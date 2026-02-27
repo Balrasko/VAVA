@@ -40,19 +40,4 @@ mvn clean javafx:run
 
 ## Code organization
 
-The source code lives under `src/main/java/dev/vavateam1/` and follows a standard MVC layout:
-
-| Package / File | Purpose                                                                                         |
-| -------------- | ----------------------------------------------------------------------------------------------- |
-| `App.java`     | Application entry point; extends `javafx.application.Application` and launches the JavaFX stage |
-| `controller/`  | JavaFX controllers – handle UI events and mediate between view and service layers               |
-| `model/`       | Plain data/domain objects (POJOs, records, enums)                                               |
-| `service/`     | Business logic and data-access services consumed by controllers                                 |
-| `view/`        | Custom JavaFX components or FXML-related view helpers                                           |
-
-Resources are organised under `src/main/resources/` and copied to the classpath root by Maven at build time:
-
-| Folder  | Purpose                                 |
-| ------- | --------------------------------------- |
-| `view/` | FXML layout files loaded by controllers |
-| `css/`  | Stylesheets applied to JavaFX scenes    |
+TBD
