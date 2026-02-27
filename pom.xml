@@ -20,12 +20,6 @@
       <artifactId>javafx-controls</artifactId>
       <version>25.0.2</version>
     </dependency>
-
-    <dependency>
-      <groupId>io.github.mkpaz</groupId>
-      <artifactId>atlantafx-base</artifactId>
-      <version>2.1.0</version>
-    </dependency>
   </dependencies>
   
   <build>
