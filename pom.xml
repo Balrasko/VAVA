@@ -20,6 +20,12 @@
       <artifactId>javafx-controls</artifactId>
       <version>25.0.2</version>
     </dependency>
+    <dependency>
+      <groupId>org.openjfx</groupId>
+      <artifactId>javafx-fxml</artifactId>
+      <version>25.0.2</version>
+    </dependency>
+
   </dependencies>
   
   <build>
@@ -41,6 +47,9 @@
                   <id>default-cli</id>
                   <configuration>
                       <mainClass>dev.vavateam1.App</mainClass>
+                    <options>
+                      <option>-Djava.util.logging.config.file=${project.basedir}/logging.properties</option>
+                    </options>
                   </configuration>
               </execution>
           </executions>

@@ -1,0 +1,66 @@
+.root-pane {
+  -fx-background-color: #f5f6fa;
+  -fx-font-family: "System";
+}
+
+.title-label {
+  -fx-font-size: 24px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #2c3e50;
+}
+
+.field-label {
+  -fx-font-size: 13px;
+  -fx-text-fill: #555;
+}
+
+.text-field,
+.password-field {
+  -fx-pref-width: 260px;
+  -fx-pref-height: 36px;
+  -fx-background-radius: 6;
+  -fx-border-radius: 6;
+  -fx-border-color: #ccc;
+  -fx-border-width: 1;
+  -fx-padding: 4 10;
+  -fx-font-size: 13px;
+}
+
+.text-field:focused,
+.password-field:focused {
+  -fx-border-color: #3498db;
+}
+
+.primary-button {
+  -fx-pref-width: 260px;
+  -fx-pref-height: 38px;
+  -fx-background-color: #3498db;
+  -fx-text-fill: white;
+  -fx-font-size: 14px;
+  -fx-font-weight: bold;
+  -fx-background-radius: 6;
+  -fx-cursor: hand;
+}
+
+.primary-button:hover {
+  -fx-background-color: #2980b9;
+}
+
+.secondary-button {
+  -fx-pref-width: 160px;
+  -fx-pref-height: 36px;
+  -fx-background-color: #95a5a6;
+  -fx-text-fill: white;
+  -fx-font-size: 13px;
+  -fx-background-radius: 6;
+  -fx-cursor: hand;
+}
+
+.secondary-button:hover {
+  -fx-background-color: #7f8c8d;
+}
+
+.error-label {
+  -fx-text-fill: #e74c3c;
+  -fx-font-size: 12px;
+}
