@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="dev.vavateam1.controller.DashboardController">
+
+    <!-- LEFT SIDEBAR -->
+    <left>
+    <VBox fx:id="sidebar"
+      spacing="10"
+      prefWidth="220"
+      styleClass="sidebar"
+      style="-fx-padding: 20;"
+      fillWidth="true">
+
+    <!-- MENU ITEMS -->
+    <HBox styleClass="sidebar-item"
+          onMouseClicked="#showTables">
+        <Label text="Tables" styleClass="sidebar-label"/>
+    </HBox>
+
+    <HBox styleClass="sidebar-item"
+          onMouseClicked="#showClosing">
+        <Label text="Closing" styleClass="sidebar-label"/>
+    </HBox>
+
+    <HBox styleClass="sidebar-item"
+          onMouseClicked="#showHistory">
+        <Label text="History" styleClass="sidebar-label"/>
+    </HBox>
+
+    <HBox styleClass="sidebar-item"
+          onMouseClicked="#showManager">
+        <Label text="Manager panel" styleClass="sidebar-label"/>
+    </HBox>
+
+    <!-- SPACER -->
+    <VBox VBox.vgrow="ALWAYS"/>
+
+    <!-- LOGOUT -->
+    <HBox styleClass="sidebar-item logout-item"
+          onMouseClicked="#logout">
+        <Label text="Logout" styleClass="sidebar-label"/>
+    </HBox>
+
+    <!-- PROFILE -->
+    <VBox alignment="CENTER" spacing="8">
+        <Label text="Logged in as"
+               style="-fx-text-fill: white; -fx-font-size: 11px;"/>
+        <Label text="Waiter"
+               style="-fx-text-fill: white; -fx-font-weight: bold;"/>
+    </VBox>
+
+</VBox>
+</left>
+
+    <!-- TOP BAR -->
+    <top>
+    <HBox spacing="15"
+          alignment="CENTER_LEFT"
+          style="-fx-background-color: #1c2a78; -fx-padding: 15;">
+
+        <Label text="☰"
+               onMouseClicked="#toggleSidebar"
+               style="-fx-text-fill: white;
+                      -fx-font-size: 20px;
+                      -fx-cursor: hand;"/>
+
+        <Label text="Restaurant"
+               style="-fx-text-fill: white;
+                      -fx-font-size: 16px;"/>
+    </HBox>
+</top>
+
+    <!-- CENTER CONTENT -->
+    <center>
+        <StackPane fx:id="contentArea"
+           alignment="CENTER"
+           style="-fx-background-color: #f4f4f4;">
+        </StackPane>
+    </center>
+
+</BorderPane>

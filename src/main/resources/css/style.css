@@ -1,0 +1,23 @@
+.sidebar {
+    -fx-background-color: #161b8c;
+}
+
+.sidebar-item {
+    -fx-padding: 12 18;
+    -fx-alignment: CENTER_LEFT;
+    -fx-cursor: hand;
+    -fx-background-radius: 10;
+}
+
+.sidebar-item:hover {
+    -fx-background-color: #1c2a78;
+}
+
+.logout-item:hover {
+    -fx-background-color: #b91c1c;
+}
+
+.sidebar-label {
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+}

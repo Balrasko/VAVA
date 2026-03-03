@@ -1,23 +1,26 @@
 package dev.vavateam1;
 
 import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
-/**
- * JavaFX App
- */
 public class App extends Application {
 
     @Override
-    public void start(Stage stage) {
-        var javaVersion = SystemInfo.javaVersion();
-        var javafxVersion = SystemInfo.javafxVersion();
+    public void start(Stage stage) throws Exception {
 
-        var label = new Label("Hello, JavaFX " + javafxVersion + ", running on Java " + javaVersion + ".");
-        var scene = new Scene(new StackPane(label), 640, 480);
+        FXMLLoader loader = new FXMLLoader(
+                getClass().getResource("/view/login.fxml")
+        );
+
+        Scene scene = new Scene(loader.load(), 1200, 800);
+
+        scene.getStylesheets().add(
+                getClass().getResource("/css/style.css").toExternalForm()
+        );
+
+        stage.setTitle("Restaurant Management System");
         stage.setScene(scene);
         stage.show();
     }
@@ -25,5 +28,4 @@ public class App extends Application {
     public static void main(String[] args) {
         launch();
     }
-
 }
