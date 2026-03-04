@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+
+<StackPane xmlns:fx="http://javafx.com/fxml"
+           fx:id="contentArea"
+           fx:controller="dev.vavateam1.controller.TablesController"
+           alignment="CENTER"
+           style="-fx-background-color: #f4f4f4;">
+
+</StackPane>

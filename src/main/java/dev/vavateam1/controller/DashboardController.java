@@ -7,6 +7,7 @@ import javafx.stage.Stage;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.control.Label;
+import javafx.scene.Parent;
 
 // animácie
 import javafx.animation.KeyFrame;
@@ -56,8 +57,14 @@ public class DashboardController {
     }
 
     @FXML
-    private void showTables() {
-        setContent("Here will be Tables screen");
+    private void showTables() throws Exception {
+        FXMLLoader loader = new FXMLLoader(
+                getClass().getResource("/view/tables.fxml")
+        );
+
+        Parent view = loader.load();
+
+        contentArea.getChildren().setAll(view);
     }
 
     @FXML
