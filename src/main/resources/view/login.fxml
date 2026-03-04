@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.*?>
+
+
+
+<StackPane fx:id="root"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="dev.vavateam1.controller.LoginController"
+           style="-fx-background-color: linear-gradient(to bottom right, #0f1b4c, #1c2a78);">
+
+    <VBox fx:id="loginCard"
+      alignment="CENTER"
+      spacing="18"
+      maxWidth="400"
+      maxHeight="350"
+      prefWidth="400"
+      style="-fx-background-color: white;
+             -fx-background-radius: 24;
+             -fx-padding: 50;">
+
+        <Label text="Restaurant Management System"
+               style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+
+        <TextField fx:id="emailField"
+                   promptText="Email"/>
+
+        <PasswordField fx:id="passwordField"
+                       promptText="Password"/>
+
+        <Button text="Sign in"
+                onAction="#handleLogin"/>
+
+        <Label fx:id="errorLabel"/>
+
+    </VBox>
+
+</StackPane>
