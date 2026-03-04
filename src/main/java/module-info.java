@@ -1,6 +1,8 @@
 module dev.vavateam1 {
 
     requires javafx.controls;
+    requires java.sql;
+    requires org.postgresql.jdbc;
     requires javafx.fxml;
 
     requires atlantafx.base;
