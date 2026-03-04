@@ -26,6 +26,12 @@
       <artifactId>atlantafx-base</artifactId>
       <version>2.1.0</version>
     </dependency>
+
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <version>42.7.3</version>
+    </dependency>
   </dependencies>
   
   <build>
