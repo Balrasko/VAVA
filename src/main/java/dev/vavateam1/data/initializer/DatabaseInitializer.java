@@ -27,18 +27,20 @@ public class DatabaseInitializer {
         try (Connection conn = ConnectionFactory.getConnection()) {
 
             InputStream is = DatabaseInitializer.class.getResourceAsStream("/db/schema.sql");
-            if (is == null) throw new RuntimeException("schema.sql not found!");
+            if (is == null)
+                throw new RuntimeException("schema.sql not found!");
 
-            Scanner scanner = new Scanner(is).useDelimiter(";");
-            Statement stmt = conn.createStatement();
+            try (Scanner scanner = new Scanner(is).useDelimiter(";")) {
+                Statement stmt = conn.createStatement();
 
-            while (scanner.hasNext()) {
-                String sql = scanner.next().trim();
-                if (!sql.isEmpty()) {
-                    stmt.execute(sql);
+                while (scanner.hasNext()) {
+                    String sql = scanner.next().trim();
+                    if (!sql.isEmpty()) {
+                        stmt.execute(sql);
+                    }
                 }
+                logger.log(Level.INFO, "Database schema initialized");
             }
-            logger.log(Level.INFO, "Database schema initialized");
 
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Database schema initialization failed: " + e.getMessage());

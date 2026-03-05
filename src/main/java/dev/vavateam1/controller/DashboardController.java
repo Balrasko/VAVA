@@ -1,20 +1,23 @@
 package dev.vavateam1.controller;
 
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
-import javafx.scene.layout.VBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.control.Label;
-
+import dev.vavateam1.service.AuthService;
+import dev.vavateam1.service.BasicAuthService;
 // animácie
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
 public class DashboardController {
+    // TODO: inject
+    private final AuthService authService = new BasicAuthService();
 
     @FXML
     private StackPane contentArea;
@@ -38,13 +41,10 @@ public class DashboardController {
 
         double endWidth = sidebarVisible ? 0 : 220;
 
-        Timeline timeline = new Timeline(
-                new KeyFrame(Duration.millis(250),
-                        new KeyValue(sidebar.prefWidthProperty(), endWidth),
-                        new KeyValue(sidebar.minWidthProperty(), endWidth),
-                        new KeyValue(sidebar.maxWidthProperty(), endWidth)
-                )
-        );
+        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(250),
+                new KeyValue(sidebar.prefWidthProperty(), endWidth),
+                new KeyValue(sidebar.minWidthProperty(), endWidth),
+                new KeyValue(sidebar.maxWidthProperty(), endWidth)));
 
         timeline.play();
         sidebarVisible = !sidebarVisible;
@@ -77,15 +77,12 @@ public class DashboardController {
 
     @FXML
     private void logout() throws Exception {
+        authService.logout();
 
-        FXMLLoader loader = new FXMLLoader(
-                getClass().getResource("/view/login.fxml")
-        );
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/login.fxml"));
 
         Scene scene = new Scene(loader.load(), 1200, 800);
-        scene.getStylesheets().add(
-                getClass().getResource("/css/style.css").toExternalForm()
-        );
+        scene.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
 
         Stage stage = (Stage) sidebar.getScene().getWindow();
         stage.setScene(scene);
