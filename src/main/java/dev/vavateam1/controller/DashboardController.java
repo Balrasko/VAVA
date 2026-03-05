@@ -32,6 +32,13 @@ public class DashboardController {
         sidebar.setMinWidth(0);
         sidebar.setMaxWidth(0);
         sidebarVisible = false;
+
+        try {
+            showTables();
+        }
+        catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
     }
 
     @FXML
