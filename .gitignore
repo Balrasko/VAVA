@@ -231,3 +231,5 @@ $RECYCLE.BIN/
 
 # Vscode settings
 .vscode
+
+.env
