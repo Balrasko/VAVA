@@ -10,4 +10,8 @@
            alignment="CENTER"
            style="-fx-background-color: #f4f4f4;">
 
+    <Pane fx:id="tablesPane"
+               prefWidth="800"
+               prefHeight="600"/>
+
 </StackPane>
