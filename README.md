@@ -32,6 +32,21 @@ git clone git@github.com:Balrasko/VAVA.git
 cd VAVA
 ```
 
+### Create DB
+
+```bash
+docker-compose down && docker-compose up -d;
+```
+
+### Seed DB
+```bash
+zsh ./seed.sh
+```
+
+### ENV set
+```bash
+zsh ./run.sh
+```
 ### Run the application
 
 ```bash
@@ -56,3 +71,11 @@ Resources are organised under `src/main/resources/` and copied to the classpath 
 | ------- | --------------------------------------- |
 | `view/` | FXML layout files loaded by controllers |
 | `css/`  | Stylesheets applied to JavaFX scenes    |
+
+## Seed DB users
+
+Users (id, name, email, password)
+1, Admin User, admin@vava.com, admin123
+2, Test Manager, manager@vava.com, manager123
+3, Jožko Čašník, waiter@vava.com, waiter123
+4, Fero Kuchár, chef@vava.com, chef123
