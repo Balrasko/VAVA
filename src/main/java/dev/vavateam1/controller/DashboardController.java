@@ -1,23 +1,26 @@
 package dev.vavateam1.controller;
 
+import com.google.inject.Inject;
 import dev.vavateam1.service.AuthService;
-import dev.vavateam1.service.BasicAuthService;
 // animácie
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 import javafx.util.Duration;
 
 public class DashboardController {
-    // TODO: inject
-    private final AuthService authService = new BasicAuthService();
+    private final AuthService authService;
+    private final ViewSwitcher viewSwitcher;
+
+    @Inject
+    public DashboardController(AuthService authService, ViewSwitcher viewSwitcher) {
+        this.authService = authService;
+        this.viewSwitcher = viewSwitcher;
+    }
 
     @FXML
     private StackPane contentArea;
@@ -26,7 +29,6 @@ public class DashboardController {
     private VBox sidebar;
 
     private boolean sidebarVisible = false;
-
 
     @FXML
     public void initialize() {
@@ -78,13 +80,6 @@ public class DashboardController {
     @FXML
     private void logout() throws Exception {
         authService.logout();
-
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/login.fxml"));
-
-        Scene scene = new Scene(loader.load(), 1200, 800);
-        scene.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
-
-        Stage stage = (Stage) sidebar.getScene().getWindow();
-        stage.setScene(scene);
+        viewSwitcher.SetView("/view/login.fxml");
     }
 }

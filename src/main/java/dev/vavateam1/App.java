@@ -1,23 +1,18 @@
 package dev.vavateam1;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+
+import dev.vavateam1.controller.ViewSwitcher;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class App extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/login.fxml"));
-
-        Scene scene = new Scene(loader.load(), 1200, 800);
-
-        scene.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
-
-        stage.setTitle("Restaurant Management System");
-        stage.setScene(scene);
-        stage.show();
+        Injector injector = Guice.createInjector(new AppModule());
+        injector.getInstance(ViewSwitcher.class).InitStage(stage, injector);
     }
 
     public static void main(String[] args) {

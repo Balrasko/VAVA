@@ -1,18 +1,24 @@
 package dev.vavateam1.controller;
 
+import java.io.IOException;
+
+import com.google.inject.Inject;
+
 import dev.vavateam1.service.AuthService;
-import dev.vavateam1.service.BasicAuthService;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
 
 public class LoginController {
-    // TODO: inject
-    private final AuthService authService = new BasicAuthService();
+    private final AuthService authService;
+    private final ViewSwitcher viewSwitcher;
+
+    @Inject
+    public LoginController(AuthService authService, ViewSwitcher viewSwitcher) {
+        this.authService = authService;
+        this.viewSwitcher = viewSwitcher;
+    }
 
     @FXML
     private TextField emailField;
@@ -23,31 +29,14 @@ public class LoginController {
     @FXML
     private Label errorLabel;
 
-
     @FXML
-    private void handleLogin() {
+    private void handleLogin() throws IOException {
 
         String email = emailField.getText();
         String password = passwordField.getText();
 
         if (authService.login(email, password)) {
-
-            try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/dashboard.fxml"));
-
-                Scene scene = new Scene(loader.load(), 1200, 800);
-
-                // ✅ TU JE FIX
-                scene.getStylesheets()
-                        .add(getClass().getResource("/css/style.css").toExternalForm());
-
-                Stage stage = (Stage) emailField.getScene().getWindow();
-                stage.setScene(scene);
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
+            viewSwitcher.SetView("/view/dashboard.fxml");
         } else {
             errorLabel.setText("Invalid credentials");
         }

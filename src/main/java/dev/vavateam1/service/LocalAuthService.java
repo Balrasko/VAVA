@@ -2,19 +2,26 @@ package dev.vavateam1.service;
 
 import java.util.Objects;
 import java.util.Optional;
+
+import com.google.inject.Inject;
+
 import dev.vavateam1.dao.UserDao;
 import dev.vavateam1.dao.UserSessionDao;
 import dev.vavateam1.model.User;
 import dev.vavateam1.model.UserSession;
 
-public class BasicAuthService implements AuthService {
-
-    // TODO: inject
-    private final UserDao userDao = new UserDao();
-    private final UserSessionDao userSessionDao = new UserSessionDao();
+public class LocalAuthService implements AuthService {
+    private final UserDao userDao;
+    private final UserSessionDao userSessionDao;
 
     private User currentUser;
     private UserSession currentSession;
+
+    @Inject
+    public LocalAuthService(UserDao userDao, UserSessionDao userSessionDao) {
+        this.userDao = userDao;
+        this.userSessionDao = userSessionDao;
+    }
 
     @Override
     public boolean login(String email, String password) {
@@ -33,7 +40,6 @@ public class BasicAuthService implements AuthService {
         return true;
     }
 
-
     @Override
     public User getUser() {
         return currentUser;
@@ -49,4 +55,3 @@ public class BasicAuthService implements AuthService {
         currentUser = null;
     }
 }
-

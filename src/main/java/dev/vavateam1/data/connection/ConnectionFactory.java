@@ -1,13 +1,13 @@
 package dev.vavateam1.data.connection;
 
-import dev.vavateam1.data.config.DBConfig;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class ConnectionFactory {
+import dev.vavateam1.data.config.DBConfig;
 
-    public static Connection getConnection() throws SQLException {
+public class ConnectionFactory {
+    public Connection getConnection() throws SQLException {
         try {
             Class.forName("org.postgresql.Driver");
         } catch (ClassNotFoundException e) {
@@ -17,7 +17,7 @@ public class ConnectionFactory {
         return DriverManager.getConnection(DBConfig.getJdbcUrl(), DBConfig.getUser(), DBConfig.getPassword());
     }
 
-    public static Connection getConnectionToPostgresDB() throws SQLException {
+    public Connection getConnectionToPostgresDB() throws SQLException {
         try {
             Class.forName("org.postgresql.Driver");
         } catch (ClassNotFoundException e) {
