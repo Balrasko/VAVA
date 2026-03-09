@@ -13,19 +13,26 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>25</maven.compiler.source>
     <maven.compiler.target>25</maven.compiler.target>
+
+    <!-- JavaFX is distributed per-platform; classifier is mandatory -->
+    <javafx.version>25.0.2</javafx.version>
+    <!-- Apple Silicon Mac -->
+    <javafx.platform>mac-aarch64</javafx.platform>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>org.openjfx</groupId>
       <artifactId>javafx-controls</artifactId>
-      <version>25.0.2</version>
+      <version>${javafx.version}</version>
+      <classifier>${javafx.platform}</classifier>
     </dependency>
 
     <dependency>
       <groupId>org.openjfx</groupId>
       <artifactId>javafx-fxml</artifactId>
-      <version>25.0.2</version>
+      <version>${javafx.version}</version>
+      <classifier>${javafx.platform}</classifier>
     </dependency>
 
     <dependency>
