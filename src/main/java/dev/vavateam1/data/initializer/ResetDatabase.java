@@ -15,7 +15,8 @@ public class ResetDatabase {
     private static final Logger logger = Logger.getLogger(ResetDatabase.class.getName());
 
     public static void main(String[] args) {
-        try (Connection conn = ConnectionFactory.getConnection()){
+        ConnectionFactory connectionFactory = new ConnectionFactory();
+        try (Connection conn = connectionFactory.getConnection()) {
 
             Statement stmt = conn.createStatement();
             stmt.executeUpdate("DROP TABLE IF EXISTS roles CASCADE");
