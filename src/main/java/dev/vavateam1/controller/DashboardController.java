@@ -11,6 +11,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
+import javafx.fxml.FXMLLoader;
 
 public class DashboardController {
     private final AuthService authService;
@@ -69,7 +70,20 @@ public class DashboardController {
 
     @FXML
     private void showHistory() {
-        setContent("Here will be History screen");
+
+        try {
+
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/view/history.fxml")
+            );
+
+            contentArea.getChildren().clear();
+            contentArea.getChildren().add(loader.load());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     @FXML
