@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+
+<HBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="dev.vavateam1.controller.HistoryController"
+      spacing="20"
+      maxWidth="Infinity"
+      style="-fx-padding:20; -fx-background-color:#f4f4f4;">
+
+    <!-- LEFT PANEL -->
+    <VBox fx:id="ordersContainer"
+          spacing="12"
+          prefWidth="500"
+          maxWidth="Infinity"
+          HBox.hgrow="ALWAYS"
+          style="-fx-padding:10; -fx-background-color:#d9d9d9; -fx-background-radius:12;"/>
+
+    <!-- RIGHT PANEL -->
+    <VBox fx:id="detailPanel"
+          spacing="10"
+          prefWidth="500"
+          maxWidth="Infinity"
+          fillWidth="true"
+          visible="false"
+          managed="false"
+          HBox.hgrow="ALWAYS"
+          style="-fx-background-color:#d9d9d9; -fx-padding:10; -fx-background-radius:12;">
+
+        <!-- ACTION BUTTONS -->
+        <HBox alignment="TOP_RIGHT" spacing="10">
+
+            <Button text="✕"
+                    onAction="#closeDetail"
+                    style="-fx-background-color:transparent; -fx-text-fill:#333; -fx-font-size:14; -fx-cursor:hand;"/>
+
+            <Button text="refund"
+                    style="-fx-background-color:#e53935; -fx-text-fill:white; -fx-background-radius:20;"/>
+
+            <Button text="print copy"
+                    style="-fx-background-color:#43a047; -fx-text-fill:white; -fx-background-radius:20;"/>
+
+        </HBox>
+
+        <!-- DETAIL CARD -->
+        <VBox fx:id="detailContainer"
+              spacing="15"
+              maxWidth="Infinity"
+              VBox.vgrow="ALWAYS"
+              style="-fx-background-color:white; -fx-padding:25; -fx-background-radius:20;"/>
+
+    </VBox>
+
+</HBox>
