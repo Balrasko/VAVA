@@ -3,21 +3,38 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
 
-<BorderPane fx:id="root"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="dev.vavateam1.controller.HistoryController">
+<HBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="dev.vavateam1.controller.HistoryController"
+      spacing="20"
+      style="-fx-padding:20; -fx-background-color:#f4f4f4;">
 
-    <center>
+    <!-- LEFT PANEL -->
+    <VBox fx:id="ordersContainer"
+          spacing="12"
+          prefWidth="500"
+          style="-fx-padding:10; -fx-background-color:#d9d9d9; -fx-background-radius:12;"/>
 
-        <ScrollPane fitToWidth="true"
-                    style="-fx-background-color:transparent;">
+    <!-- RIGHT PANEL -->
+    <VBox spacing="10"
+          prefWidth="500"
+          style="-fx-background-color:#d9d9d9; -fx-padding:10; -fx-background-radius:12;">
 
-            <VBox fx:id="ordersContainer"
-                spacing="10"
-                style="-fx-padding:20;" />
+        <!-- ACTION BUTTONS -->
+        <HBox alignment="TOP_RIGHT" spacing="10">
 
-        </ScrollPane>
+            <Button text="refund"
+                    style="-fx-background-color:#e53935; -fx-text-fill:white; -fx-background-radius:20;"/>
 
-    </center>
+            <Button text="print copy"
+                    style="-fx-background-color:#43a047; -fx-text-fill:white; -fx-background-radius:20;"/>
 
-</BorderPane>
+        </HBox>
+
+        <!-- DETAIL CARD -->
+        <VBox fx:id="detailContainer"
+              spacing="15"
+              style="-fx-background-color:white; -fx-padding:25; -fx-background-radius:20;"/>
+
+    </VBox>
+
+</HBox>
