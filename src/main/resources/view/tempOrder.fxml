@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+
+<StackPane xmlns:fx="http://javafx.com/fxml"
+           fx:controller="dev.vavateam1.controller.TempOrderController"
+           alignment="CENTER">
+
+    <Label fx:id="orderLabel"
+           text="Order view"
+           style="-fx-font-size: 24px;"/>
+
+</StackPane>

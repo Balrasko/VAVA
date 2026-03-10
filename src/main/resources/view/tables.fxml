@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.Insets?>
+
+<StackPane xmlns:fx="http://javafx.com/fxml"
+           fx:id="contentArea"
+           fx:controller="dev.vavateam1.controller.TablesController"
+           alignment="CENTER"
+           style="-fx-background-color: #f4f4f4;">
+
+    <!-- MAIN PAGE AREA -->
+    <Pane fx:id="tablesPane"
+          prefWidth="800"
+          prefHeight="600"/>
+
+    <!-- DRAG TOGGLE BUTTON -->
+    <Button fx:id="dragButton"
+            text="Enter Drag Mode"
+            onAction="#toggleDragging"
+            StackPane.alignment="BOTTOM_LEFT"
+            style="-fx-font-size: 14px; -fx-border-color:#000000;">
+            
+       <StackPane.margin>
+              <Insets bottom="15" left="15"/>
+       </StackPane.margin>
+
+    </Button>
+
+</StackPane>
