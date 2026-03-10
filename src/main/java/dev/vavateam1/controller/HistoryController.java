@@ -3,7 +3,6 @@ package dev.vavateam1.controller;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.Button;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
 import javafx.geometry.Pos;
@@ -11,10 +10,10 @@ import javafx.geometry.Pos;
 public class HistoryController {
 
     @FXML
-    private BorderPane root;
+    private VBox ordersContainer;
 
     @FXML
-    private VBox ordersContainer;
+    private VBox detailPanel;
 
     @FXML
     public void initialize() {
@@ -27,6 +26,8 @@ public class HistoryController {
         addDay("Yesterday");
 
         addOrder("#21","24.2.2025 18:45","18.90€");
+        detailPanel.setVisible(false);
+        detailPanel.setManaged(false);
     }
 
         private void addDay(String day){
@@ -73,6 +74,9 @@ public class HistoryController {
 
     private void showDetail(String id, String date, String total){
 
+        detailPanel.setVisible(true);
+        detailPanel.setManaged(true);
+
         detailContainer.getChildren().clear();
 
         Label title = new Label("Order summary");
@@ -93,5 +97,11 @@ public class HistoryController {
                 tip,
                 payment
         );
+    }
+
+    @FXML
+    private void closeDetail() {
+        detailPanel.setVisible(false);
+        detailPanel.setManaged(false);
     }
 }
