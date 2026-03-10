@@ -24,8 +24,10 @@ public class DBConfig {
     }
 
     private static String getEnv(String key) {
-        String value = System.getenv(key);
-        return value != null ? value : ENV.get(key);
+        String value = ENV.get(key);
+        if (value != null) return value;
+
+        return System.getenv(key);
     }
 
     public static String getHost() {
