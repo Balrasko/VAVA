@@ -3,6 +3,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
+<?import javafx.geometry.Insets?>
 
 <StackPane xmlns:fx="http://javafx.com/fxml"
            fx:id="contentArea"
@@ -10,8 +11,22 @@
            alignment="CENTER"
            style="-fx-background-color: #f4f4f4;">
 
+    <!-- Main page area -->
     <Pane fx:id="tablesPane"
-               prefWidth="800"
-               prefHeight="600"/>
+          prefWidth="800"
+          prefHeight="600"/>
+
+    <!-- Drag toggle button -->
+    <Button fx:id="dragButton"
+            text="Enter Drag Mode"
+            onAction="#toggleDragging"
+            StackPane.alignment="BOTTOM_LEFT"
+            style="-fx-font-size: 14px; -fx-border-color:#000000;">
+            
+       <StackPane.margin>
+              <Insets bottom="15" left="15"/>
+       </StackPane.margin>
+
+    </Button>
 
 </StackPane>
