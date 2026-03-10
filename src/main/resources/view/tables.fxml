@@ -11,12 +11,12 @@
            alignment="CENTER"
            style="-fx-background-color: #f4f4f4;">
 
-    <!-- Main page area -->
+    <!-- MAIN PAGE AREA -->
     <Pane fx:id="tablesPane"
           prefWidth="800"
           prefHeight="600"/>
 
-    <!-- Drag toggle button -->
+    <!-- DRAG TOGGLE BUTTON -->
     <Button fx:id="dragButton"
             text="Enter Drag Mode"
             onAction="#toggleDragging"

@@ -18,7 +18,7 @@
 
     <!-- MENU ITEMS -->
     <HBox styleClass="sidebar-item"
-          onMouseClicked="#showTables">
+          onMouseClicked="#showTableView">
         <Label text="Tables" styleClass="sidebar-label"/>
     </HBox>
 

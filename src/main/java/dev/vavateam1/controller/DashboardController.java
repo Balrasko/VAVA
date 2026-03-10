@@ -1,6 +1,8 @@
 package dev.vavateam1.controller;
 
 import com.google.inject.Inject;
+
+import dev.vavateam1.model.Table;
 import dev.vavateam1.service.AuthService;
 // animácie
 import javafx.animation.KeyFrame;
@@ -40,7 +42,7 @@ public class DashboardController {
         sidebarVisible = false;
 
         try {
-            showTables();
+            showTableView();
         }
         catch (Exception e) {
             System.err.println(e.getMessage());
@@ -67,7 +69,7 @@ public class DashboardController {
     }
 
     @FXML
-    private void showTables() throws Exception {
+    private void showTableView() throws Exception {
         FXMLLoader loader = new FXMLLoader(
                 getClass().getResource("/view/tables.fxml")
         );
@@ -81,7 +83,7 @@ public class DashboardController {
     }
 
     @FXML
-    public void showOrderView(int tableNumber) throws Exception {
+    public void showOrderView(Table table) throws Exception {
         FXMLLoader loader = new FXMLLoader(
             getClass().getResource("/view/tempOrder.fxml")
         );
@@ -89,7 +91,7 @@ public class DashboardController {
         Parent view = loader.load();
 
         TempOrderController controller = loader.getController();
-        controller.setTableNumber(tableNumber);
+        controller.setTable(table);
 
         contentArea.getChildren().setAll(view);
     }
