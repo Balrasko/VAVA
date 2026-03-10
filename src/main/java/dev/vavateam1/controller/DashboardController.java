@@ -47,6 +47,13 @@ public class DashboardController {
         catch (Exception e) {
             System.err.println(e.getMessage());
         }
+
+        try {
+            showTableView();
+        }
+        catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
     }
 
     @FXML
