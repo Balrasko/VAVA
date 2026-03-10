@@ -6,10 +6,9 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.StackPane;
-import javafx.scene.transform.Scale;
 import javafx.scene.control.Label;
 import javafx.scene.Parent;
-
+import dev.vavateam1.model.Table;
 // animácie
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -35,7 +34,7 @@ public class DashboardController {
         sidebarVisible = false;
 
         try {
-            showTables();
+            showTableView();
         }
         catch (Exception e) {
             System.err.println(e.getMessage());
@@ -65,7 +64,7 @@ public class DashboardController {
     }
 
     @FXML
-    private void showTables() throws Exception {
+    private void showTableView() throws Exception {
         FXMLLoader loader = new FXMLLoader(
                 getClass().getResource("/view/tables.fxml")
         );
@@ -79,7 +78,7 @@ public class DashboardController {
     }
 
     @FXML
-    public void showOrderView(int tableNumber) throws Exception {
+    public void showOrderView(Table table) throws Exception {
         FXMLLoader loader = new FXMLLoader(
             getClass().getResource("/view/tempOrder.fxml")
         );
@@ -87,7 +86,7 @@ public class DashboardController {
         Parent view = loader.load();
 
         TempOrderController controller = loader.getController();
-        controller.setTableNumber(tableNumber);
+        controller.setTable(table);
 
         contentArea.getChildren().setAll(view);
     }

@@ -1,31 +1,19 @@
 package dev.vavateam1.controller;
 
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.geometry.Insets;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
-import javafx.scene.layout.VBox;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.transform.Scale;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.Node;
 
 import javafx.scene.shape.Circle;
 
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
-import javafx.util.Duration;
-
 import java.math.BigDecimal;
 import java.util.List;
 
-import dev.vavateam1.controller.DashboardController.*;
 import dev.vavateam1.model.Table;
 import dev.vavateam1.service.*;
 
@@ -55,8 +43,10 @@ public class TablesController {
         // Make a node for each table
         if (!tables.isEmpty()) {
             for (Table table : tables) {
-                Node node = createTableNode(table);
-                tablesPane.getChildren().add(node);
+                if (table.getLocationId() == 1) { // Location check - nothing so far
+                    Node node = createTableNode(table);
+                    tablesPane.getChildren().add(node);
+                }
             }
         }
     }
@@ -105,7 +95,7 @@ public class TablesController {
         box.setOnMouseClicked(e -> {
             if (!dragging) {
                 try {
-                    dashboard.showOrderView(table.getTableNumber());
+                    dashboard.showOrderView(table);
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -133,7 +123,7 @@ public class TablesController {
             node.setLayoutX(e.getSceneX() - mouseX);
             node.setLayoutY(e.getSceneY() - mouseY);
 
-            // Dont let tables leave the screen
+            // Don't let tables leave the screen
             if (node.getLayoutX() < 0) {
                 node.setLayoutX(0);
             }
@@ -150,9 +140,11 @@ public class TablesController {
 
         node.setOnMouseReleased(e -> {
 
-            // Save new position
+            // Set new position
             table.setPosX(BigDecimal.valueOf(node.getLayoutX()));
             table.setPosY(BigDecimal.valueOf(node.getLayoutY()));
+
+            // Save to DB - maybe could be done with its own button
 
             // System.out.println("X: " + table.getPosX());
             // System.out.println("Y: " + table.getPosY());
