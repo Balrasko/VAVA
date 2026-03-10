@@ -6,6 +6,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.StackPane;
+import javafx.scene.transform.Scale;
 import javafx.scene.control.Label;
 import javafx.scene.Parent;
 
@@ -70,6 +71,23 @@ public class DashboardController {
         );
 
         Parent view = loader.load();
+
+        TablesController controller = loader.getController();
+        controller.setDashboardController(this);
+
+        contentArea.getChildren().setAll(view);
+    }
+
+    @FXML
+    public void showOrderView(int tableNumber) throws Exception {
+        FXMLLoader loader = new FXMLLoader(
+            getClass().getResource("/view/tempOrder.fxml")
+        );
+
+        Parent view = loader.load();
+
+        TempOrderController controller = loader.getController();
+        controller.setTableNumber(tableNumber);
 
         contentArea.getChildren().setAll(view);
     }

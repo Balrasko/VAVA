@@ -10,6 +10,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.transform.Scale;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.Node;
 
@@ -28,22 +30,25 @@ import dev.vavateam1.model.Table;
 import dev.vavateam1.service.*;
 
 public class TablesController {
-    
-    @FXML
-    private StackPane contentArea;
 
     @FXML
     private Pane tablesPane;
+
+    private DashboardController dashboard;
+
+    @FXML
+    private Button dragButton;
 
     // Mock backend service
     private final TableService tableService = new MockTableService();
 
     private List<Table> tables;
 
+    private Boolean dragging = false;
 
     @FXML
     public void initialize() {
-        
+
         // Get list of tables
         tables = tableService.getTables();
 
@@ -56,6 +61,17 @@ public class TablesController {
         }
     }
 
+    public void setDashboardController(DashboardController dashboard) {
+        this.dashboard = dashboard;
+    }
+
+    @FXML
+    private void toggleDragging() {
+        dragging = !dragging;
+
+        dragButton.setText(dragging ? "Exit Drag Mode" : "Enter Drag Mode");
+        dragButton.setStyle("-fx-font-size: 14px; -fx-border-color:#000000;"); //  + (dragging ? "-fx-background-color:#fffa61" : "-fx-background-color:#61d2ff")
+    }
 
     private Node createTableNode(Table table) {
         StackPane box = new StackPane();
@@ -71,10 +87,11 @@ public class TablesController {
         box.setStyle("""
             -fx-background-color: lightblue;
             -fx-border-color: black;
-            -fx-border-radius: 5;
+            -fx-border-radius: 3;
             -fx-background-radius: 5;
         """);
 
+        // Draw green circle if table is available
         Circle status = new Circle(6);
         // status.setStyle(table.getAvailability() ? "-fx-fill: LIMEGREEN;" : "-fx-fill: RED");
         status.setStyle("-fx-fill: LIMEGREEN");
@@ -82,9 +99,18 @@ public class TablesController {
 
         box.getChildren().add(status);
         StackPane.setAlignment(status, Pos.TOP_RIGHT);
-        StackPane.setMargin(status, new Insets(4));
+        StackPane.setMargin(status, new Insets(-4));
 
-        enableDrag(box, table);
+        enableTableDrag(box, table);
+        box.setOnMouseClicked(e -> {
+            if (!dragging) {
+                try {
+                    dashboard.showOrderView(table.getTableNumber());
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
 
         return box;
     }
@@ -92,19 +118,39 @@ public class TablesController {
     private double mouseX;
     private double mouseY;
 
-    private void enableDrag(Node node, Table table) {
+    private void enableTableDrag(Node node, Table table) {
 
         node.setOnMousePressed(e -> {
+            if (!dragging) return;
+
             mouseX = e.getSceneX() - node.getLayoutX();
             mouseY = e.getSceneY() - node.getLayoutY();
         });
 
         node.setOnMouseDragged(e -> {
+            if (!dragging) return;
+
             node.setLayoutX(e.getSceneX() - mouseX);
             node.setLayoutY(e.getSceneY() - mouseY);
+
+            // Dont let tables leave the screen
+            if (node.getLayoutX() < 0) {
+                node.setLayoutX(0);
+            }
+            if (node.getLayoutY() < 0) {
+                node.setLayoutY(0);
+            }
+            if (node.getLayoutX() > tablesPane.getWidth() - node.getBoundsInParent().getWidth()) {
+                node.setLayoutX(tablesPane.getWidth() - node.getBoundsInParent().getWidth());
+            }
+            if (node.getLayoutY() > tablesPane.getHeight() - node.getBoundsInParent().getHeight()) {
+                node.setLayoutY(tablesPane.getHeight() - node.getBoundsInParent().getHeight());
+            }
         });
 
         node.setOnMouseReleased(e -> {
+
+            // Save new position
             table.setPosX(BigDecimal.valueOf(node.getLayoutX()));
             table.setPosY(BigDecimal.valueOf(node.getLayoutY()));
 
