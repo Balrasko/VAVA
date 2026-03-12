@@ -189,7 +189,7 @@ public class DashboardController {
     }
 
     @FXML
-    private void showTableView() throws Exception {
+    public void showTableView() throws Exception {
         FXMLLoader loader = new FXMLLoader(
                 getClass().getResource("/view/tables.fxml"));
         loader.setControllerFactory(injector::getInstance);
