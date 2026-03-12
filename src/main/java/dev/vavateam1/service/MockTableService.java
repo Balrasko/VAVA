@@ -4,10 +4,13 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import dev.vavateam1.model.Table;
 
 public class MockTableService implements TableService {
+
+    @Override
     public List<Table> getTables() {
         List<Table> tables = new ArrayList<>();
 
@@ -58,5 +61,30 @@ public class MockTableService implements TableService {
         ));
 
         return tables;
+    }
+
+    @Override
+    public Optional<Table> getTableById(int id) {
+        return getTables().stream().filter(t -> t.getId() == id).findFirst();
+    }
+
+    @Override
+    public Table createTable(int locationId, int tableNumber, BigDecimal posX, BigDecimal posY, boolean availability) {
+        return new Table(null, locationId, tableNumber, posX, posY, availability, LocalDateTime.now(), LocalDateTime.now());
+    }
+
+    @Override
+    public Table updateTable(Table table) {
+        return table;
+    }
+
+    @Override
+    public boolean deleteTable(int id) {
+        return true;
+    }
+
+    @Override
+    public boolean updateTableAvailability(int id, boolean availability) {
+        return true;
     }
 }
