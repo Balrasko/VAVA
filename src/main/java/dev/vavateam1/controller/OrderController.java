@@ -5,6 +5,7 @@ import dev.vavateam1.model.OrderItem;
 import dev.vavateam1.model.Table;
 import dev.vavateam1.model.Category;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 
@@ -26,7 +27,7 @@ public class OrderController {
     private VBox orderPanel;
 
     @FXML
-    private Label orderLabel;
+    private Label tableLabel;
 
     private DashboardController dashboardController;
 
@@ -42,6 +43,15 @@ public class OrderController {
         this.table = table;
         this.dashboardController = dashboardController;
 
-        this.orderLabel.setText("Order view for Table " + table.getTableNumber());
+        this.tableLabel.setText("Table " + table.getTableNumber());
+    }
+
+    @FXML
+    public void backToTableView() {
+        try {
+            dashboardController.showTableView();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
