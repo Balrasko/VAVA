@@ -93,13 +93,13 @@ public class DashboardController {
     @FXML
     public void showOrderView(Table table) throws Exception {
         FXMLLoader loader = new FXMLLoader(
-            getClass().getResource("/view/tempOrder.fxml")
+            getClass().getResource("/view/order.fxml")
         );
 
         Parent view = loader.load();
 
-        TempOrderController controller = loader.getController();
-        controller.setTable(table);
+        OrderController controller = loader.getController();
+        controller.initData(table, this);
 
         contentArea.getChildren().setAll(view);
     }
