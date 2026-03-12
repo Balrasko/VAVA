@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.StackPane?>
 
 <StackPane xmlns:fx="http://javafx.com/fxml"
-           fx:controller="dev.vavateam1.controller.TempOrderController"
+           fx:controller="dev.vavateam1.controller.OrderController"
            alignment="CENTER">
 
     <Label fx:id="orderLabel"

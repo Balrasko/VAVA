@@ -213,8 +213,8 @@ public class DashboardController {
 
         Parent view = loader.load();
 
-        TempOrderController controller = loader.getController();
-        controller.setTable(table);
+        OrderController controller = loader.getController();
+        controller.initData(table, this);
 
         contentArea.getChildren().setAll(view);
         setTopNavbarVisible(false);
