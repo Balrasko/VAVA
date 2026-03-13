@@ -106,7 +106,18 @@ public class DashboardController {
 
     @FXML
     private void showClosing() {
-        setContent("Here will be Closing screen");
+        try {
+
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/view/closing.fxml")
+            );
+
+            contentArea.getChildren().clear();
+            contentArea.getChildren().add(loader.load());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
