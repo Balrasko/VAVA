@@ -30,6 +30,7 @@ public class LocalAuthService implements AuthService {
             return false;
         }
 
+        // TODO: hash password!!
         User user = foundUser.get();
         if (!Objects.equals(user.getPassword(), password)) {
             return false;

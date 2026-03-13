@@ -1,13 +1,23 @@
 package dev.vavateam1.controller;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+
+import com.google.inject.Inject;
+
+import dev.vavateam1.model.Payment;
+import dev.vavateam1.service.HistoryService;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
-import javafx.scene.control.Button;
-import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
-import javafx.geometry.Pos;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 
 public class HistoryController {
+
+    private static final DateTimeFormatter DISPLAY_FORMAT = DateTimeFormatter.ofPattern("d.M.yyyy HH:mm");
+    private static final DateTimeFormatter DAY_FORMAT = DateTimeFormatter.ofPattern("d.M.yyyy");
 
     @FXML
     private VBox ordersContainer;
@@ -16,64 +26,77 @@ public class HistoryController {
     private VBox detailPanel;
 
     @FXML
+    private VBox detailContainer;
+
+    private final HistoryService historyService;
+
+    @Inject
+    public HistoryController(HistoryService historyService) {
+        this.historyService = historyService;
+    }
+
+    @FXML
     public void initialize() {
+        List<Payment> payments = historyService.getPayments();
 
-        addDay("Today");
+        LocalDate today = LocalDate.now();
+        LocalDate yesterday = today.minusDays(1);
+        LocalDate lastGroupDate = null;
 
-        addOrder("#23","25.2.2025 14:00","306.43€");
-        addOrder("#22","25.2.2025 13:12","54.20€");
+        for (Payment payment : payments) {
+            LocalDate paymentDate = payment.getCreatedAt().toLocalDate();
 
-        addDay("Yesterday");
+            if (!paymentDate.equals(lastGroupDate)) {
+                String dayLabel;
+                if (paymentDate.equals(today))
+                    dayLabel = "Today";
+                else if (paymentDate.equals(yesterday))
+                    dayLabel = "Yesterday";
+                else
+                    dayLabel = paymentDate.format(DAY_FORMAT);
 
-        addOrder("#21","24.2.2025 18:45","18.90€");
+                addDay(dayLabel);
+                lastGroupDate = paymentDate;
+            }
+
+            addOrder(payment);
+        }
+
         detailPanel.setVisible(false);
         detailPanel.setManaged(false);
     }
 
-        private void addDay(String day){
-
+    private void addDay(String day) {
         Label label = new Label(day);
-
         label.setStyle(
                 "-fx-background-color:white;" +
-                "-fx-padding:8 18;" +
-                "-fx-background-radius:20;" +
-                "-fx-font-weight:bold;"
-        );
-
+                        "-fx-padding:8 18;" +
+                        "-fx-background-radius:20;" +
+                        "-fx-font-weight:bold;");
         ordersContainer.getChildren().add(label);
-        }
+    }
 
-        private void addOrder(String id, String date, String total){
-
+    private void addOrder(Payment payment) {
         HBox card = new HBox(20);
-
         card.setStyle(
                 "-fx-background-color:white;" +
-                "-fx-padding:15 25;" +
-                "-fx-background-radius:25;"
-        );
+                        "-fx-padding:15 25;" +
+                        "-fx-background-radius:25;");
 
-        Label orderId = new Label(id);
-        Label orderDate = new Label(date);
-        Label orderTotal = new Label(total);
+        Label orderId = new Label("#" + payment.getId());
+        Label orderDate = new Label(payment.getCreatedAt().format(DISPLAY_FORMAT));
+        Label orderTotal = new Label(payment.getAmount().toPlainString() + "€");
 
         orderTotal.setStyle("-fx-font-weight:bold;");
-
-        HBox.setHgrow(orderDate, javafx.scene.layout.Priority.ALWAYS);
+        HBox.setHgrow(orderDate, Priority.ALWAYS);
 
         card.getChildren().addAll(orderId, orderDate, orderTotal);
-
-        card.setOnMouseClicked(e -> showDetail(id,date,total));
+        card.setOnMouseClicked(e -> showDetail(payment));
 
         ordersContainer.getChildren().add(card);
-        }
+    }
 
-    @FXML
-    private VBox detailContainer;
-
-    private void showDetail(String id, String date, String total){
-
+    private void showDetail(Payment payment) {
         detailPanel.setVisible(true);
         detailPanel.setManaged(true);
 
@@ -82,21 +105,21 @@ public class HistoryController {
         Label title = new Label("Order summary");
         title.setStyle("-fx-font-size:20; -fx-font-weight:bold;");
 
-        Label orderId = new Label("Order: " + id);
-        Label orderDate = new Label("Date: " + date);
-        Label orderTotal = new Label("Total: " + total);
+        Label orderId = new Label("Order: #" + payment.getId());
+        Label orderDate = new Label("Date: " + payment.getCreatedAt().format(DISPLAY_FORMAT));
+        Label orderTotal = new Label("Total: " + payment.getAmount().toPlainString() + "€");
 
-        Label tip = new Label("Tip: %");
-        Label payment = new Label("Payment: card");
+        String tipText = payment.getTip() != null
+                ? payment.getTip().stripTrailingZeros().toPlainString() + "%"
+                : "-";
+        Label tip = new Label("Tip: " + tipText);
 
-        detailContainer.getChildren().addAll(
-                title,
-                orderId,
-                orderDate,
-                orderTotal,
-                tip,
-                payment
-        );
+        String methodText = payment.getPaymentMethodName() != null
+                ? payment.getPaymentMethodName()
+                : "-";
+        Label paymentMethod = new Label("Payment: " + methodText);
+
+        detailContainer.getChildren().addAll(title, orderId, orderDate, orderTotal, tip, paymentMethod);
     }
 
     @FXML

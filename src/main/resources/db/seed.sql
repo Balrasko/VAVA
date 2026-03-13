@@ -48,7 +48,7 @@ ON CONFLICT (item_code) DO NOTHING;
 
 -- Menu Item Ingredients
 -- Espresso (1) needs Kava (2)
-INSERT INTO menu_item_ingredients (ingredient_id, menu_item_id, quantity_needed) VALUES 
+INSERT INTO menu_item_ingredients (ingredient_id, menu_item_id, quantity_needed) VALUES
 (2, 1, 0.015),
 -- Limonada (2) needs Citron (3)
 (3, 2, 0.5),
@@ -59,3 +59,11 @@ INSERT INTO menu_item_ingredients (ingredient_id, menu_item_id, quantity_needed)
 (6, 4, 0.1),
 (7, 4, 2),
 (1, 4, 0.2);
+
+-- Payments (waiter_id=3=Jožko; method: 1=Hotovosť, 2=Karta, 3=Stravná karta; tip in %)
+INSERT INTO payments (waiter_id, method_id, amount, tip, created_at) VALUES
+(3, 2, 306.43, 10, '2026-03-13 12:00:00'),
+(3, 1,  54.20,  5, '2026-03-13 10:00:00'),
+(3, 2,  18.90,  0, '2026-03-12 15:00:00'),
+(3, 3, 124.50,  8, '2026-03-12 12:00:00'),
+(3, 1,  75.00, 15, '2026-03-11 13:00:00');
