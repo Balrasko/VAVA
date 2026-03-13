@@ -34,8 +34,28 @@ cd VAVA
 
 ### Create DB
 
+The compose files are split into:
+
+- `docker-compose.yml` as the base setup for local development
+- `docker-compose.prod.yml` as an override that adds persistent PostgreSQL storage
+
+The base setup starts:
+
+- `db`
+- `pgadmin`
+
+and does not persist PostgreSQL data, so init scripts are applied from a clean state.
+
+Start the default development setup with:
+
 ```bash
-docker-compose down && docker-compose up -d;
+docker-compose down && docker-compose up -d
+```
+
+For a persistent production-style database, use the override file:
+
+```bash
+docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 ```
 
 ### Seed DB
