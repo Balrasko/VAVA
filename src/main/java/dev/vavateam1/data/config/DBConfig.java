@@ -25,7 +25,8 @@ public class DBConfig {
 
     private static String getEnv(String key) {
         String value = ENV.get(key);
-        if (value != null) return value;
+        if (value != null)
+            return value;
 
         return System.getenv(key);
     }

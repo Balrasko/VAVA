@@ -2,7 +2,6 @@ package dev.vavateam1.controller;
 
 import java.io.IOException;
 
-import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Singleton;
 

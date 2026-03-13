@@ -1,6 +1,7 @@
 package dev.vavateam1.controller;
 
 import com.google.inject.Inject;
+import com.google.inject.Injector;
 
 import dev.vavateam1.model.Table;
 import dev.vavateam1.service.AuthService;
@@ -15,16 +16,17 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
-import javafx.fxml.FXMLLoader;
 
 public class DashboardController {
     private final AuthService authService;
     private final ViewSwitcher viewSwitcher;
+    private final Injector injector;
 
     @Inject
-    public DashboardController(AuthService authService, ViewSwitcher viewSwitcher) {
+    public DashboardController(AuthService authService, ViewSwitcher viewSwitcher, Injector injector) {
         this.authService = authService;
         this.viewSwitcher = viewSwitcher;
+        this.injector = injector;
     }
 
     @FXML
@@ -44,15 +46,13 @@ public class DashboardController {
 
         try {
             showTableView();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             System.err.println(e.getMessage());
         }
 
         try {
             showTableView();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             System.err.println(e.getMessage());
         }
     }
@@ -79,8 +79,8 @@ public class DashboardController {
     @FXML
     private void showTableView() throws Exception {
         FXMLLoader loader = new FXMLLoader(
-                getClass().getResource("/view/tables.fxml")
-        );
+                getClass().getResource("/view/tables.fxml"));
+        loader.setControllerFactory(injector::getInstance);
 
         Parent view = loader.load();
 
@@ -93,8 +93,8 @@ public class DashboardController {
     @FXML
     public void showOrderView(Table table) throws Exception {
         FXMLLoader loader = new FXMLLoader(
-            getClass().getResource("/view/tempOrder.fxml")
-        );
+                getClass().getResource("/view/tempOrder.fxml"));
+        loader.setControllerFactory(injector::getInstance);
 
         Parent view = loader.load();
 
@@ -126,8 +126,8 @@ public class DashboardController {
         try {
 
             FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/view/history.fxml")
-            );
+                    getClass().getResource("/view/history.fxml"));
+            loader.setControllerFactory(injector::getInstance);
 
             contentArea.getChildren().clear();
             contentArea.getChildren().add(loader.load());

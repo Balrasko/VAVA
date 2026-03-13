@@ -1,5 +1,7 @@
 package dev.vavateam1.controller;
 
+import com.google.inject.Inject;
+
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.geometry.Insets;
@@ -15,7 +17,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import dev.vavateam1.model.Table;
-import dev.vavateam1.service.*;
+import dev.vavateam1.service.TableService;
 
 public class TablesController {
 
@@ -27,8 +29,12 @@ public class TablesController {
     @FXML
     private Button dragButton;
 
-    // Mock backend service
-    private final TableService tableService = new MockTableService();
+    private final TableService tableService;
+
+    @Inject
+    public TablesController(TableService tableService) {
+        this.tableService = tableService;
+    }
 
     private List<Table> tables;
 
@@ -60,13 +66,15 @@ public class TablesController {
         dragging = !dragging;
 
         dragButton.setText(dragging ? "Exit Drag Mode" : "Enter Drag Mode");
-        dragButton.setStyle("-fx-font-size: 14px; -fx-border-color:#000000;"); //  + (dragging ? "-fx-background-color:#fffa61" : "-fx-background-color:#61d2ff")
+        dragButton.setStyle("-fx-font-size: 14px; -fx-border-color:#000000;"); // + (dragging ?
+                                                                               // "-fx-background-color:#fffa61" :
+                                                                               // "-fx-background-color:#61d2ff")
     }
 
     private Node createTableNode(Table table) {
         StackPane box = new StackPane();
         box.setPrefSize(160, 80);
-    
+
         Label label = new Label("Table " + table.getTableNumber());
 
         box.getChildren().add(label);
@@ -75,15 +83,16 @@ public class TablesController {
         box.setLayoutY(table.getPosY().doubleValue());
 
         box.setStyle("""
-            -fx-background-color: lightblue;
-            -fx-border-color: black;
-            -fx-border-radius: 3;
-            -fx-background-radius: 5;
-        """);
+                    -fx-background-color: lightblue;
+                    -fx-border-color: black;
+                    -fx-border-radius: 3;
+                    -fx-background-radius: 5;
+                """);
 
         // Draw green circle if table is available
         Circle status = new Circle(6);
-        // status.setStyle(table.getAvailability() ? "-fx-fill: LIMEGREEN;" : "-fx-fill: RED");
+        // status.setStyle(table.getAvailability() ? "-fx-fill: LIMEGREEN;" : "-fx-fill:
+        // RED");
         status.setStyle("-fx-fill: LIMEGREEN");
         status.setVisible(table.getAvailability());
 
@@ -111,14 +120,16 @@ public class TablesController {
     private void enableTableDrag(Node node, Table table) {
 
         node.setOnMousePressed(e -> {
-            if (!dragging) return;
+            if (!dragging)
+                return;
 
             mouseX = e.getSceneX() - node.getLayoutX();
             mouseY = e.getSceneY() - node.getLayoutY();
         });
 
         node.setOnMouseDragged(e -> {
-            if (!dragging) return;
+            if (!dragging)
+                return;
 
             node.setLayoutX(e.getSceneX() - mouseX);
             node.setLayoutY(e.getSceneY() - mouseY);
