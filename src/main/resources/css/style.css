@@ -286,6 +286,7 @@
 }
 
 .scroll-no-border .viewport {
+    -fx-padding: 0;
     -fx-background-color: #d9d9d9;
 }
 
@@ -301,7 +302,7 @@
 }
 
 .category-button {
-    -fx-font-size: 16px;
+    -fx-font-size: 13px;
     -fx-padding: 10 25 10 25;
 
     -fx-background-color: #7997E1;
@@ -311,7 +312,7 @@
 }
 
 .category-button-selected {
-    -fx-font-size: 16px;
+    -fx-font-size: 13px;
     -fx-padding: 10 25 10 25;
 
     -fx-background-color: #f4f4f4;

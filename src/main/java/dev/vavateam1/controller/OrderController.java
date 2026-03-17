@@ -11,6 +11,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.TextAlignment;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -71,7 +72,7 @@ public class OrderController {
     }
 
     private void loadCategories() {
-        // Load all the categories and make a button for each
+        // Load all the categories and make a button for eachq one
 
         boolean first = true;
 
@@ -86,9 +87,11 @@ public class OrderController {
                 showCategory(category.getId());
             });
 
-            btn.setMinHeight(40);
-            btn.setPrefWidth(140);
             btn.setWrapText(true);
+            btn.setTextAlignment(TextAlignment.CENTER);
+            btn.setMinHeight(60);
+            btn.setPrefWidth(140);
+            btn.setStyle("-fx-cursor: hand;");
 
             categoryBox.getChildren().add(btn);
 
@@ -103,6 +106,8 @@ public class OrderController {
     }
 
     private void selectCategory(Button button) {
+        // Highlight selected category button
+
         if (this.selectedCategory != null) {
             this.selectedCategory.getStyleClass().remove("category-button-selected");
 
@@ -118,6 +123,8 @@ public class OrderController {
     }
 
     private void showCategory(int categoryId) {
+        // Get menu items for the selected category
+
         menuTile.getChildren().clear();
 
         menuItems.stream()
@@ -154,6 +161,8 @@ public class OrderController {
 
     @FXML
     public void backToTableView() {
+        // Return to the table page
+
         try {
             dashboardController.showTableView();
         } catch (Exception e) {

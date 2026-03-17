@@ -34,11 +34,12 @@
                           fitToHeight="true"
                           hbarPolicy="NEVER"
                           vbarPolicy="NEVER"
+                          pannable="true"
                           styleClass="scroll-no-border">
 
                      <HBox fx:id="categoryBox"
                            spacing="0"
-                           style="-fx-padding: 5 5 0 5; -fx-background-color: #d9d9d9;"/>
+                           style="-fx-padding: 0; -fx-background-color: #d9d9d9;"/>
               </ScrollPane>
 
               <!-- MENU ITEMS -->
