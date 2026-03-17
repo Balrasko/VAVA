@@ -18,12 +18,15 @@ public class UserDaoImpl implements UserDao {
         this.connectionFactory = connectionFactory;
     }
 
-    public Optional<User> findByEmail(String email) {
-        String sql = "SELECT id, role_id, name, email, password, status, created_at, updated_at FROM users WHERE email = ?";
+    @Override
+    public Optional<User> findByEmailOrUsername(String emailOrUsername) {
+        String sql = "SELECT id, role_id, name, email, password, status, created_at, updated_at "
+                + "FROM users WHERE LOWER(email) = LOWER(?) OR LOWER(name) = LOWER(?)";
 
         try (Connection conn = connectionFactory.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, email);
+            stmt.setString(1, emailOrUsername);
+            stmt.setString(2, emailOrUsername);
 
             ResultSet resultSet = stmt.executeQuery();
             if (!resultSet.next()) {
@@ -42,7 +45,7 @@ public class UserDaoImpl implements UserDao {
 
             return Optional.of(user);
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to find user by email: " + email, e);
+            throw new RuntimeException("Failed to find user by email or username: " + emailOrUsername, e);
         }
     }
 

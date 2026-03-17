@@ -24,8 +24,8 @@ public class LocalAuthService implements AuthService {
     }
 
     @Override
-    public boolean login(String email, String password) {
-        Optional<User> foundUser = userDao.findByEmail(email);
+    public boolean login(String emailOrUsername, String password) {
+        Optional<User> foundUser = userDao.findByEmailOrUsername(emailOrUsername);
         if (foundUser.isEmpty()) {
             return false;
         }
