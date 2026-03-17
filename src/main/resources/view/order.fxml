@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
 
 <HBox xmlns:fx="http://javafx.com/fxml"
            fx:controller="dev.vavateam1.controller.OrderController"
            spacing="20"
            maxWidth="Infinity"
-           style="-fx-padding:20; -fx-background-color:#f4f4f4;">
+           style="-fx-padding: 20; -fx-background-color: #f4f4f4;">
 
        <!-- LEFT PANEL -->
        <VBox fx:id="menuPanel"
@@ -15,18 +16,47 @@
           prefWidth="500"
           maxWidth="Infinity"
           HBox.hgrow="ALWAYS"
-          style="-fx-padding:10; -fx-background-color:#d9d9d9; -fx-background-radius:12;">
+          style="-fx-padding: 10; -fx-background-color: #d9d9d9; -fx-background-radius: 12;">
 
               <!-- BACK BUTTON AND TABLE LABEL -->
               <HBox alignment="TOP_LEFT" spacing="10">
                      <Button text="←"
                             onAction="#backToTableView"
-                            style="-fx-background-color:#f4f4f4; -fx-text-fill:#333; -fx-font-size:22; -fx-cursor:hand; -fx-background-radius:20; -fx-font-weight:bold;"/>
+                            style="-fx-background-color: #f4f4f4; -fx-text-fill: #333; -fx-font-size: 22; -fx-cursor: hand; -fx-background-radius: 20; -fx-font-weight: bold;"/>
 
                      <Label fx:id="tableLabel"
                             styleClass="button"
-                            style="-fx-background-color:#f4f4f4; -fx-text-fill:#333; -fx-font-size:22; -fx-background-radius:20;"/>
+                            style="-fx-background-color: #f4f4f4; -fx-text-fill: #333; -fx-font-size: 22; -fx-background-radius: 20;"/>
               </HBox>
+
+              <!-- CATEGORY SELECT BUTTONS -->
+              <ScrollPane fitToWidth="false"
+                          fitToHeight="true"
+                          hbarPolicy="NEVER"
+                          vbarPolicy="NEVER"
+                          styleClass="scroll-no-border">
+
+                     <HBox fx:id="categoryBox"
+                           spacing="0"
+                           style="-fx-padding: 5 5 0 5; -fx-background-color: #d9d9d9;"/>
+              </ScrollPane>
+
+              <!-- MENU ITEMS -->
+              <ScrollPane fitToWidth="true"
+                          fitToHeight="true"
+                          VBox.vgrow="ALWAYS"
+                          styleClass="rounded-scroll">
+
+                     <VBox.margin>
+                            <Insets top="-12"/>
+                     </VBox.margin>
+
+                     <TilePane fx:id="menuTile"
+                               prefColumns="5"
+                               hgap="10"
+                               vgap="10"
+                               style="-fx-padding: 10;"/>
+              </ScrollPane>
        </VBox>
 
        <!-- RIGHT PANEL -->
@@ -35,7 +65,7 @@
           prefWidth="500"
           maxWidth="Infinity"
           HBox.hgrow="ALWAYS"
-          style="-fx-padding:10; -fx-background-color:#d9d9d9; -fx-background-radius:12;"/>
+          style="-fx-padding: 10; -fx-background-color: #d9d9d9; -fx-background-radius: 12;"/>
 
        
 

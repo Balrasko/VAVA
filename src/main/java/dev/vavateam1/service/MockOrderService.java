@@ -12,13 +12,17 @@ import dev.vavateam1.model.Category;
 
 public class MockOrderService {
     
+    // All mock values made by AI
+
     public List<Category> getCategories() {
+        // Get menu categories
+
         List<Category> categories = List.of(
-            new Category(0, "Nealko nápoje", LocalDateTime.now(), LocalDateTime.now()),
-            new Category(1, "Alkoholické nápoje", LocalDateTime.now(), LocalDateTime.now()),
-            new Category(2, "Predjedlá", LocalDateTime.now(), LocalDateTime.now()),
-            new Category(3, "Hlavné jedlá", LocalDateTime.now(), LocalDateTime.now()),
-            new Category(4, "Dezerty", LocalDateTime.now(), LocalDateTime.now())
+            new Category(1, "Nealko nápoje", LocalDateTime.now(), LocalDateTime.now()),
+            new Category(2, "Alkoholické nápoje", LocalDateTime.now(), LocalDateTime.now()),
+            new Category(3, "Predjedlá", LocalDateTime.now(), LocalDateTime.now()),
+            new Category(4, "Hlavné jedlá", LocalDateTime.now(), LocalDateTime.now()),
+            new Category(5, "Dezerty", LocalDateTime.now(), LocalDateTime.now())
         );
 
         return categories;
@@ -28,7 +32,6 @@ public class MockOrderService {
 
         // Get all menu items (only if available)
 
-        // Random menu item examples made by AI
         List<MenuItem> menuItems = List.of(
             // Non-Alcoholic Drinks
             new MenuItem(1, 1, 1001, "Coca-Cola", new BigDecimal("2.50"), true,
