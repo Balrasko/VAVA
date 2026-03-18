@@ -5,10 +5,14 @@ import dev.vavateam1.model.OrderItem;
 import dev.vavateam1.model.Table;
 import dev.vavateam1.model.Category;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
@@ -36,9 +40,6 @@ public class OrderController {
     private MockOrderService orderService = new MockOrderService();
 
     @FXML
-    private VBox menuPanel;
-
-    @FXML
     private VBox orderPanel;
 
     @FXML
@@ -50,6 +51,11 @@ public class OrderController {
     @FXML
     private TilePane menuTile;
 
+    @FXML
+    private Label totalLabel;
+
+    @FXML
+    private Label subtotalLabel;
 
     private Button selectedCategory;
     private DashboardController dashboardController;
@@ -69,6 +75,7 @@ public class OrderController {
         this.tableLabel.setText("Table " + table.getTableNumber());
 
         loadCategories();
+        loadMockOrderUI();
     }
 
     private void loadCategories() {
@@ -144,7 +151,7 @@ public class OrderController {
         
         card.getChildren().addAll(name);
 
-        card.setPrefSize(100, 100);
+        card.setPrefSize(95, 95);
 
         card.setStyle("""
             -fx-background-color: #d9d9d9;
@@ -158,6 +165,71 @@ public class OrderController {
 
         return card;
     }
+
+    private HBox createOrderItemRow(MenuItem item) {
+        HBox row = new HBox(8);
+        row.setAlignment(Pos.CENTER_LEFT);
+        row.setMinHeight(50);
+        row.getStyleClass().add("order-row");
+
+        // CheckBox
+        CheckBox checkBox = new CheckBox();
+
+        // Name label
+        Label name = new Label(item.getName());
+        name.setPrefWidth(120);
+        name.setWrapText(true);
+
+        // Quantity label
+        Label quantityTextLabel = new Label("Quantity:");
+        quantityTextLabel.setMinWidth(50);
+
+        // Minus button
+        Button minusBtn = new Button("-");
+        minusBtn.getStyleClass().add("quantity-button");
+        minusBtn.setStyle("-fx-background-color: #dd5656");
+
+        // Quantity value
+        Label quantityValue = new Label("1");
+        // get the quantity from OrderItem
+
+        // Plus button
+        Button plusBtn = new Button("+");
+        plusBtn.getStyleClass().add("quantity-button");
+        plusBtn.setStyle("-fx-background-color: #37ff4b");
+
+        // Note button
+        Button noteBtn = new Button("Add note");
+        noteBtn.setMinWidth(70);
+        noteBtn.getStyleClass().add("note-button");
+
+        // Discount
+        Label discountText = new Label("Discount:");
+        discountText.setMinWidth(50);
+        Label discountValue = new Label("0.00");
+        discountValue.setMinWidth(50);
+    
+        // Spacer
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+
+        // Price
+        Label price = new Label(item.getPrice().toString() + " €");
+        price.setMinWidth(50);
+
+        row.getChildren().addAll(checkBox, name, quantityTextLabel, minusBtn, quantityValue, plusBtn, noteBtn, discountText, discountValue, spacer, price);
+
+        return row;
+    }
+
+    private void loadMockOrderUI() {
+        orderPanel.getChildren().clear();
+
+        // Just reuse your menu items for now
+        menuItems.stream().limit(4).forEach(item -> {
+            orderPanel.getChildren().add(createOrderItemRow(item));
+    });
+}
 
     @FXML
     public void backToTableView() {

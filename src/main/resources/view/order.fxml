@@ -46,7 +46,7 @@
               <ScrollPane fitToWidth="true"
                           fitToHeight="true"
                           VBox.vgrow="ALWAYS"
-                          styleClass="rounded-scroll">
+                          styleClass="rounded-scroll-menu">
 
                      <VBox.margin>
                             <Insets top="-12"/>
@@ -66,7 +66,68 @@
           prefWidth="500"
           maxWidth="Infinity"
           HBox.hgrow="ALWAYS"
-          style="-fx-padding: 10; -fx-background-color: #d9d9d9; -fx-background-radius: 12;"/>
+          style="-fx-padding: 10; -fx-background-color: #d9d9d9; -fx-background-radius: 12;">
+
+              <HBox spacing="10">
+                     
+                     <!-- Buttons -->
+                     <VBox spacing="10">
+
+                            <Button text="Discount"
+                                    styleClass="action-button"
+                                    VBox.vgrow="NEVER"/>
+
+                            <HBox spacing="10">
+
+                                   <Button text="Payment"
+                                           styleClass="action-button"
+                                           HBox.hgrow="ALWAYS"
+                                           maxWidth="Infinity"/>
+
+                                   <Button text="Split the bill"
+                                           styleClass="action-button"
+                                           HBox.hgrow="ALWAYS"
+                                           maxWidth="Infinity"/>
+
+                            </HBox>
+
+                     </VBox>
+
+                     <!-- PRICE BOX -->
+                     <VBox spacing="5"
+                           styleClass="price-box"
+                           prefWidth="240">
+
+                            <HBox>
+                                   <Label text="Total:" style="-fx-font-size: 14px"/>
+                                   <Region HBox.hgrow="ALWAYS"/>
+                                   <Label fx:id="totalLabel" text="0.00 €" style="-fx-font-size: 28px"/>
+                            </HBox>
+
+                            <HBox>
+                                   <Label text="Subtotal:" style="-fx-font-size: 14px"/>
+                                   <Region HBox.hgrow="ALWAYS"/>
+                                   <Label fx:id="subtotalLabel" text="0.00 €" style="-fx-font-size: 22px"/>
+                            </HBox>
+
+                     </VBox>
+              </HBox>
+
+              <!-- ORDER ITEMS -->
+              <ScrollPane fitToWidth="true"
+                          VBox.vgrow="ALWAYS"
+                          vbarPolicy="NEVER"
+                          styleClass="rounded-scroll-order"
+                          style="-fx-background-radius: 5;">
+
+                     <VBox fx:id="orderPanel"
+                           spacing="8"
+                           style="-fx-padding: 10;"/>
+
+              </ScrollPane>
+
+
+       </VBox>
 
        
 

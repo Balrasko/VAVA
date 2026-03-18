@@ -34,69 +34,89 @@ public class MockOrderService {
 
         List<MenuItem> menuItems = List.of(
             // Non-Alcoholic Drinks
-            new MenuItem(1, 1, 1001, "Coca-Cola", new BigDecimal("2.50"), true,
-                    "Classic Coca-Cola soft drink", false, BigDecimal.ZERO,
-                    LocalDateTime.now(), LocalDateTime.now()),
+                new MenuItem(1, 1, 1001, "Coca-Cola", new BigDecimal("2.50"), true,
+                        "Classic Coca-Cola soft drink", false, BigDecimal.ZERO,
+                        LocalDateTime.now(), LocalDateTime.now()),
 
-            new MenuItem(2, 1, 1002, "Orange Juice", new BigDecimal("3.00"), true,
-                    "Fresh squeezed orange juice", false, BigDecimal.ZERO,
-                    LocalDateTime.now(), LocalDateTime.now()),
+                new MenuItem(2, 1, 1002, "Orange Juice", new BigDecimal("3.00"), true,
+                        "Fresh squeezed orange juice", false, BigDecimal.ZERO,
+                        LocalDateTime.now(), LocalDateTime.now()),
 
-            new MenuItem(3, 1, 1003, "Sparkling Water", new BigDecimal("2.00"), true,
-                    "Carbonated mineral water", false, BigDecimal.ZERO,
-                    LocalDateTime.now(), LocalDateTime.now()),
+                new MenuItem(3, 1, 1003, "Sparkling Water", new BigDecimal("2.00"), true,
+                        "Carbonated mineral water", false, BigDecimal.ZERO,
+                        LocalDateTime.now(), LocalDateTime.now()),
 
-            // Alcoholic Drinks
-            new MenuItem(4, 2, 2001, "Draft Beer", new BigDecimal("4.50"), true,
-                    "Local draft lager", false, BigDecimal.ZERO,
-                    LocalDateTime.now(), LocalDateTime.now()),
+                // Alcoholic Drinks
+                new MenuItem(4, 2, 2001, "Draft Beer", new BigDecimal("4.50"), true,
+                        "Local draft lager", false, BigDecimal.ZERO,
+                        LocalDateTime.now(), LocalDateTime.now()),
 
-            new MenuItem(5, 2, 2002, "House Red Wine", new BigDecimal("5.50"), true,
-                    "Glass of house red wine", false, BigDecimal.ZERO,
-                    LocalDateTime.now(), LocalDateTime.now()),
+                new MenuItem(5, 2, 2002, "House Red Wine", new BigDecimal("5.50"), true,
+                        "Glass of house red wine", false, BigDecimal.ZERO,
+                        LocalDateTime.now(), LocalDateTime.now()),
 
-            new MenuItem(6, 2, 2003, "Mojito", new BigDecimal("7.00"), true,
+                new MenuItem(6, 2, 2003, "Mojito", new BigDecimal("7.00"), true,
+                        "Rum cocktail with mint and lime", false, BigDecimal.ZERO,
+                        LocalDateTime.now(), LocalDateTime.now()),
+                
+                new MenuItem(61, 2, 2003, "Test1", new BigDecimal("7.00"), true,
                     "Rum cocktail with mint and lime", false, BigDecimal.ZERO,
                     LocalDateTime.now(), LocalDateTime.now()),
 
-            // Appetizers
-            new MenuItem(7, 3, 3001, "Garlic Bread", new BigDecimal("4.00"), true,
-                    "Toasted bread with garlic butter", true, BigDecimal.ZERO,
+                new MenuItem(62, 2, 2003, "Test2", new BigDecimal("7.00"), true,
+                    "Rum cocktail with mint and lime", false, BigDecimal.ZERO,
                     LocalDateTime.now(), LocalDateTime.now()),
 
-            new MenuItem(8, 3, 3002, "Bruschetta", new BigDecimal("5.50"), true,
-                    "Grilled bread with tomato and basil", true, BigDecimal.ZERO,
+                new MenuItem(63, 2, 2003, "Test3", new BigDecimal("7.00"), true,
+                    "Rum cocktail with mint and lime", false, BigDecimal.ZERO,
                     LocalDateTime.now(), LocalDateTime.now()),
 
-            new MenuItem(9, 3, 3003, "Fried Calamari", new BigDecimal("7.50"), true,
-                    "Crispy fried squid with dipping sauce", true, BigDecimal.ZERO,
+                new MenuItem(64, 2, 2003, "Test4", new BigDecimal("7.00"), true,
+                    "Rum cocktail with mint and lime", false, BigDecimal.ZERO,
                     LocalDateTime.now(), LocalDateTime.now()),
 
-            // Main Courses
-            new MenuItem(10, 4, 4001, "Grilled Chicken", new BigDecimal("12.50"), true,
-                    "Grilled chicken breast with vegetables", true, BigDecimal.ZERO,
+                new MenuItem(65, 2, 2003, "Test5", new BigDecimal("7.00"), true,
+                    "Rum cocktail with mint and lime", false, BigDecimal.ZERO,
                     LocalDateTime.now(), LocalDateTime.now()),
 
-            new MenuItem(11, 4, 4002, "Beef Burger", new BigDecimal("11.00"), true,
-                    "Beef burger with fries", true, BigDecimal.ZERO,
-                    LocalDateTime.now(), LocalDateTime.now()),
+                // Appetizers
+                new MenuItem(7, 3, 3001, "Garlic Bread", new BigDecimal("4.00"), true,
+                        "Toasted bread with garlic butter", true, BigDecimal.ZERO,
+                        LocalDateTime.now(), LocalDateTime.now()),
 
-            new MenuItem(12, 4, 4003, "Spaghetti Carbonara", new BigDecimal("10.50"), true,
-                    "Pasta with pancetta, egg and parmesan", true, BigDecimal.ZERO,
-                    LocalDateTime.now(), LocalDateTime.now()),
+                new MenuItem(8, 3, 3002, "Bruschetta", new BigDecimal("5.50"), true,
+                        "Grilled bread with tomato and basil", true, BigDecimal.ZERO,
+                        LocalDateTime.now(), LocalDateTime.now()),
 
-            // Desserts
-            new MenuItem(13, 5, 5001, "Chocolate Cake", new BigDecimal("5.00"), true,
-                    "Rich chocolate layered cake", true, BigDecimal.ZERO,
-                    LocalDateTime.now(), LocalDateTime.now()),
+                new MenuItem(9, 3, 3003, "Fried Calamari", new BigDecimal("7.50"), true,
+                        "Crispy fried squid with dipping sauce", true, BigDecimal.ZERO,
+                        LocalDateTime.now(), LocalDateTime.now()),
 
-            new MenuItem(14, 5, 5002, "Cheesecake", new BigDecimal("5.50"), true,
-                    "Creamy New York style cheesecake", true, BigDecimal.ZERO,
-                    LocalDateTime.now(), LocalDateTime.now()),
+                // Main Courses
+                new MenuItem(10, 4, 4001, "Grilled Chicken", new BigDecimal("12.50"), true,
+                        "Grilled chicken breast with vegetables", true, BigDecimal.ZERO,
+                        LocalDateTime.now(), LocalDateTime.now()),
 
-            new MenuItem(15, 5, 5003, "Ice Cream Sundae", new BigDecimal("4.50"), true,
-                    "Vanilla ice cream with chocolate syrup", true, BigDecimal.ZERO,
-                    LocalDateTime.now(), LocalDateTime.now())
+                new MenuItem(11, 4, 4002, "Beef Burger", new BigDecimal("11.00"), true,
+                        "Beef burger with fries", true, BigDecimal.ZERO,
+                        LocalDateTime.now(), LocalDateTime.now()),
+
+                new MenuItem(12, 4, 4003, "Spaghetti Carbonara", new BigDecimal("10.50"), true,
+                        "Pasta with pancetta, egg and parmesan", true, BigDecimal.ZERO,
+                        LocalDateTime.now(), LocalDateTime.now()),
+
+                // Desserts
+                new MenuItem(13, 5, 5001, "Chocolate Cake", new BigDecimal("5.00"), true,
+                        "Rich chocolate layered cake", true, BigDecimal.ZERO,
+                        LocalDateTime.now(), LocalDateTime.now()),
+
+                new MenuItem(14, 5, 5002, "Cheesecake", new BigDecimal("5.50"), true,
+                        "Creamy New York style cheesecake", true, BigDecimal.ZERO,
+                        LocalDateTime.now(), LocalDateTime.now()),
+
+                new MenuItem(15, 5, 5003, "Ice Cream Sundae", new BigDecimal("4.50"), true,
+                        "Vanilla ice cream with chocolate syrup", true, BigDecimal.ZERO,
+                        LocalDateTime.now(), LocalDateTime.now())
         );
 
         return menuItems;

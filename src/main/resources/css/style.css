@@ -290,15 +290,26 @@
     -fx-background-color: #d9d9d9;
 }
 
-.rounded-scroll {
+.rounded-scroll-menu {
     -fx-background-color: transparent;
     -fx-background-insets: 0;
     -fx-padding: 0;
 }
 
-.rounded-scroll .viewport {
+.rounded-scroll-menu .viewport {
     -fx-background-color: #f4f4f4;
     -fx-background-radius: 0 0 12 12;
+}
+
+.rounded-scroll-order {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+
+.rounded-scroll-order .viewport {
+    -fx-background-color: #f4f4f4;
+    -fx-background-radius: 12;
 }
 
 .category-button {
@@ -319,4 +330,38 @@
     -fx-text-fill: #000;
 
     -fx-background-radius: 12 12 0 0;
+}
+
+.action-button {
+    -fx-background-color: #f4f4f4;
+    -fx-text-fill: #333;
+    -fx-font-size: 22px;
+    -fx-background-radius: 10;
+    -fx-padding: 8 16;
+    -fx-cursor: "hand";
+}
+
+.price-box {
+    -fx-background-color: #f4f4f4;
+    -fx-background-radius: 12;
+    -fx-padding: 10;
+}
+
+.order-row {
+    -fx-background-color: #d9d9d9;
+    -fx-background-radius: 10;
+    -fx-padding: 8;
+    -fx-alignment: center-left;
+}
+
+.quantity-button {
+    -fx-min-width: 25;
+    -fx-min-height: 25;
+    -fx-cursor: hand;
+}
+
+.note-button {
+    -fx-background-color: #e0e0e0;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
 }
