@@ -177,12 +177,13 @@ public class OrderController {
 
         // Name label
         Label name = new Label(item.getName());
-        name.setPrefWidth(120);
+        //HBox.setHgrow(name, Priority.ALWAYS);
+        name.setPrefWidth(70);
         name.setWrapText(true);
 
         // Quantity label
         Label quantityTextLabel = new Label("Quantity:");
-        quantityTextLabel.setMinWidth(50);
+        quantityTextLabel.setPrefWidth(50);
 
         // Minus button
         Button minusBtn = new Button("-");
@@ -205,13 +206,13 @@ public class OrderController {
 
         // Discount
         Label discountText = new Label("Discount:");
-        discountText.setMinWidth(50);
+        discountText.setPrefWidth(50);
         Label discountValue = new Label("0.00");
         discountValue.setMinWidth(50);
     
         // Spacer
         Region spacer = new Region();
-        HBox.setHgrow(spacer, Priority.ALWAYS);
+        HBox.setHgrow(spacer, Priority.NEVER);
 
         // Price
         Label price = new Label(item.getPrice().toString() + " €");
