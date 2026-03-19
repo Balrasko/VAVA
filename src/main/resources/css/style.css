@@ -365,3 +365,19 @@
     -fx-background-radius: 8;
     -fx-cursor: hand;
 }
+
+.no-hover-menu-item {
+    -fx-background-color: transparent;
+}
+
+.no-hover-menu-item:hover {
+    -fx-background-color: transparent;
+}
+
+.no-hover-menu-item .label {
+    -fx-text-fill: #000;
+}
+
+.no-hover-menu-item:hover .label {
+    -fx-text-fill: #000;
+}

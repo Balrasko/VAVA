@@ -6,8 +6,11 @@ import dev.vavateam1.model.Table;
 import dev.vavateam1.model.Category;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
+import javafx.geometry.Side;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.CustomMenuItem;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -60,10 +63,15 @@ public class OrderController {
     private Button selectedCategory;
     private DashboardController dashboardController;
 
+    private boolean paymentMode = false;
+
     private Table table;
     private List<MenuItem> menuItems;
     private List<Category> categories;
     private List<OrderItem> orderItems;
+
+    // TEMPORARY
+    private BigDecimal subtotal = new BigDecimal(0);
 
     public void initData(Table table, DashboardController dashboardController) {
         this.categories = orderService.getCategories();
@@ -161,9 +169,20 @@ public class OrderController {
             -fx-cursor: hand;
         """);
 
-        // card.setOnMouseClicked(e -> addItemToOrder(item));
+        card.setOnMouseClicked(e -> addItemToOrder(item));
 
         return card;
+    }
+
+    private void addItemToOrder(MenuItem item) {
+        orderPanel.getChildren().add(createOrderItemRow(item));
+        subtotal = subtotal.add(item.getPrice());
+
+        updateTotals();
+    }
+
+    private void updateTotals() {
+        subtotalLabel.setText(subtotal.toString() + " €");
     }
 
     private HBox createOrderItemRow(MenuItem item) {
@@ -174,6 +193,7 @@ public class OrderController {
 
         // CheckBox
         CheckBox checkBox = new CheckBox();
+        checkBox.setVisible(paymentMode);
 
         // Name label
         Label name = new Label(item.getName());
@@ -189,10 +209,16 @@ public class OrderController {
         Button minusBtn = new Button("-");
         minusBtn.getStyleClass().add("quantity-button");
         minusBtn.setStyle("-fx-background-color: #dd5656");
+        minusBtn.setOnAction(e -> {
+            orderPanel.getChildren().remove(row);
+
+            subtotal = subtotal.subtract(item.getPrice());
+            updateTotals();
+        });
 
         // Quantity value
         Label quantityValue = new Label("1");
-        // get the quantity from OrderItem
+        // get the quantity from OrderItem - no idea how this should work since order view always has a Payment_id
 
         // Plus button
         Button plusBtn = new Button("+");
@@ -201,24 +227,43 @@ public class OrderController {
 
         // Note button
         Button noteBtn = new Button("Add note");
-        noteBtn.setMinWidth(70);
+        noteBtn.setPrefWidth(70);
         noteBtn.getStyleClass().add("note-button");
 
         // Discount
-        Label discountText = new Label("Discount:");
-        discountText.setPrefWidth(50);
-        Label discountValue = new Label("0.00");
-        discountValue.setMinWidth(50);
+        Button discountBtn = new Button("Discount");
+        discountBtn.getStyleClass().add("note-button");
+        discountBtn.setPrefWidth(70);
+
+        // Discount popup
+        ContextMenu discountPopup = new ContextMenu();
+
+        Label discountLabel = new Label("Current discount: 0.00 €");
+
+        CustomMenuItem discountCMI = new CustomMenuItem(discountLabel);
+        discountCMI.setHideOnClick(false);
+        discountCMI.getStyleClass().add("no-hover-menu-item");
+
+        discountPopup.getItems().add(discountCMI);
+
+        discountBtn.setOnAction(e -> {
+            if (!discountPopup.isShowing()) {
+                discountPopup.show(discountBtn, Side.BOTTOM, 0, 0);
+            }
+            else {
+                discountPopup.hide();
+            }
+        });
     
         // Spacer
         Region spacer = new Region();
-        HBox.setHgrow(spacer, Priority.NEVER);
+        HBox.setHgrow(spacer, Priority.ALWAYS);
 
         // Price
-        Label price = new Label(item.getPrice().toString() + " €");
+        Label price = new Label((item.getPrice()).toString() + " €");
         price.setMinWidth(50);
 
-        row.getChildren().addAll(checkBox, name, quantityTextLabel, minusBtn, quantityValue, plusBtn, noteBtn, discountText, discountValue, spacer, price);
+        row.getChildren().addAll(checkBox, name, quantityTextLabel, minusBtn, quantityValue, plusBtn, noteBtn, discountBtn, spacer, price);
 
         return row;
     }
@@ -229,8 +274,11 @@ public class OrderController {
         // Just reuse your menu items for now
         menuItems.stream().limit(4).forEach(item -> {
             orderPanel.getChildren().add(createOrderItemRow(item));
-    });
-}
+
+            subtotal = subtotal.add(item.getPrice());
+        });
+        updateTotals();
+    }
 
     @FXML
     public void backToTableView() {

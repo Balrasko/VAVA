@@ -107,7 +107,7 @@
                             <HBox>
                                    <Label text="Subtotal:" style="-fx-font-size: 14px"/>
                                    <Region HBox.hgrow="ALWAYS"/>
-                                   <Label fx:id="subtotalLabel" text="0.00 €" style="-fx-font-size: 22px"/>
+                                   <Label fx:id="subtotalLabel" style="-fx-font-size: 22px"/>
                             </HBox>
 
                      </VBox>
@@ -116,7 +116,7 @@
               <!-- ORDER ITEMS -->
               <ScrollPane fitToWidth="true"
                           VBox.vgrow="ALWAYS"
-                          vbarPolicy="NEVER"
+                          vbarPolicy="AS_NEEDED"
                           styleClass="rounded-scroll-order"
                           style="-fx-background-radius: 5;">
 
@@ -125,8 +125,6 @@
                            style="-fx-padding: 10;"/>
 
               </ScrollPane>
-
-
        </VBox>
 
        

@@ -8,6 +8,7 @@ import java.util.List;
 import dev.vavateam1.model.MenuItem;
 import dev.vavateam1.model.OrderItem;
 import dev.vavateam1.model.Table;
+import javafx.scene.layout.VBox;
 import dev.vavateam1.model.Category;
 
 public class MockOrderService {
@@ -131,7 +132,7 @@ public class MockOrderService {
                 1,       // menuItemId (Coca-Cola)
                 null,     // paymentId (not paid yet)
                 2,         // waiterId
-                12,         // tableId
+                2,          // tableId
                 2,         // quantity
                 BigDecimal.ZERO,     // discount
                 new BigDecimal("2.50"),
@@ -146,7 +147,7 @@ public class MockOrderService {
                 11,       // Beef Burger
                 null,
                 2,
-                12,
+                1,
                 1,
                 BigDecimal.ZERO,
                 new BigDecimal("11.00"),
@@ -161,7 +162,7 @@ public class MockOrderService {
                 7,      // Garlic Bread
                 null,
                 2,
-                12,
+                1,
                 1,
                 BigDecimal.ZERO,
                 new BigDecimal("4.00"),
@@ -176,7 +177,7 @@ public class MockOrderService {
                 13,        // Chocolate Cake
                 null,
                 2,
-                12,
+                1,
                 2,
                 BigDecimal.ZERO,
                 new BigDecimal("5.00"),
@@ -187,7 +188,8 @@ public class MockOrderService {
             )
         );
 
-        return orderItems;
-    }
+        List<OrderItem> results = orderItems.stream().filter(orderItem -> orderItem.getTableId() == table.getId()).toList();
 
+        return results;
+    }
 }
