@@ -76,4 +76,10 @@ public class PaymentDaoImpl implements PaymentDao {
         p.setUpdatedAt(SqlUtils.toLocalDateTime(rs.getTimestamp("updated_at")));
         return p;
     }
+
+    @Override
+    public Payment setRefunded(Payment payment) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setRefunded'");
+    }
 }

@@ -19,9 +19,12 @@ public class OrderItem {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public OrderItem() {}
+    public OrderItem() {
+    }
 
-    public OrderItem(Integer id, Integer menuItemId, Integer paymentId, Integer waiterId, Integer tableId, Integer quantity, BigDecimal discount, BigDecimal price, String note, String status, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public OrderItem(Integer id, Integer menuItemId, Integer paymentId, Integer waiterId, Integer tableId,
+            Integer quantity, BigDecimal discount, BigDecimal price, String note, String status,
+            LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.menuItemId = menuItemId;
         this.paymentId = paymentId;
@@ -36,49 +39,113 @@ public class OrderItem {
         this.updatedAt = updatedAt;
     }
 
-    public Integer getId() { return id; }
-    public void setId(Integer id) { this.id = id; }
+    public Integer getId() {
+        return id;
+    }
 
-    public Integer getMenuItemId() { return menuItemId; }
-    public void setMenuItemId(Integer menuItemId) { this.menuItemId = menuItemId; }
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
-    public Integer getPaymentId() { return paymentId; }
-    public void setPaymentId(Integer paymentId) { this.paymentId = paymentId; }
+    public Integer getMenuItemId() {
+        return menuItemId;
+    }
 
-    public Integer getWaiterId() { return waiterId; }
-    public void setWaiterId(Integer waiterId) { this.waiterId = waiterId; }
+    public void setMenuItemId(Integer menuItemId) {
+        this.menuItemId = menuItemId;
+    }
 
-    public Integer getTableId() { return tableId; }
-    public void setTableId(Integer tableId) { this.tableId = tableId; }
+    public Integer getPaymentId() {
+        return paymentId;
+    }
 
-    public Integer getQuantity() { return quantity; }
-    public void setQuantity(Integer quantity) { this.quantity = quantity; }
+    public void setPaymentId(Integer paymentId) {
+        this.paymentId = paymentId;
+    }
 
-    public BigDecimal getDiscount() { return discount; }
-    public void setDiscount(BigDecimal discount) { this.discount = discount; }
+    public Integer getWaiterId() {
+        return waiterId;
+    }
 
-    public BigDecimal getPrice() { return price; }
-    public void setPrice(BigDecimal price) { this.price = price; }
+    public void setWaiterId(Integer waiterId) {
+        this.waiterId = waiterId;
+    }
 
-    public String getNote() { return note; }
-    public void setNote(String note) { this.note = note; }
+    public Integer getTableId() {
+        return tableId;
+    }
 
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
+    public void setTableId(Integer tableId) {
+        this.tableId = tableId;
+    }
 
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    public Integer getQuantity() {
+        return quantity;
+    }
 
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
-    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
+
+    public BigDecimal getDiscount() {
+        return discount;
+    }
+
+    public void setDiscount(BigDecimal discount) {
+        this.discount = discount;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof OrderItem that)) return false;
+        if (this == o)
+            return true;
+        if (!(o instanceof OrderItem that))
+            return false;
         return Objects.equals(id, that.id);
     }
 
     @Override
-    public int hashCode() { return Objects.hash(id); }
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }

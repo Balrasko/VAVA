@@ -7,4 +7,6 @@ public interface PaymentDao {
     List<Payment> findAll();
 
     Payment findById(int id);
+
+    Payment setRefunded(Payment payment);
 }
