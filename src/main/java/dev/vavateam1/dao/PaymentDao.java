@@ -1,10 +1,9 @@
 package dev.vavateam1.dao;
 
 import java.util.List;
-import dev.vavateam1.model.Payment;
+import dev.vavateam1.dto.PaymentDto;
 
 public interface PaymentDao {
-    List<Payment> findAll();
-
-    Payment findById(int id);
+    List<PaymentDto> findAll();
+    PaymentDto findById(int id);
 }

@@ -10,7 +10,7 @@ import java.util.List;
 import com.google.inject.Inject;
 
 import dev.vavateam1.data.connection.ConnectionFactory;
-import dev.vavateam1.model.Payment;
+import dev.vavateam1.dto.PaymentDto;
 import dev.vavateam1.util.SqlUtils;
 
 public class PaymentDaoImpl implements PaymentDao {
@@ -28,12 +28,12 @@ public class PaymentDaoImpl implements PaymentDao {
     }
 
     @Override
-    public List<Payment> findAll() {
+    public List<PaymentDto> findAll() {
         String sql = "SELECT " + SELECT_COLUMNS + " " + FROM_JOIN + " ORDER BY p.created_at DESC";
-        List<Payment> payments = new ArrayList<>();
+        List<PaymentDto> payments = new ArrayList<>();
 
         try (Connection conn = connectionFactory.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(sql)) {
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
@@ -46,11 +46,11 @@ public class PaymentDaoImpl implements PaymentDao {
     }
 
     @Override
-    public Payment findById(int id) {
+    public PaymentDto findById(int id) {
         String sql = "SELECT " + SELECT_COLUMNS + " " + FROM_JOIN + " WHERE p.id = ?";
 
         try (Connection conn = connectionFactory.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(sql)) {
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
@@ -63,8 +63,8 @@ public class PaymentDaoImpl implements PaymentDao {
         }
     }
 
-    private Payment mapRow(ResultSet rs) throws SQLException {
-        Payment p = new Payment();
+    private PaymentDto mapRow(ResultSet rs) throws SQLException {
+        PaymentDto p = new PaymentDto();
         p.setId(rs.getInt("id"));
         p.setWaiterId(rs.getInt("waiter_id"));
         p.setMethodId(rs.getInt("method_id"));

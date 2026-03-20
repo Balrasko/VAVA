@@ -1,4 +1,4 @@
-package dev.vavateam1.model;
+package dev.vavateam1.dto;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,10 +9,11 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Payment {
+public class PaymentDto {
     private int id;
     private int waiterId;
     private int methodId;
+    private String paymentMethodName;
     private BigDecimal amount;
     private boolean refunded;
     private BigDecimal tip;

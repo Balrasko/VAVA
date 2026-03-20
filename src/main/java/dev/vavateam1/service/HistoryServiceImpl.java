@@ -5,7 +5,7 @@ import java.util.List;
 import com.google.inject.Inject;
 
 import dev.vavateam1.dao.PaymentDao;
-import dev.vavateam1.model.Payment;
+import dev.vavateam1.dto.PaymentDto;
 
 public class HistoryServiceImpl implements HistoryService {
 
@@ -17,7 +17,7 @@ public class HistoryServiceImpl implements HistoryService {
     }
 
     @Override
-    public List<Payment> getPayments() {
+    public List<PaymentDto> getPayments() {
         return paymentDao.findAll();
     }
 }

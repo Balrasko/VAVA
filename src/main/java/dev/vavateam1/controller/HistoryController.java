@@ -6,7 +6,7 @@ import java.util.List;
 
 import com.google.inject.Inject;
 
-import dev.vavateam1.model.Payment;
+import dev.vavateam1.dto.PaymentDto;
 import dev.vavateam1.service.HistoryService;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -37,13 +37,13 @@ public class HistoryController {
 
     @FXML
     public void initialize() {
-        List<Payment> payments = historyService.getPayments();
+        List<PaymentDto> payments = historyService.getPayments();
 
         LocalDate today = LocalDate.now();
         LocalDate yesterday = today.minusDays(1);
         LocalDate lastGroupDate = null;
 
-        for (Payment payment : payments) {
+        for (PaymentDto payment : payments) {
             LocalDate paymentDate = payment.getCreatedAt().toLocalDate();
 
             if (!paymentDate.equals(lastGroupDate)) {
@@ -76,7 +76,7 @@ public class HistoryController {
         ordersContainer.getChildren().add(label);
     }
 
-    private void addOrder(Payment payment) {
+    private void addOrder(PaymentDto payment) {
         HBox card = new HBox(20);
         card.setStyle(
                 "-fx-background-color:white;" +
@@ -96,7 +96,7 @@ public class HistoryController {
         ordersContainer.getChildren().add(card);
     }
 
-    private void showDetail(Payment payment) {
+    private void showDetail(PaymentDto payment) {
         detailPanel.setVisible(true);
         detailPanel.setManaged(true);
 

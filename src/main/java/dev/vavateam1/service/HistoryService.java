@@ -1,8 +1,8 @@
 package dev.vavateam1.service;
 
 import java.util.List;
-import dev.vavateam1.model.Payment;
+import dev.vavateam1.dto.PaymentDto;
 
 public interface HistoryService {
-    List<Payment> getPayments();
+    List<PaymentDto> getPayments();
 }
