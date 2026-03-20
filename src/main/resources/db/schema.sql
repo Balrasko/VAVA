@@ -104,7 +104,7 @@ CREATE TABLE IF NOT EXISTS payments (
 CREATE TABLE IF NOT EXISTS order_items (
     id SERIAL PRIMARY KEY,
     menu_item_id INT NOT NULL REFERENCES menu_items(id),
-    payment_id INT NOT NULL REFERENCES payments(id),
+    payment_id INT REFERENCES payments(id),
     waiter_id INT NOT NULL REFERENCES users(id),
     table_id INT NOT NULL REFERENCES tables(id),
     quantity INT NOT NULL,
