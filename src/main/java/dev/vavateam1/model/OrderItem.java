@@ -8,9 +8,11 @@ public class OrderItem {
 
     private Integer id;
     private Integer menuItemId;
+    private String menuItemName;
     private Integer paymentId;
     private Integer waiterId;
     private Integer tableId;
+    private Integer tableNumber;
     private Integer quantity;
     private BigDecimal discount;
     private BigDecimal price;
@@ -63,6 +65,14 @@ public class OrderItem {
         this.paymentId = paymentId;
     }
 
+    public String getMenuItemName() {
+        return menuItemName;
+    }
+
+    public void setMenuItemName(String menuItemName) {
+        this.menuItemName = menuItemName;
+    }
+
     public Integer getWaiterId() {
         return waiterId;
     }
@@ -77,6 +87,14 @@ public class OrderItem {
 
     public void setTableId(Integer tableId) {
         this.tableId = tableId;
+    }
+
+    public Integer getTableNumber() {
+        return tableNumber;
+    }
+
+    public void setTableNumber(Integer tableNumber) {
+        this.tableNumber = tableNumber;
     }
 
     public Integer getQuantity() {

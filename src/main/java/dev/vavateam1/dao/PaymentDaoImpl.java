@@ -79,7 +79,26 @@ public class PaymentDaoImpl implements PaymentDao {
 
     @Override
     public Payment setRefunded(Payment payment) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setRefunded'");
+        String sql = "UPDATE payments SET refunded = TRUE, updated_at = NOW() " +
+                "WHERE id = ? AND COALESCE(refunded, FALSE) = FALSE";
+
+        try (Connection conn = connectionFactory.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, payment.getId());
+            int updatedRows = stmt.executeUpdate();
+
+            if (updatedRows == 0) {
+                Payment currentPayment = findById(payment.getId());
+                if (currentPayment != null && Boolean.TRUE.equals(currentPayment.getRefunded())) {
+                    throw new IllegalStateException("Payment " + payment.getId() + " is already refunded");
+                }
+                return null;
+            }
+
+            return findById(payment.getId());
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to mark payment " + payment.getId() + " as refunded", e);
+        }
     }
 }
