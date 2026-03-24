@@ -11,7 +11,6 @@ import com.google.inject.Inject;
 
 import dev.vavateam1.data.connection.ConnectionFactory;
 import dev.vavateam1.model.OrderItem;
-import dev.vavateam1.model.Payment;
 import dev.vavateam1.util.SqlUtils;
 
 public class OrderItemDaoImpl implements OrderItemDao {
@@ -24,7 +23,7 @@ public class OrderItemDaoImpl implements OrderItemDao {
     }
 
     @Override
-    public List<OrderItem> findByPayment(Payment payment) {
+    public List<OrderItem> findByPayment(int paymentId) {
         String sql = """
                 SELECT oi.id, oi.menu_item_id, mi.name AS menu_item_name, oi.payment_id, oi.waiter_id,
                        oi.table_id, t.table_number, oi.quantity, oi.discount, oi.price, oi.note,
@@ -41,18 +40,16 @@ public class OrderItemDaoImpl implements OrderItemDao {
         try (Connection conn = connectionFactory.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setInt(1, payment.getId());
+            stmt.setInt(1, paymentId);
 
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 OrderItem orderItem = new OrderItem();
                 orderItem.setId(rs.getInt("id"));
                 orderItem.setMenuItemId(rs.getInt("menu_item_id"));
-                orderItem.setMenuItemName(rs.getString("menu_item_name"));
                 orderItem.setPaymentId(rs.getInt("payment_id"));
                 orderItem.setWaiterId(rs.getInt("waiter_id"));
                 orderItem.setTableId(rs.getInt("table_id"));
-                orderItem.setTableNumber(rs.getInt("table_number"));
                 orderItem.setQuantity(rs.getInt("quantity"));
                 orderItem.setDiscount(rs.getBigDecimal("discount"));
                 orderItem.setPrice(rs.getBigDecimal("price"));
@@ -65,7 +62,7 @@ public class OrderItemDaoImpl implements OrderItemDao {
 
             return orderItems;
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to fetch order items for payment " + payment.getId(), e);
+            throw new RuntimeException("Failed to fetch order items for payment " + paymentId, e);
         }
     }
 }

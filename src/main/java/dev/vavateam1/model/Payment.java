@@ -1,18 +1,20 @@
 package dev.vavateam1.model;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import lombok.Data;
-
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Payment {
-    private Integer id;
-    private Integer waiterId;
-    private Integer methodId;
-    private String paymentMethodName;
+    private int id;
+    private int waiterId;
+    private int methodId;
     private BigDecimal amount;
-    private Boolean refunded;
+    private boolean refunded;
     private BigDecimal tip;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

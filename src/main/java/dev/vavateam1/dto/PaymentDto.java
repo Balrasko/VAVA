@@ -1,16 +1,22 @@
-package dev.vavateam1.model;
+package dev.vavateam1.dto;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Category {
+public class PaymentDto {
     private int id;
-    private String name;
+    private int waiterId;
+    private int methodId;
+    private String paymentMethodName;
+    private BigDecimal amount;
+    private Boolean refunded;
+    private BigDecimal tip;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

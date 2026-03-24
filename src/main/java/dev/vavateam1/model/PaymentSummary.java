@@ -3,9 +3,11 @@ package dev.vavateam1.model;
 import java.math.BigDecimal;
 import java.util.List;
 
+import dev.vavateam1.dto.PaymentDto;
+
 public class PaymentSummary {
 
-    private Payment payment;
+    private PaymentDto payment;
     private List<OrderItem> orderItems;
     private BigDecimal orderItemsTotal;
     private Integer totalQuantity;
@@ -13,18 +15,19 @@ public class PaymentSummary {
     public PaymentSummary() {
     }
 
-    public PaymentSummary(Payment payment, List<OrderItem> orderItems, BigDecimal orderItemsTotal, Integer totalQuantity) {
+    public PaymentSummary(PaymentDto payment, List<OrderItem> orderItems, BigDecimal orderItemsTotal,
+            Integer totalQuantity) {
         this.payment = payment;
         this.orderItems = orderItems;
         this.orderItemsTotal = orderItemsTotal;
         this.totalQuantity = totalQuantity;
     }
 
-    public Payment getPayment() {
+    public PaymentDto getPayment() {
         return payment;
     }
 
-    public void setPayment(Payment payment) {
+    public void setPayment(PaymentDto payment) {
         this.payment = payment;
     }
 
