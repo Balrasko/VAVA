@@ -73,25 +73,19 @@
                      <!-- Buttons -->
                      <VBox spacing="10">
 
-                            <Button text="Discount"
+                            <Button text="Payment"
                                     styleClass="action-button"
-                                    VBox.vgrow="NEVER"/>
+                                    VBox.vgrow="NEVER"
+                                    maxWidth="Infinity"/>
 
-                            <HBox spacing="10">
-
-                                   <Button text="Payment"
-                                           styleClass="action-button"
-                                           HBox.hgrow="ALWAYS"
-                                           maxWidth="Infinity"/>
-
-                                   <Button text="Split the bill"
-                                           styleClass="action-button"
-                                           HBox.hgrow="ALWAYS"
-                                           maxWidth="Infinity"/>
-
-                            </HBox>
+                            <Button text="Split the bill"
+                                    styleClass="action-button"
+                                    VBox.vgrow="ALWAYS"
+                                    maxWidth="Infinity"/>
 
                      </VBox>
+
+                     <Region HBox.hgrow="ALWAYS"/>
 
                      <!-- PRICE BOX -->
                      <VBox spacing="5"

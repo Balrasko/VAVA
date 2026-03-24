@@ -29,9 +29,9 @@ public class MockOrderService {
         return categories;
     }
 
-    public List<MenuItem> getAvailableMenuItems() {
+    public List<MenuItem> getMenuItems() {
 
-        // Get all menu items (only if available)
+        // Get all menu items
 
         List<MenuItem> menuItems = List.of(
             // Non-Alcoholic Drinks
@@ -191,5 +191,23 @@ public class MockOrderService {
         List<OrderItem> results = orderItems.stream().filter(orderItem -> orderItem.getTableId() == table.getId()).toList();
 
         return results;
+    }
+
+    public OrderItem createOrderFromMenu(MenuItem menuItem) {
+        OrderItem orderItem = new OrderItem();
+
+        orderItem.setId(null);
+        orderItem.setMenuItemId(menuItem.getId());
+        orderItem.setPaymentId(null);
+        orderItem.setWaiterId(null);
+        orderItem.setQuantity(1);
+        orderItem.setDiscount(BigDecimal.ZERO);
+        orderItem.setPrice(menuItem.getPrice());
+        orderItem.setNote(null);
+        orderItem.setStatus("WAITING");
+        orderItem.setCreatedAt(LocalDateTime.now());
+        orderItem.setUpdatedAt(null);
+
+        return orderItem;
     }
 }

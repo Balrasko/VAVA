@@ -4,6 +4,7 @@ import dev.vavateam1.model.MenuItem;
 import dev.vavateam1.model.OrderItem;
 import dev.vavateam1.model.Table;
 import dev.vavateam1.model.Category;
+import dev.vavateam1.model.OrderItemView;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.geometry.Side;
@@ -24,6 +25,9 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import dev.vavateam1.service.MockOrderService;;
 
@@ -35,6 +39,8 @@ import dev.vavateam1.service.MockOrderService;;
 // RENAME CLOSING TO FINANCE
 // RENAME CLOSING TO FINANCE
 // RENAME CLOSING TO FINANCE
+
+// Payment screen needs buttons for discount, tip, actual payment.
 
 
 
@@ -68,22 +74,33 @@ public class OrderController {
     private Table table;
     private List<MenuItem> menuItems;
     private List<Category> categories;
-    private List<OrderItem> orderItems;
+    private List<OrderItemView> orderItemViews;
 
     // TEMPORARY
     private BigDecimal subtotal = new BigDecimal(0);
 
     public void initData(Table table, DashboardController dashboardController) {
         this.categories = orderService.getCategories();
-        this.menuItems = orderService.getAvailableMenuItems();
-        this.orderItems = orderService.getOrderItems(table);
+        this.menuItems = orderService.getMenuItems();
+        this.orderItemViews = getOrderItemViews(orderService.getOrderItems(table));
         this.table = table;
         this.dashboardController = dashboardController;
 
         this.tableLabel.setText("Table " + table.getTableNumber());
 
         loadCategories();
-        loadMockOrderUI();
+        loadOrderItems();
+    }
+
+    private List<OrderItemView> getOrderItemViews(List<OrderItem> orderItems) {
+        List<OrderItemView> orderItemViews = new ArrayList<>();
+        for (OrderItem item : orderItems) {
+            MenuItem menuItem = menuItems.stream().filter(m -> m.getId() == item.getMenuItemId()).findFirst().orElse(null);
+
+            orderItemViews.add(new OrderItemView(item, menuItem));
+        }
+
+        return orderItemViews;
     }
 
     private void loadCategories() {
@@ -142,8 +159,9 @@ public class OrderController {
 
         menuTile.getChildren().clear();
 
+        // Show available items from the category
         menuItems.stream()
-            .filter(item -> item.getCategoryId() == categoryId)
+            .filter(item -> (item.getCategoryId() == categoryId && item.getAvailability()))
             .forEach(item -> {
                 VBox card = createMenuItemCard(item);
                 menuTile.getChildren().add(card);
@@ -174,9 +192,37 @@ public class OrderController {
         return card;
     }
 
-    private void addItemToOrder(MenuItem item) {
-        orderPanel.getChildren().add(createOrderItemRow(item));
-        subtotal = subtotal.add(item.getPrice());
+    private void addItemToOrder(MenuItem menuItem) {
+        OrderItemView existingItem = orderItemViews.stream()
+            .filter(item -> item.isSameItem(menuItem, null))
+            .findFirst()
+            .orElse(null);
+        
+        if (existingItem != null) {
+            existingItem.setQuantity(existingItem.getQuantity() + 1);
+            
+            refreshOrderPanel();
+        }
+        else {
+            OrderItemView newItem = new OrderItemView(orderService.createOrderFromMenu(menuItem), menuItem);
+
+            orderItemViews.add(newItem);
+            orderPanel.getChildren().add(createOrderItemRow(newItem));
+
+            subtotal = subtotal.add(menuItem.getPrice());
+            updateTotals();
+        }
+    }
+
+    private void refreshOrderPanel() {
+        orderPanel.getChildren().clear();
+
+        subtotal = BigDecimal.ZERO;
+
+        for (OrderItemView item : orderItemViews) {
+            orderPanel.getChildren().add(createOrderItemRow(item));
+            subtotal = subtotal.add(item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())));
+        }
 
         updateTotals();
     }
@@ -185,7 +231,7 @@ public class OrderController {
         subtotalLabel.setText(subtotal.toString() + " €");
     }
 
-    private HBox createOrderItemRow(MenuItem item) {
+    private HBox createOrderItemRow(OrderItemView item) {
         HBox row = new HBox(8);
         row.setAlignment(Pos.CENTER_LEFT);
         row.setMinHeight(50);
@@ -209,21 +255,44 @@ public class OrderController {
         Button minusBtn = new Button("-");
         minusBtn.getStyleClass().add("quantity-button");
         minusBtn.setStyle("-fx-background-color: #dd5656");
-        minusBtn.setOnAction(e -> {
-            orderPanel.getChildren().remove(row);
-
-            subtotal = subtotal.subtract(item.getPrice());
-            updateTotals();
-        });
 
         // Quantity value
-        Label quantityValue = new Label("1");
-        // get the quantity from OrderItem - no idea how this should work since order view always has a Payment_id
+        Label quantityValue = new Label(item.getQuantity().toString());
+
+        // Minus button functionality
+        minusBtn.setOnAction(e -> {
+            var quantity = item.getQuantity();
+
+            quantity--;
+            subtotal = subtotal.subtract(item.getPrice());
+            updateTotals();
+
+            if (quantity <= 0) {
+                orderPanel.getChildren().remove(row);
+                orderItemViews.remove(item);
+                return;
+            }
+
+            item.setQuantity(quantity);
+            quantityValue.setText(quantity.toString());
+        });
 
         // Plus button
         Button plusBtn = new Button("+");
         plusBtn.getStyleClass().add("quantity-button");
         plusBtn.setStyle("-fx-background-color: #37ff4b");
+
+        // Plus button functionality
+        plusBtn.setOnAction(e -> {
+            var quantity = item.getQuantity();
+
+            quantity++;
+            subtotal = subtotal.add(item.getPrice());
+            updateTotals();
+
+            item.setQuantity(quantity);
+            quantityValue.setText(quantity.toString());
+        });
 
         // Note button
         Button noteBtn = new Button("Add note");
@@ -238,7 +307,7 @@ public class OrderController {
         // Discount popup
         ContextMenu discountPopup = new ContextMenu();
 
-        Label discountLabel = new Label("Current discount: 0.00 €");
+        Label discountLabel = new Label("Current discount: " + item.getDiscount().toString() + " €");
 
         CustomMenuItem discountCMI = new CustomMenuItem(discountLabel);
         discountCMI.setHideOnClick(false);
@@ -268,15 +337,12 @@ public class OrderController {
         return row;
     }
 
-    private void loadMockOrderUI() {
-        orderPanel.getChildren().clear();
+    private void loadOrderItems() {
+        for (OrderItemView orderItemView : orderItemViews) {
+            orderPanel.getChildren().add(createOrderItemRow(orderItemView));
+            subtotal = subtotal.add(orderItemView.getPrice().multiply(BigDecimal.valueOf(orderItemView.getQuantity())));
+        }
 
-        // Just reuse your menu items for now
-        menuItems.stream().limit(4).forEach(item -> {
-            orderPanel.getChildren().add(createOrderItemRow(item));
-
-            subtotal = subtotal.add(item.getPrice());
-        });
         updateTotals();
     }
 
