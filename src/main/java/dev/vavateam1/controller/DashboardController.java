@@ -35,6 +35,9 @@ public class DashboardController {
     @FXML
     private VBox sidebar;
 
+    @FXML
+    private TopNavbarController topNavbarController;
+
     private boolean sidebarVisible = false;
 
     @FXML
@@ -43,6 +46,10 @@ public class DashboardController {
         sidebar.setMinWidth(0);
         sidebar.setMaxWidth(0);
         sidebarVisible = false;
+
+        if (topNavbarController != null) {
+            topNavbarController.setOnTabSelected(this::handleTopTabSelected);
+        }
 
         try {
             showTableView();
@@ -76,6 +83,22 @@ public class DashboardController {
         contentArea.getChildren().add(new Label(text));
     }
 
+    private void handleTopTabSelected(String tabName) {
+        try {
+            switch (tabName) {
+                case "tableLayout" -> showTableView();
+                case "finances" -> showFinances();
+                case "users" -> setContent("Users placeholder");
+                case "menu" -> setContent("Menu placeholder");
+                case "inventory" -> setContent("Inventory placeholder");
+                default -> {
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     @FXML
     private void showTableView() throws Exception {
         FXMLLoader loader = new FXMLLoader(
@@ -88,6 +111,10 @@ public class DashboardController {
         controller.setDashboardController(this);
 
         contentArea.getChildren().setAll(view);
+
+        if (topNavbarController != null) {
+            topNavbarController.setActiveTab("tableLayout");
+        }
     }
 
     @FXML
@@ -140,7 +167,23 @@ public class DashboardController {
 
     @FXML
     private void showManager() {
-        setContent("Here will be Manager panel");
+        
+    }
+    
+    @FXML
+    private void showFinances() {
+        try {
+
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/view/finances.fxml"));
+            loader.setControllerFactory(injector::getInstance);
+
+            contentArea.getChildren().clear();
+            contentArea.getChildren().add(loader.load());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
