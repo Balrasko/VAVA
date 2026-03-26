@@ -21,3 +21,33 @@
     -fx-text-fill: white;
     -fx-font-size: 14px;
 }
+
+.top-nav {
+    -fx-background-color: #161b8c;
+    -fx-padding: 0;
+}
+
+.nav-tab {
+    -fx-background-color: #0D0DB9;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+    -fx-min-width: 120px;
+    -fx-pref-width: 120px;
+    -fx-max-width: 120px;
+    -fx-min-height: 56px;
+    -fx-pref-height: 56px;
+    -fx-max-height: 56px;
+    -fx-padding: 0;
+    -fx-cursor: hand;
+}
+
+.nav-tab:hover {
+    -fx-background-color: #1c2a78;
+}
+
+.nav-tab-active {
+    -fx-background-color: #e8e8e8;
+    -fx-text-fill: #1d1d1d;
+}

@@ -10,7 +10,7 @@
       style="-fx-padding:20; -fx-background-color:#f4f4f4;">
 
     <!-- MAIN PANEL -->
-    <VBox fx:id="ordersContainer"
+    <VBox 
           spacing="12"
           prefWidth="500"
           maxWidth="Infinity"

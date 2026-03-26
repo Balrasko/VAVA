@@ -59,21 +59,27 @@
 
     <!-- TOP BAR -->
     <top>
-    <HBox spacing="15"
-          alignment="CENTER_LEFT"
-          style="-fx-background-color: #1c2a78; -fx-padding: 15;">
+      <VBox>
+        <children>
+          <HBox spacing="15"
+              alignment="CENTER_LEFT"
+              style="-fx-background-color: #1c2a78; -fx-padding: 0 0 0 15;">
 
-        <Label text="☰"
-               onMouseClicked="#toggleSidebar"
-               style="-fx-text-fill: white;
-                      -fx-font-size: 20px;
-                      -fx-cursor: hand;"/>
+            <Label text="☰"
+                 onMouseClicked="#toggleSidebar"
+                 style="-fx-text-fill: white;
+                    -fx-font-size: 20px;
+                    -fx-cursor: hand;"/>
+            <children>
+                <fx:include fx:id="topNavbar" source="top-navbar.fxml" />
+            </children>
+            
+          </HBox>
 
-        <Label text="Restaurant"
-               style="-fx-text-fill: white;
-                      -fx-font-size: 16px;"/>
-    </HBox>
-</top>
+          
+        </children>
+      </VBox>
+    </top>
 
     <!-- CENTER CONTENT -->
     <center>
