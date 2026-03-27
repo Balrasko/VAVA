@@ -8,6 +8,7 @@ import dev.vavateam1.model.KitchenOrder;
 import dev.vavateam1.model.KitchenOrderItem;
 import dev.vavateam1.model.OrderStatus;
 import dev.vavateam1.model.Table;
+import dev.vavateam1.service.AuthService;
 import dev.vavateam1.service.KitchenOrderService;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -33,13 +34,17 @@ public class TempOrderController {
     @FXML
     private VBox thirdColumn;
 
+    private final AuthService authService;
     private final KitchenOrderService kitchenOrderService;
+    private final ViewSwitcher viewSwitcher;
 
     private Table selectedTable;
 
     @Inject
-    public TempOrderController(KitchenOrderService kitchenOrderService) {
+    public TempOrderController(AuthService authService, KitchenOrderService kitchenOrderService, ViewSwitcher viewSwitcher) {
+        this.authService = authService;
         this.kitchenOrderService = kitchenOrderService;
+        this.viewSwitcher = viewSwitcher;
     }
 
     @FXML
@@ -217,5 +222,11 @@ public class TempOrderController {
         }
 
         boardTitleLabel.setText("Kitchen board - opened from table " + selectedTable.getTableNumber());
+    }
+
+    @FXML
+    private void handleLogout() throws Exception {
+        authService.logout();
+        viewSwitcher.SetView("/view/login.fxml");
     }
 }
