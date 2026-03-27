@@ -170,3 +170,11 @@
     -fx-font-size: 13px;
     -fx-text-fill: #6b7280;
 }
+
+.chef-logout-button {
+    -fx-background-color: #b91c1c;
+    -fx-text-fill: white;
+    -fx-background-radius: 999;
+    -fx-padding: 10 16;
+    -fx-cursor: hand;
+}
