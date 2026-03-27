@@ -10,12 +10,19 @@
       style="-fx-padding:20; -fx-background-color:#f4f4f4;">
 
     <!-- LEFT PANEL -->
-    <VBox fx:id="ordersContainer"
-          spacing="12"
-          prefWidth="500"
-          maxWidth="Infinity"
-          HBox.hgrow="ALWAYS"
-          style="-fx-padding:10; -fx-background-color:#d9d9d9; -fx-background-radius:12;"/>
+    <ScrollPane fitToWidth="true"
+                hbarPolicy="NEVER"
+                prefWidth="500"
+                maxWidth="Infinity"
+                HBox.hgrow="ALWAYS"
+                style="-fx-background:#d9d9d9; -fx-background-color:#d9d9d9; -fx-background-radius:12;">
+        <content>
+            <VBox fx:id="ordersContainer"
+                  spacing="12"
+                  maxWidth="Infinity"
+                  style="-fx-padding:10; -fx-background-color:#d9d9d9; -fx-background-radius:12;"/>
+        </content>
+    </ScrollPane>
 
     <!-- RIGHT PANEL -->
     <VBox fx:id="detailPanel"

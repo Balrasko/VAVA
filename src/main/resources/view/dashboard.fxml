@@ -50,7 +50,8 @@
     <VBox alignment="CENTER" spacing="8">
         <Label text="Logged in as"
                style="-fx-text-fill: white; -fx-font-size: 11px;"/>
-        <Label text="Waiter"
+        <Label fx:id="loggedInRoleLabel"
+               text="Waiter"
                style="-fx-text-fill: white; -fx-font-weight: bold;"/>
     </VBox>
 
@@ -59,7 +60,7 @@
 
     <!-- TOP BAR -->
     <top>
-      <VBox>
+      <VBox fx:id="topSection">
         <children>
           <HBox spacing="15"
               alignment="CENTER_LEFT"

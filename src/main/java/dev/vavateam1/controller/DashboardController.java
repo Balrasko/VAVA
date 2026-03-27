@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 
 import dev.vavateam1.model.Table;
+import dev.vavateam1.model.User;
 import dev.vavateam1.service.AuthService;
 // animácie
 import javafx.animation.KeyFrame;
@@ -36,29 +37,44 @@ public class DashboardController {
     private VBox sidebar;
 
     @FXML
+    private VBox topSection;
+
+    @FXML
+    private Label loggedInRoleLabel;
+
+    @FXML
     private TopNavbarController topNavbarController;
 
     private boolean sidebarVisible = false;
 
     @FXML
     public void initialize() {
+        User currentUser = authService.getUser();
+        boolean isChef = currentUser != null && currentUser.getRoleId() == 3;
+
         sidebar.setPrefWidth(0);
         sidebar.setMinWidth(0);
         sidebar.setMaxWidth(0);
         sidebarVisible = false;
+
+        if (loggedInRoleLabel != null && currentUser != null) {
+            loggedInRoleLabel.setText(getRoleName(currentUser.getRoleId()));
+        }
 
         if (topNavbarController != null) {
             topNavbarController.setOnTabSelected(this::handleTopTabSelected);
         }
 
         try {
-            showTableView();
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
-        }
-
-        try {
-            showTableView();
+            if (isChef) {
+                showChefView();
+                sidebar.setVisible(false);
+                sidebar.setManaged(false);
+                topSection.setVisible(false);
+                topSection.setManaged(false);
+            } else {
+                showTableView();
+            }
         } catch (Exception e) {
             System.err.println(e.getMessage());
         }
@@ -66,6 +82,10 @@ public class DashboardController {
 
     @FXML
     private void toggleSidebar() {
+        User currentUser = authService.getUser();
+        if (currentUser != null && currentUser.getRoleId() == 3) {
+            return;
+        }
 
         double endWidth = sidebarVisible ? 0 : 220;
 
@@ -131,6 +151,15 @@ public class DashboardController {
         contentArea.getChildren().setAll(view);
     }
 
+    private void showChefView() throws Exception {
+        FXMLLoader loader = new FXMLLoader(
+                getClass().getResource("/view/tempOrder.fxml"));
+        loader.setControllerFactory(injector::getInstance);
+
+        Parent view = loader.load();
+        contentArea.getChildren().setAll(view);
+    }
+
     @FXML
     private void showClosing() {
         try {
@@ -190,5 +219,14 @@ public class DashboardController {
     private void logout() throws Exception {
         authService.logout();
         viewSwitcher.SetView("/view/login.fxml");
+    }
+
+    private String getRoleName(int roleId) {
+        return switch (roleId) {
+            case 1 -> "Admin";
+            case 2 -> "Waiter";
+            case 3 -> "Chef";
+            default -> "User";
+        };
     }
 }

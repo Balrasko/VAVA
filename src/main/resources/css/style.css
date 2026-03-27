@@ -51,3 +51,122 @@
     -fx-background-color: #e8e8e8;
     -fx-text-fill: #1d1d1d;
 }
+
+.chef-board-root {
+    -fx-background-color: #f4f4f4;
+}
+
+.chef-board-title {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1d1d1d;
+}
+
+.chef-board-scroll {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.chef-board-scroll > .viewport {
+    -fx-background-color: transparent;
+}
+
+.chef-card {
+    -fx-background-color: white;
+    -fx-background-radius: 18;
+    -fx-border-radius: 18;
+    -fx-border-color: #d7d7d7;
+    -fx-border-width: 1;
+}
+
+.chef-card-done {
+    -fx-opacity: 0.92;
+}
+
+.chef-card-header {
+    -fx-padding: 16 18 16 18;
+    -fx-background-radius: 18 18 0 0;
+}
+
+.chef-card-body {
+    -fx-padding: 0;
+}
+
+.chef-card-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+.chef-card-subtitle {
+    -fx-font-size: 12px;
+    -fx-text-fill: rgba(255, 255, 255, 0.85);
+}
+
+.chef-status-received {
+    -fx-background-color: #d62828;
+}
+
+.chef-status-progress {
+    -fx-background-color: #f4c430;
+}
+
+.chef-status-done {
+    -fx-background-color: #7b8794;
+}
+
+.chef-item-label {
+    -fx-font-size: 15px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #1d1d1d;
+    -fx-wrap-text: true;
+}
+
+.chef-item-done {
+    -fx-strikethrough: true;
+    -fx-text-fill: #68707c;
+}
+
+.chef-note-label {
+    -fx-font-size: 12px;
+    -fx-text-fill: #6b7280;
+    -fx-wrap-text: true;
+}
+
+.chef-status-button {
+    -fx-background-color: #1c2a78;
+    -fx-text-fill: white;
+    -fx-background-radius: 999;
+    -fx-padding: 8 14;
+    -fx-cursor: hand;
+}
+
+.chef-status-button:disabled {
+    -fx-opacity: 1;
+    -fx-background-color: #c8ced6;
+    -fx-text-fill: #3b3f45;
+}
+
+.chef-delete-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #c62828;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+
+.chef-empty-state {
+    -fx-background-color: white;
+    -fx-background-radius: 18;
+    -fx-border-radius: 18;
+    -fx-border-color: #d7d7d7;
+}
+
+.chef-empty-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+
+.chef-empty-subtitle {
+    -fx-font-size: 13px;
+    -fx-text-fill: #6b7280;
+}
