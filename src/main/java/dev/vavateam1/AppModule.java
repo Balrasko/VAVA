@@ -18,6 +18,8 @@ import dev.vavateam1.service.AuthService;
 import dev.vavateam1.service.HistoryService;
 import dev.vavateam1.service.HistoryServiceImpl;
 import dev.vavateam1.service.LocalAuthService;
+import dev.vavateam1.service.KitchenOrderService;
+import dev.vavateam1.service.MockKitchenOrderService;
 import dev.vavateam1.service.TableService;
 import dev.vavateam1.service.TableServiceImpl;
 
@@ -33,5 +35,6 @@ public class AppModule extends AbstractModule {
         bind(PaymentDao.class).to(PaymentDaoImpl.class).in(Scopes.SINGLETON);
         bind(OrderItemDao.class).to(OrderItemDaoImpl.class).in(Scopes.SINGLETON);
         bind(HistoryService.class).to(HistoryServiceImpl.class).in(Scopes.SINGLETON);
+        bind(KitchenOrderService.class).to(MockKitchenOrderService.class).in(Scopes.SINGLETON);
     }
 }

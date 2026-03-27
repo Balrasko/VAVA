@@ -1,14 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.control.*?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.VBox?>
 
-<StackPane xmlns:fx="http://javafx.com/fxml"
-           fx:controller="dev.vavateam1.controller.TempOrderController"
-           alignment="CENTER">
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="dev.vavateam1.controller.TempOrderController"
+      spacing="18"
+      styleClass="chef-board-root"
+      style="-fx-padding: 20;">
 
-    <Label fx:id="orderLabel"
-           text="Order view"
-           style="-fx-font-size: 24px;"/>
+    <Label fx:id="boardTitleLabel"
+           text="Kitchen board"
+           styleClass="chef-board-title"/>
 
-</StackPane>
+    <ScrollPane fitToWidth="true"
+                hbarPolicy="NEVER"
+                VBox.vgrow="ALWAYS"
+                styleClass="chef-board-scroll">
+        <content>
+            <HBox spacing="18"
+                  fillHeight="false"
+                  style="-fx-padding: 0 0 20 0;">
+                <VBox fx:id="firstColumn"
+                      spacing="18"
+                      prefWidth="360"
+                      HBox.hgrow="ALWAYS"/>
+                <VBox fx:id="secondColumn"
+                      spacing="18"
+                      prefWidth="360"
+                      HBox.hgrow="ALWAYS"/>
+                <VBox fx:id="thirdColumn"
+                      spacing="18"
+                      prefWidth="360"
+                      HBox.hgrow="ALWAYS"/>
+            </HBox>
+        </content>
+    </ScrollPane>
+
+</VBox>

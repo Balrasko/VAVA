@@ -98,4 +98,4 @@ Users (id, name, email, password)
 1, Admin User, admin@vava.com, admin123
 2, Test Manager, manager@vava.com, manager123
 3, Jožko Čašník, waiter@vava.com, waiter123
-4, Fero Kuchár, chef@vava.com, chef123
+4, Fero Kuchár, chef1@vava.com, chef123
