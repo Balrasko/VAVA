@@ -20,14 +20,14 @@
             <children>
                 <Button fx:id="restaurantButton" text="Restaurant" styleClass="nav-tab" onAction="#onRestaurant" />
                 <Button fx:id="restaurantDeleteButton"
-                        text="✕"
+                    text="X"
                         onAction="#onDeleteRestaurant"
                         visible="false"
                         managed="false"
                         StackPane.alignment="TOP_RIGHT"
-                        style="-fx-background-color: transparent; -fx-text-fill: #d62828; -fx-font-size: 14px; -fx-font-weight: bold; -fx-cursor: hand; -fx-padding: 0; -fx-min-width: 16; -fx-min-height: 16;">
+                    style="-fx-background-color: #d62828; -fx-text-fill: #e8e8e8; -fx-font-size: 14px; -fx-font-weight: 900; -fx-font-family: 'Arial'; -fx-cursor: hand; -fx-padding: 0 0 1 0; -fx-background-radius: 999; -fx-border-radius: 999; -fx-min-width: 20; -fx-min-height: 20; -fx-max-width: 20; -fx-max-height: 20; -fx-alignment: center; -fx-border-color: transparent; -fx-border-color: #7f1d1d; -fx-border-width: 1;">
                     <StackPane.margin>
-                        <Insets top="6" right="8"/>
+                        <Insets top="3" right="6"/>
                     </StackPane.margin>
                 </Button>
             </children>
@@ -37,14 +37,14 @@
             <children>
                 <Button fx:id="teraceButton" text="Terace" styleClass="nav-tab" onAction="#onTerace" />
                 <Button fx:id="teraceDeleteButton"
-                        text="✕"
+                    text="X"
                         onAction="#onDeleteTerace"
                         visible="false"
                         managed="false"
                         StackPane.alignment="TOP_RIGHT"
-                        style="-fx-background-color: transparent; -fx-text-fill: #d62828; -fx-font-size: 14px; -fx-font-weight: bold; -fx-cursor: hand; -fx-padding: 0; -fx-min-width: 16; -fx-min-height: 16;">
+                    style="-fx-background-color: #d62828; -fx-text-fill: #e8e8e8; -fx-font-size: 14px; -fx-font-weight: 900; -fx-font-family: 'Arial'; -fx-cursor: hand; -fx-padding: 0 0 1 0; -fx-background-radius: 999; -fx-border-radius: 999; -fx-min-width: 20; -fx-min-height: 20; -fx-max-width: 20; -fx-max-height: 20; -fx-alignment: center; -fx-border-color: transparent; -fx-border-color: #7f1d1d; -fx-border-width: 1;">
                     <StackPane.margin>
-                        <Insets top="6" right="8"/>
+                        <Insets top="3" right="6"/>
                     </StackPane.margin>
                 </Button>
             </children>
@@ -54,14 +54,14 @@
             <children>
                 <Button fx:id="barButton" text="Bar" styleClass="nav-tab" onAction="#onBar" />
                 <Button fx:id="barDeleteButton"
-                        text="✕"
+                    text="X"
                         onAction="#onDeleteBar"
                         visible="false"
                         managed="false"
                         StackPane.alignment="TOP_RIGHT"
-                        style="-fx-background-color: transparent; -fx-text-fill: #d62828; -fx-font-size: 14px; -fx-font-weight: bold; -fx-cursor: hand; -fx-padding: 0; -fx-min-width: 16; -fx-min-height: 16;">
+                    style="-fx-background-color: #d62828; -fx-text-fill: #e8e8e8; -fx-font-size: 14px; -fx-font-weight: 900; -fx-font-family: 'Arial'; -fx-cursor: hand; -fx-padding: 0 0 1 0; -fx-background-radius: 999; -fx-border-radius: 999; -fx-min-width: 20; -fx-min-height: 20; -fx-max-width: 20; -fx-max-height: 20; -fx-alignment: center; -fx-border-color: transparent; -fx-border-color: #7f1d1d; -fx-border-width: 1;">
                     <StackPane.margin>
-                        <Insets top="6" right="8"/>
+                        <Insets top="3" right="6"/>
                     </StackPane.margin>
                 </Button>
             </children>
