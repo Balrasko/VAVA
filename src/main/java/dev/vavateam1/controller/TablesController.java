@@ -37,6 +37,7 @@ public class TablesController {
     }
 
     private List<Table> tables;
+    private int activeZoneId = 1;
 
     private Boolean dragging = false;
 
@@ -46,10 +47,25 @@ public class TablesController {
         // Get list of tables
         tables = tableService.getTables();
 
+        renderTables();
+    }
+
+    public void setActiveZone(int zoneId) {
+        activeZoneId = zoneId;
+        renderTables();
+    }
+
+    private void renderTables() {
+        if (tablesPane == null || tables == null) {
+            return;
+        }
+
+        tablesPane.getChildren().clear();
+
         // Make a node for each table
         if (!tables.isEmpty()) {
             for (Table table : tables) {
-                if (table.getLocationId() == 1) { // Location check - nothing so far
+                if (table.getLocationId() == activeZoneId) {
                     Node node = createTableNode(table);
                     tablesPane.getChildren().add(node);
                 }
@@ -59,16 +75,6 @@ public class TablesController {
 
     public void setDashboardController(DashboardController dashboard) {
         this.dashboard = dashboard;
-    }
-
-    @FXML
-    private void toggleDragging() {
-        dragging = !dragging;
-
-        dragButton.setText(dragging ? "Exit Drag Mode" : "Enter Drag Mode");
-        dragButton.setStyle("-fx-font-size: 14px; -fx-border-color:#000000;"); // + (dragging ?
-                                                                               // "-fx-background-color:#fffa61" :
-                                                                               // "-fx-background-color:#61d2ff")
     }
 
     private Node createTableNode(Table table) {
@@ -100,7 +106,7 @@ public class TablesController {
         StackPane.setAlignment(status, Pos.TOP_RIGHT);
         StackPane.setMargin(status, new Insets(-4));
 
-        enableTableDrag(box, table);
+
         box.setOnMouseClicked(e -> {
             if (!dragging) {
                 try {
@@ -112,53 +118,5 @@ public class TablesController {
         });
 
         return box;
-    }
-
-    private double mouseX;
-    private double mouseY;
-
-    private void enableTableDrag(Node node, Table table) {
-
-        node.setOnMousePressed(e -> {
-            if (!dragging)
-                return;
-
-            mouseX = e.getSceneX() - node.getLayoutX();
-            mouseY = e.getSceneY() - node.getLayoutY();
-        });
-
-        node.setOnMouseDragged(e -> {
-            if (!dragging)
-                return;
-
-            node.setLayoutX(e.getSceneX() - mouseX);
-            node.setLayoutY(e.getSceneY() - mouseY);
-
-            // Don't let tables leave the screen
-            if (node.getLayoutX() < 0) {
-                node.setLayoutX(0);
-            }
-            if (node.getLayoutY() < 0) {
-                node.setLayoutY(0);
-            }
-            if (node.getLayoutX() > tablesPane.getWidth() - node.getBoundsInParent().getWidth()) {
-                node.setLayoutX(tablesPane.getWidth() - node.getBoundsInParent().getWidth());
-            }
-            if (node.getLayoutY() > tablesPane.getHeight() - node.getBoundsInParent().getHeight()) {
-                node.setLayoutY(tablesPane.getHeight() - node.getBoundsInParent().getHeight());
-            }
-        });
-
-        node.setOnMouseReleased(e -> {
-
-            // Set new position
-            table.setPosX(BigDecimal.valueOf(node.getLayoutX()));
-            table.setPosY(BigDecimal.valueOf(node.getLayoutY()));
-
-            // Save to DB - maybe could be done with its own button
-
-            // System.out.println("X: " + table.getPosX());
-            // System.out.println("Y: " + table.getPosY());
-        });
     }
 }
