@@ -153,7 +153,7 @@ public class DashboardController {
 
     private void showChefView() throws Exception {
         FXMLLoader loader = new FXMLLoader(
-                getClass().getResource("/view/tempOrder.fxml"));
+                getClass().getResource("/view/chef.fxml"));
         loader.setControllerFactory(injector::getInstance);
 
         Parent view = loader.load();
