@@ -51,69 +51,9 @@
                               styleClass="menu-inner-panel">
                             <children>
 
-                                <VBox fx:id="foodSection" spacing="18">
-                                    <children>
-                                        <VBox spacing="12">
-                                            <children>
-                                                <Label text="Pizza" styleClass="menu-category-title"/>
-
-                                                <HBox spacing="20" alignment="CENTER_LEFT">
-                                                    <children>
-                                                        <VBox spacing="3" HBox.hgrow="ALWAYS">
-                                                            <children>
-                                                                <Label text="Menu 1" styleClass="menu-item-title"/>
-                                                                <Label text="detailed description" styleClass="menu-item-description"/>
-                                                            </children>
-                                                        </VBox>
-                                                        <Label text="Price" styleClass="menu-action-label"/>
-                                                    </children>
-                                                </HBox>
-
-                                                <HBox spacing="20" alignment="CENTER_LEFT">
-                                                    <children>
-                                                        <VBox spacing="3" HBox.hgrow="ALWAYS">
-                                                            <children>
-                                                                <Label text="Menu 2" styleClass="menu-item-title"/>
-                                                                <Label text="detailed description" styleClass="menu-item-description"/>
-                                                            </children>
-                                                        </VBox>
-                                                        <Label text="Price" styleClass="menu-action-label"/>
-                                                    </children>
-                                                </HBox>
-                                            </children>
-                                        </VBox>
-
-                                        <VBox spacing="12">
-                                            <children>
-                                                <Label text="Burger" styleClass="menu-category-title"/>
-
-                                                <HBox spacing="20" alignment="CENTER_LEFT">
-                                                    <children>
-                                                        <VBox spacing="3" HBox.hgrow="ALWAYS">
-                                                            <children>
-                                                                <Label text="Menu 1" styleClass="menu-item-title"/>
-                                                                <Label text="detailed description" styleClass="menu-item-description"/>
-                                                            </children>
-                                                        </VBox>
-                                                        <Label text="Price" styleClass="menu-action-label"/>
-                                                    </children>
-                                                </HBox>
-                                            </children>
-                                        </VBox>
-                                    </children>
-                                </VBox>
-
-                                <VBox fx:id="drinksSection" spacing="18" visible="false" managed="false">
-                                    <children>
-                                        <Label text="Drinks section" styleClass="menu-category-title"/>
-                                    </children>
-                                </VBox>
-
-                                <VBox fx:id="servicesSection" spacing="18" visible="false" managed="false">
-                                    <children>
-                                        <Label text="Services section" styleClass="menu-category-title"/>
-                                    </children>
-                                </VBox>
+                                <VBox fx:id="foodSection" spacing="18"/>
+                                <VBox fx:id="drinksSection" spacing="18" visible="false" managed="false"/>
+                                <VBox fx:id="servicesSection" spacing="18" visible="false" managed="false"/>
 
                                 <Region VBox.vgrow="ALWAYS"/>
 
