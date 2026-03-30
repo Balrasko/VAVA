@@ -52,7 +52,6 @@ public class TopNavbarController {
     public void setOnTabSelected(Consumer<String> tabSelectionHandler) {
         this.tabSelectionHandler = tabSelectionHandler;
     }
-
     private void notifyTabSelection(String tabName) {
         if (tabSelectionHandler != null) {
             tabSelectionHandler.accept(tabName);
