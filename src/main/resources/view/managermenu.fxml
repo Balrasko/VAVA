@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="dev.vavateam1.controller.MenuController"
+            maxWidth="Infinity"
+            styleClass="page-root">
+
+    <center>
+        <HBox spacing="16"
+              maxWidth="Infinity"
+              styleClass="page-content">
+            <children>
+
+                <VBox fx:id="menuListPanel"
+                      spacing="0"
+                      HBox.hgrow="ALWAYS"
+                      styleClass="menu-outer-panel">
+                    <children>
+
+                        <HBox spacing="0" styleClass="menu-tabs-bar">
+                            <children>
+                                <Button fx:id="foodTabButton"
+                                        text="Food"
+                                        onAction="#onFoodTab"
+                                        styleClass="menu-tab"/>
+
+                                <Button fx:id="drinksTabButton"
+                                        text="Drinks"
+                                        onAction="#onDrinksTab"
+                                        styleClass="menu-tab"/>
+
+                                <Button fx:id="servicesTabButton"
+                                        text="Services"
+                                        onAction="#onServicesTab"
+                                        styleClass="menu-tab"/>
+                            </children>
+                        </HBox>
+
+                        <VBox spacing="18"
+                              VBox.vgrow="ALWAYS"
+                              styleClass="menu-inner-panel">
+                            <children>
+
+                                <VBox fx:id="foodSection" spacing="18"/>
+                                <VBox fx:id="drinksSection" spacing="18" visible="false" managed="false"/>
+                                <VBox fx:id="servicesSection" spacing="18" visible="false" managed="false"/>
+
+                                <Region VBox.vgrow="ALWAYS"/>
+
+                                <HBox alignment="CENTER_RIGHT">
+                                    <children>
+                                        <Button fx:id="addMenuButton"
+                                                text="Add menu"
+                                                onAction="#onAddMenu"
+                                                styleClass="green-action-button"/>
+                                    </children>
+                                    <padding>
+                                        <Insets top="0" right="0" bottom="4" left="0"/>
+                                    </padding>
+                                </HBox>
+                            </children>
+                        </VBox>
+                    </children>
+                </VBox>
+
+                <VBox fx:id="menuFormPanel"
+                      prefWidth="420"
+                      minWidth="420"
+                      maxWidth="420"
+                      spacing="18"
+                      visible="false"
+                      managed="false"
+                      styleClass="menu-form-panel">
+                    <children>
+
+                        <HBox alignment="CENTER_RIGHT">
+                            <children>
+                                <Button text="✕"
+                                        onAction="#onCloseForm"
+                                        styleClass="form-close-button"/>
+                            </children>
+                        </HBox>
+
+                        <VBox spacing="8">
+                            <children>
+                                <Label text="Name" styleClass="form-label"/>
+                                <TextField fx:id="nameField" styleClass="form-input"/>
+                            </children>
+                        </VBox>
+
+                        <VBox spacing="8">
+                            <children>
+                                <Label text="Description" styleClass="form-label"/>
+                                <TextField fx:id="descriptionField" styleClass="form-input"/>
+                            </children>
+                        </VBox>
+
+                        <VBox spacing="8">
+                            <children>
+                                <Label text="Ingredients" styleClass="form-label"/>
+                                <TextField fx:id="ingredientsField" styleClass="form-input"/>
+                            </children>
+                        </VBox>
+
+                        <VBox spacing="8">
+                            <children>
+                                <Label text="Category" styleClass="form-label"/>
+                                <TextField fx:id="categoryField" styleClass="form-input"/>
+                            </children>
+                        </VBox>
+
+                        <HBox spacing="20">
+                            <children>
+                                <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                    <children>
+                                        <Label text="Price" styleClass="form-label"/>
+                                        <TextField fx:id="priceField" styleClass="form-input"/>
+                                    </children>
+                                </VBox>
+
+                                <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                    <children>
+                                        <Label text="Discount" styleClass="form-label"/>
+                                        <TextField fx:id="discountField" styleClass="form-input"/>
+                                    </children>
+                                </VBox>
+                            </children>
+                        </HBox>
+
+                        <Region VBox.vgrow="ALWAYS"/>
+
+                        <HBox alignment="CENTER_RIGHT" spacing="12">
+                            <children>
+                                <Button text="Cancel"
+                                        onAction="#onCloseForm"
+                                        styleClass="secondary-action-button"/>
+                                <Button text="Add menu"
+                                        onAction="#onSubmitMenu"
+                                        styleClass="green-action-button"/>
+                            </children>
+                        </HBox>
+
+                    </children>
+                </VBox>
+
+            </children>
+        </HBox>
+    </center>
+</BorderPane>

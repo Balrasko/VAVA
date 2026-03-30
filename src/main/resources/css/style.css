@@ -178,3 +178,102 @@
     -fx-padding: 10 16;
     -fx-cursor: hand;
 }
+
+.page-root {
+    -fx-background-color: #f4f4f4;
+}
+
+.page-content {
+    -fx-padding: 20;
+    -fx-background-color: #f4f4f4;
+}
+
+.menu-outer-panel {
+    -fx-background-color: #d9d9d9;
+    -fx-background-radius: 24;
+    -fx-padding: 16;
+}
+
+.menu-tabs-bar {
+    -fx-padding: 0 0 0 16;
+}
+
+.menu-inner-panel {
+    -fx-background-color: #f4f4f4;
+    -fx-background-radius: 24;
+    -fx-padding: 22;
+}
+
+.menu-tab {
+    -fx-background-color: #1a27d9;
+    -fx-text-fill: white;
+    -fx-background-radius: 12 12 0 0;
+    -fx-padding: 8 22 8 22;
+}
+
+.menu-tab-active {
+    -fx-background-color: #f4f4f4;
+    -fx-text-fill: #1d1d1d;
+}
+
+.menu-category-title {
+    -fx-font-size: 14;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1d1d1d;
+}
+
+.menu-item-title {
+    -fx-font-size: 13;
+    -fx-text-fill: #1d1d1d;
+}
+
+.menu-item-description {
+    -fx-font-size: 10;
+    -fx-text-fill: #a0a0a0;
+}
+
+.menu-action-label {
+    -fx-font-size: 13;
+    -fx-text-fill: #1d1d1d;
+}
+
+.green-action-button {
+    -fx-background-color: #57c84d;
+    -fx-text-fill: #1d1d1d;
+    -fx-background-radius: 24;
+    -fx-padding: 10 24 10 24;
+    -fx-cursor: hand;
+}
+
+.menu-form-panel {
+    -fx-background-color: #d9d9d9;
+    -fx-background-radius: 24;
+    -fx-padding: 20;
+}
+
+.form-label {
+    -fx-font-size: 14;
+    -fx-text-fill: #1d1d1d;
+}
+
+.form-input {
+    -fx-background-color: #f4f4f4;
+    -fx-background-radius: 20;
+    -fx-border-radius: 20;
+    -fx-padding: 12 16 12 16;
+}
+
+.form-close-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #1d1d1d;
+    -fx-font-size: 16;
+    -fx-cursor: hand;
+}
+
+.secondary-action-button {
+    -fx-background-color: #f4f4f4;
+    -fx-text-fill: #1d1d1d;
+    -fx-background-radius: 24;
+    -fx-padding: 10 24 10 24;
+    -fx-cursor: hand;
+}

@@ -14,14 +14,7 @@ import dev.vavateam1.dao.UserDaoImpl;
 import dev.vavateam1.dao.UserSessionDao;
 import dev.vavateam1.dao.UserSessionDaoImpl;
 import dev.vavateam1.data.connection.ConnectionFactory;
-import dev.vavateam1.service.AuthService;
-import dev.vavateam1.service.HistoryService;
-import dev.vavateam1.service.HistoryServiceImpl;
-import dev.vavateam1.service.LocalAuthService;
-import dev.vavateam1.service.KitchenOrderService;
-import dev.vavateam1.service.MockKitchenOrderService;
-import dev.vavateam1.service.TableService;
-import dev.vavateam1.service.TableServiceImpl;
+import dev.vavateam1.service.*;
 
 public class AppModule extends AbstractModule {
     @Override
@@ -36,5 +29,6 @@ public class AppModule extends AbstractModule {
         bind(OrderItemDao.class).to(OrderItemDaoImpl.class).in(Scopes.SINGLETON);
         bind(HistoryService.class).to(HistoryServiceImpl.class).in(Scopes.SINGLETON);
         bind(KitchenOrderService.class).to(MockKitchenOrderService.class).in(Scopes.SINGLETON);
+        bind(MenuService.class).to(MockMenuService.class).in(Scopes.SINGLETON);
     }
 }
