@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.Insets?>
+
+<StackPane xmlns:fx="http://javafx.com/fxml"
+           fx:id="contentArea"
+           fx:controller="dev.vavateam1.controller.TableLayoutController"
+           alignment="TOP_LEFT"
+           style="-fx-background-color: #f4f4f4;">
+
+    <HBox fx:id="zonesNavbarContainer"
+          StackPane.alignment="TOP_LEFT">
+        <children>
+            <fx:include fx:id="zonesNavbar" source="top-navbar-zones.fxml" />
+        </children>
+    </HBox>
+
+    <!-- MAIN PAGE AREA -->
+    <Pane fx:id="tablesPane"
+          prefWidth="800"
+          prefHeight="600">
+        <StackPane.margin>
+            <Insets top="56"/>
+        </StackPane.margin>
+    </Pane>
+
+    <!-- DRAG TOGGLE BUTTON -->
+    
+    <Button fx:id="dragButton"
+            text="Enter Edit Mode"
+            onAction="#toggleDragging"
+            StackPane.alignment="BOTTOM_RIGHT"
+            style="-fx-background-color:#57c84d; -fx-text-fill:#1d1d1d; -fx-background-radius:24; -fx-padding:12 24 12 24; -fx-cursor:hand;">
+            
+        <StackPane.margin>
+            <Insets bottom="15" right="15"/>
+       </StackPane.margin>
+
+    </Button>
+
+    <Button fx:id="undoButton"
+            text="Undo"
+            onAction="#undoTableLayoutChanges"
+            visible="false"
+            managed="false"
+            disable="true"
+            StackPane.alignment="BOTTOM_RIGHT"
+            style="-fx-background-color:#ffd166; -fx-text-fill:#1d1d1d; -fx-background-radius:24; -fx-padding:12 24 12 24; -fx-cursor:hand;">
+
+        <StackPane.margin>
+            <Insets bottom="15" right="180"/>
+        </StackPane.margin>
+
+    </Button>
+
+    <Button fx:id="addButton"
+            text="+"
+            onAction="#onAddClicked"
+            visible="false"
+            managed="false"
+            StackPane.alignment="TOP_RIGHT"
+            style="-fx-background-color:#e0e0e0; -fx-text-fill:#1d1d1d; -fx-font-size:24px; -fx-font-weight:bold; -fx-background-radius:999; -fx-min-width:44px; -fx-min-height:44px; -fx-max-width:44px; -fx-max-height:44px; -fx-padding: 0; -fx-alignment: center; -fx-cursor:hand; -fx-border-color:transparent;">
+
+        <StackPane.margin>
+            <Insets top="12" right="12"/>
+        </StackPane.margin>
+
+    </Button>
+
+</StackPane>

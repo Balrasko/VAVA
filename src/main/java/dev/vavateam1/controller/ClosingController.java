@@ -22,7 +22,7 @@ public class ClosingController {
     private Label totalPaidLabel;
 
     @FXML
-    private Label totalOpenedLabel;
+    private Label totalTipsLabel;
 
     @FXML
     private Label grandTotalLabel;
@@ -52,14 +52,14 @@ public class ClosingController {
 
     public void setClosingSummary(
             String totalPaid,
-            String totalOpened,
+            String totalTips,
             String grandTotal,
             String cashFloat,
             String cash,
             String card
     ) {
         totalPaidLabel.setText(totalPaid);
-        totalOpenedLabel.setText(totalOpened);
+        totalTipsLabel.setText(totalTips);
         grandTotalLabel.setText(grandTotal);
         cashFloatValueLabel.setText(cashFloat);
         cashValueLabel.setText(cash);

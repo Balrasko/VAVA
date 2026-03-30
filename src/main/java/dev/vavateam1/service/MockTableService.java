@@ -59,4 +59,8 @@ public class MockTableService implements TableService {
 
         return tables;
     }
+
+    @Override
+    public void updateTablePosition(int tableId, BigDecimal posX, BigDecimal posY) {
+    }
 }

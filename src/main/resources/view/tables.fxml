@@ -16,17 +16,4 @@
           prefWidth="800"
           prefHeight="600"/>
 
-    <!-- DRAG TOGGLE BUTTON -->
-    <Button fx:id="dragButton"
-            text="Enter Drag Mode"
-            onAction="#toggleDragging"
-            StackPane.alignment="BOTTOM_LEFT"
-            style="-fx-font-size: 14px; -fx-border-color:#000000;">
-            
-       <StackPane.margin>
-              <Insets bottom="15" left="15"/>
-       </StackPane.margin>
-
-    </Button>
-
 </StackPane>

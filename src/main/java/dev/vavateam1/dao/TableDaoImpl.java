@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,6 +47,21 @@ public class TableDaoImpl implements TableDao {
             return tables;
         } catch (SQLException e) {
             throw new RuntimeException("Failed to fetch tables", e);
+        }
+    }
+
+    @Override
+    public void updatePosition(int tableId, BigDecimal posX, BigDecimal posY) {
+        String sql = "UPDATE tables SET pos_x = ?, pos_y = ?, updated_at = NOW() WHERE id = ?";
+
+        try (Connection conn = connectionFactory.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setBigDecimal(1, posX);
+            stmt.setBigDecimal(2, posY);
+            stmt.setInt(3, tableId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to update table position for id=" + tableId, e);
         }
     }
 }

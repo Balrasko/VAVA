@@ -14,6 +14,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
@@ -43,14 +44,25 @@ public class DashboardController {
     private Label loggedInRoleLabel;
 
     @FXML
+    private HBox managerPanelItem;
+
+    @FXML
+    private HBox topNavbarContainer;
+
     private TopNavbarController topNavbarController;
+    private TopNavbarZonesController topNavbarZonesController;
+    private TablesController tablesController;
+    private int activeZoneId = 1;
 
     private boolean sidebarVisible = false;
+
+    private boolean isAdmin = false;
 
     @FXML
     public void initialize() {
         User currentUser = authService.getUser();
         boolean isChef = currentUser != null && currentUser.getRoleId() == 3;
+        isAdmin = currentUser != null && currentUser.getRoleId() == 1;
 
         sidebar.setPrefWidth(0);
         sidebar.setMinWidth(0);
@@ -61,9 +73,12 @@ public class DashboardController {
             loggedInRoleLabel.setText(getRoleName(currentUser.getRoleId()));
         }
 
-        if (topNavbarController != null) {
-            topNavbarController.setOnTabSelected(this::handleTopTabSelected);
+        if (managerPanelItem != null) {
+            managerPanelItem.setVisible(isAdmin);
+            managerPanelItem.setManaged(isAdmin);
         }
+
+        setTopNavbarVisible(false);
 
         try {
             if (isChef) {
@@ -103,16 +118,70 @@ public class DashboardController {
         contentArea.getChildren().add(new Label(text));
     }
 
+    private void setTopNavbarVisible(boolean visible) {
+        if (topNavbarContainer != null) {
+            topNavbarContainer.setVisible(visible);
+            topNavbarContainer.setManaged(visible);
+            if (!visible) {
+                topNavbarContainer.getChildren().clear();
+                topNavbarController = null;
+            }
+        }
+        if (!visible) {
+            topNavbarZonesController = null;
+        }
+    }
+
+    private void loadManagerTopNavbar() throws Exception {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/top-navbar.fxml"));
+        loader.setControllerFactory(injector::getInstance);
+
+        Parent navbar = loader.load();
+        topNavbarController = loader.getController();
+
+        if (topNavbarController != null) {
+            topNavbarController.setOnTabSelected(this::handleTopTabSelected);
+            topNavbarController.setActiveTab("tableLayout");
+        }
+
+        topNavbarContainer.getChildren().setAll(navbar);
+        setTopNavbarVisible(true);
+    }
+
+    /** Loads zones bar into top row for normal waiter table view. */
+    private void loadZonesTopNavbar() throws Exception {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/top-navbar-zones.fxml"));
+        loader.setControllerFactory(injector::getInstance);
+
+        Parent navbar = loader.load();
+        topNavbarZonesController = loader.getController();
+        topNavbarController = null;
+
+        if (topNavbarZonesController != null) {
+            topNavbarZonesController.setOnZoneSelected(this::handleZoneSelected);
+            topNavbarZonesController.setActiveZone(activeZoneId);
+        }
+
+        topNavbarContainer.getChildren().setAll(navbar);
+        setTopNavbarVisible(true);
+    }
+
+    private void handleZoneSelected(int zoneId) {
+        activeZoneId = zoneId;
+        if (tablesController != null) {
+            tablesController.setActiveZone(zoneId);
+        }
+    }
+
     private void handleTopTabSelected(String tabName) {
         try {
             switch (tabName) {
-                case "tableLayout" -> showTableView();
+                case "tableLayout" -> showTableLayout();
                 case "finances" -> showFinances();
                 case "users" -> setContent("Users placeholder");
                 case "menu" -> setContent("Menu placeholder");
                 case "inventory" -> setContent("Inventory placeholder");
-                default -> {
-                }
+                default -> {}
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -127,14 +196,13 @@ public class DashboardController {
 
         Parent view = loader.load();
 
-        TablesController controller = loader.getController();
-        controller.setDashboardController(this);
+        tablesController = loader.getController();
+        tablesController.setDashboardController(this);
+        tablesController.setActiveZone(activeZoneId);
 
         contentArea.getChildren().setAll(view);
 
-        if (topNavbarController != null) {
-            topNavbarController.setActiveTab("tableLayout");
-        }
+        loadZonesTopNavbar();
     }
 
     @FXML
@@ -149,6 +217,7 @@ public class DashboardController {
         controller.setTable(table);
 
         contentArea.getChildren().setAll(view);
+        setTopNavbarVisible(false);
     }
 
     private void showChefView() throws Exception {
@@ -170,6 +239,8 @@ public class DashboardController {
 
             contentArea.getChildren().clear();
             contentArea.getChildren().add(loader.load());
+                tablesController = null;
+            setTopNavbarVisible(false);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -187,6 +258,8 @@ public class DashboardController {
 
             contentArea.getChildren().clear();
             contentArea.getChildren().add(loader.load());
+                tablesController = null;
+            setTopNavbarVisible(false);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -196,7 +269,17 @@ public class DashboardController {
 
     @FXML
     private void showManager() {
-        
+        if (!isAdmin) {
+            return;
+        }
+
+        tablesController = null;
+        try {
+            loadManagerTopNavbar();
+            showTableLayout();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
     
     @FXML
@@ -209,6 +292,24 @@ public class DashboardController {
 
             contentArea.getChildren().clear();
             contentArea.getChildren().add(loader.load());
+            tablesController = null;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void showTableLayout() {
+        try {
+
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/view/tableLayout.fxml"));
+            loader.setControllerFactory(injector::getInstance);
+
+            contentArea.getChildren().clear();
+            contentArea.getChildren().add(loader.load());
+            tablesController = null;
 
         } catch (Exception e) {
             e.printStackTrace();
