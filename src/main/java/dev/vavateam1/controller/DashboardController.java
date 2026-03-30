@@ -109,7 +109,7 @@ public class DashboardController {
                 case "tableLayout" -> showTableView();
                 case "finances" -> showFinances();
                 case "users" -> setContent("Users placeholder");
-                case "menu" -> setContent("Menu placeholder");
+                case "menu" -> showMenu();
                 case "inventory" -> setContent("Inventory placeholder");
                 default -> {
                 }
@@ -167,6 +167,21 @@ public class DashboardController {
             FXMLLoader loader = new FXMLLoader(
                     getClass().getResource("/view/closing.fxml")
             );
+
+            contentArea.getChildren().clear();
+            contentArea.getChildren().add(loader.load());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void showMenu() {
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/view/managermenu.fxml"));
+            loader.setControllerFactory(injector::getInstance);
 
             contentArea.getChildren().clear();
             contentArea.getChildren().add(loader.load());
