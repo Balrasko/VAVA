@@ -38,6 +38,8 @@ public class InventoryController {
     @FXML
     private Label statusHeaderLabel;
     @FXML
+    private javafx.scene.control.TextField searchField;
+    @FXML
     private VBox itemsContainer;
 
     private final List<InventoryItem> allItems = new ArrayList<>();
