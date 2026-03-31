@@ -6,6 +6,7 @@ import dev.vavateam1.model.Table;
 import dev.vavateam1.model.Category;
 import dev.vavateam1.model.OrderItemView;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.Side;
 import javafx.scene.control.Button;
@@ -18,6 +19,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
@@ -43,6 +45,9 @@ public class OrderController {
     private MockOrderService orderService = new MockOrderService();
 
     @FXML
+    private StackPane rootStack;
+
+    @FXML
     private VBox orderPanel;
 
     @FXML
@@ -63,6 +68,9 @@ public class OrderController {
     @FXML
     private Button splitButton;
 
+    @FXML
+    private Button paymentButton;
+
     private Button selectedCategory;
     private DashboardController dashboardController;
 
@@ -73,9 +81,10 @@ public class OrderController {
     private List<Category> categories;
     private List<OrderItemView> orderItemViews;
     private Map<OrderItemView, Integer> selectedQuantities = new HashMap<>();
+    private BigDecimal tip = BigDecimal.ZERO;
 
-    // TEMPORARY
-    private BigDecimal subtotal = new BigDecimal(0);
+    private BigDecimal subtotal = BigDecimal.ZERO;
+    private BigDecimal total = BigDecimal.ZERO;
 
     public void initData(Table table, DashboardController dashboardController) {
         this.categories = orderService.getCategories();
@@ -442,11 +451,119 @@ public class OrderController {
     }
 
     @FXML
+    private void showPaymentOverlay() {
+        Region overlayBg = new Region();
+        overlayBg.setStyle("-fx-background-color: #d9d9d9;");
+        overlayBg.prefWidthProperty().bind(rootStack.widthProperty());
+        overlayBg.prefHeightProperty().bind(rootStack.heightProperty());
+
+        VBox paymentBox = new VBox(15);
+        paymentBox.setAlignment(Pos.CENTER);
+        StackPane.setMargin(paymentBox, new Insets(60, 0, 60, 0));
+        paymentBox.setMaxWidth(700);
+        paymentBox.setStyle("""
+            -fx-background-color: #fff;
+            -fx-padding: 20;
+            -fx-background-radius: 10;
+        """);
+
+        Label title = new Label("Table " + this.table.getTableNumber() + " Order Summary");
+        title.setStyle("""
+            -fx-font-size: 36px;
+            -fx-padding: 8;
+        """);
+
+        total = this.subtotal.multiply(tip).divide(new BigDecimal(100)).add(this.subtotal);
+
+        Label totalLabel = new Label("Total: €" + total.toString());
+        totalLabel.setStyle("""
+            -fx-font-size: 26px;
+        """);
+
+        // Tip
+        Button tipBtn = new Button("Tip: " + tip.toString() + "%");
+        tipBtn.getStyleClass().add("note-button");
+        tipBtn.setStyle("""
+            -fx-font-size: 26px;
+            -fx-padding: 8;
+        """);
+
+        // Tip Popup
+        ContextMenu tipPopup = new ContextMenu();
+
+        // Editable TextField
+        TextField tipField = new TextField();
+        tipField.setPromptText("Tip...%");
+
+        // Save button for the text
+        Button tipSaveBtn = new Button("Save");
+        tipSaveBtn.getStyleClass().add("note-button");
+
+        HBox tipBox = new HBox(5, tipField, tipSaveBtn);
+        tipBox.setAlignment(Pos.CENTER_LEFT);
+
+        // Save the tip
+        tipSaveBtn.setOnAction(e -> {
+            String newTip = tipField.getText();
+
+            if (newTip.isBlank()) {
+                tip = BigDecimal.ZERO;
+            }
+            else {
+                tip = new BigDecimal(newTip);
+            }
+
+            tipBtn.setText("Tip: " + tip.toString() + "%");
+            total = this.subtotal.multiply(tip).divide(new BigDecimal(100)).add(this.subtotal);
+            totalLabel.setText("Total: €" + total.toString());
+            tipPopup.hide();
+        });
+
+        // Also save by pressing "Enter"
+        tipField.setOnAction(e -> tipSaveBtn.fire());
+
+        CustomMenuItem noteCMI = new CustomMenuItem(tipBox);
+        noteCMI.setHideOnClick(false);
+        noteCMI.getStyleClass().add("no-hover-menu-item");
+
+        tipPopup.getItems().add(noteCMI);
+
+        // Show the popup
+        tipBtn.setOnAction(e -> {
+            if (!tipPopup.isShowing()) {
+                tipPopup.show(tipBtn, Side.BOTTOM, 0, 0);
+            }
+            else {
+                tipPopup.hide();
+            }
+        });
+
+        Label subtotalLabel = new Label("Subtotal: €" + this.subtotal);
+        subtotalLabel.setStyle("""
+            -fx-font-size: 24px;
+        """);
+
+        Button cancelBtn = new Button("Cancel");
+        cancelBtn.getStyleClass().add("note-button");
+
+        paymentBox.getChildren().addAll(title, tipBtn, totalLabel, subtotalLabel, cancelBtn);
+
+        StackPane overlayContainer = new StackPane(overlayBg, paymentBox);
+
+        cancelBtn.setOnAction(e -> {
+            rootStack.getChildren().remove(overlayContainer);
+        });
+        overlayBg.setOnMouseClicked(e -> rootStack.getChildren().remove(overlayContainer));
+
+        rootStack.getChildren().add(overlayContainer);
+    }
+
+    @FXML
     public void backToTableView() {
         // Return to the table page
 
         try {
-            orderService.saveOrder(); // Save order
+            orderService.saveTempOrders(orderItemViews); // Save orders
             dashboardController.showTableView();
         } catch (Exception e) {
             e.printStackTrace();

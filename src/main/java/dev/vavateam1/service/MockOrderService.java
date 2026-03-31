@@ -7,6 +7,7 @@ import java.util.List;
 
 import dev.vavateam1.model.MenuItem;
 import dev.vavateam1.model.OrderItem;
+import dev.vavateam1.model.OrderItemView;
 import dev.vavateam1.model.Table;
 import javafx.scene.layout.VBox;
 import dev.vavateam1.model.Category;
@@ -211,7 +212,9 @@ public class MockOrderService {
         return orderItem;
     }
 
-    public void saveOrder() {
-        // Save the current state of the order
+    public void saveTempOrders(List<OrderItemView> orderItemList) {
+        // Save the current state of the orders to the database
+        // If they already exist update them instead (only the ones that changed)
+        // Temporary means there is no PaymentID since these orders are not yet paid
     }
 }
