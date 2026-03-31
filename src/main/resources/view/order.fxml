@@ -79,6 +79,8 @@
                                     maxWidth="Infinity"/>
 
                             <Button text="Split the bill"
+                                    fx:id = "splitButton"
+                                    onAction = "#toggleSplitTheBill"
                                     styleClass="action-button"
                                     VBox.vgrow="ALWAYS"
                                     maxWidth="Infinity"/>

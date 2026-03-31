@@ -13,6 +13,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.CustomMenuItem;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -22,6 +23,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,16 +34,7 @@ import java.util.stream.Collectors;
 import dev.vavateam1.service.MockOrderService;;
 
 
-
-// RENAME CLOSING TO FINANCE
-// RENAME CLOSING TO FINANCE
-// RENAME CLOSING TO FINANCE
-// RENAME CLOSING TO FINANCE
-// RENAME CLOSING TO FINANCE
-// RENAME CLOSING TO FINANCE
-
 // Payment screen needs buttons for discount, tip, actual payment.
-
 
 
 public class OrderController {
@@ -66,10 +59,13 @@ public class OrderController {
     @FXML
     private Label subtotalLabel;
 
+    @FXML
+    private Button splitButton;
+
     private Button selectedCategory;
     private DashboardController dashboardController;
 
-    private boolean paymentMode = false;
+    private boolean splitBillMode = false;
 
     private Table table;
     private List<MenuItem> menuItems;
@@ -239,7 +235,7 @@ public class OrderController {
 
         // CheckBox
         CheckBox checkBox = new CheckBox();
-        checkBox.setVisible(paymentMode);
+        checkBox.setVisible(splitBillMode);
 
         // Name label
         Label name = new Label(item.getName());
@@ -254,7 +250,7 @@ public class OrderController {
         // Minus button
         Button minusBtn = new Button("-");
         minusBtn.getStyleClass().add("quantity-button");
-        minusBtn.setStyle("-fx-background-color: #dd5656");
+        //minusBtn.setStyle("-fx-background-color: #dd5656");
 
         // Quantity value
         Label quantityValue = new Label(item.getQuantity().toString());
@@ -274,13 +270,13 @@ public class OrderController {
             }
 
             item.setQuantity(quantity);
-            quantityValue.setText(quantity.toString());
+            refreshOrderPanel();
         });
 
         // Plus button
         Button plusBtn = new Button("+");
         plusBtn.getStyleClass().add("quantity-button");
-        plusBtn.setStyle("-fx-background-color: #37ff4b");
+        //plusBtn.setStyle("-fx-background-color: #37ff4b");
 
         // Plus button functionality
         plusBtn.setOnAction(e -> {
@@ -291,13 +287,62 @@ public class OrderController {
             updateTotals();
 
             item.setQuantity(quantity);
-            quantityValue.setText(quantity.toString());
+            refreshOrderPanel();
         });
 
         // Note button
-        Button noteBtn = new Button("Add note");
+        Button noteBtn = new Button(item.getNote() == null ? "Add note" : "Edit note");
         noteBtn.setPrefWidth(70);
         noteBtn.getStyleClass().add("note-button");
+
+        // Note Popup
+        ContextMenu notePopup = new ContextMenu();
+
+        // Editable TextField
+        TextField noteField = new TextField();
+        noteField.setText(item.getNote() == null ? "" : item.getNote());
+        noteField.setPromptText("Enter note...");
+
+        // Save button for the text
+        Button noteSaveBtn = new Button("Save");
+        noteSaveBtn.getStyleClass().add("note-button");
+
+        HBox noteBox = new HBox(5, noteField, noteSaveBtn);
+        noteBox.setAlignment(Pos.CENTER_LEFT);
+
+        // Save the note
+        noteSaveBtn.setOnAction(e -> {
+            String newNote = noteField.getText();
+
+            if (newNote.isBlank()) {
+                item.setNote(null);
+            }
+            else {
+                item.setNote(newNote);
+            }
+
+            notePopup.hide();
+            refreshOrderPanel();
+        });
+
+        // Also save by pressing "Enter"
+        noteField.setOnAction(e -> noteSaveBtn.fire());
+
+        CustomMenuItem noteCMI = new CustomMenuItem(noteBox);
+        noteCMI.setHideOnClick(false);
+        noteCMI.getStyleClass().add("no-hover-menu-item");
+
+        notePopup.getItems().add(noteCMI);
+
+        // Show the popup
+        noteBtn.setOnAction(e -> {
+            if (!notePopup.isShowing()) {
+                notePopup.show(noteBtn, Side.BOTTOM, 0, 0);
+            }
+            else {
+                notePopup.hide();
+            }
+        });
 
         // Discount
         Button discountBtn = new Button("Discount");
@@ -329,12 +374,26 @@ public class OrderController {
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
         // Price
-        Label price = new Label((item.getPrice()).toString() + " €");
+        Label price = new Label((item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity()))).toString() + " €");
         price.setMinWidth(50);
 
         row.getChildren().addAll(checkBox, name, quantityTextLabel, minusBtn, quantityValue, plusBtn, noteBtn, discountBtn, spacer, price);
 
         return row;
+    }
+
+    @FXML
+    private void toggleSplitTheBill() {
+        splitBillMode = !splitBillMode;
+
+        if (!splitBillMode) {
+            splitButton.setStyle("-fx-background-color: #f4f4f4; -fx-text-fill: #000");
+        }
+        else {
+            splitButton.setStyle("-fx-background-color: #7997E1; -fx-text-fill: #f4f4f4");
+        }
+
+        refreshOrderPanel();
     }
 
     private void loadOrderItems() {
@@ -351,6 +410,7 @@ public class OrderController {
         // Return to the table page
 
         try {
+            orderService.saveOrder(); // Save order
             dashboardController.showTableView();
         } catch (Exception e) {
             e.printStackTrace();

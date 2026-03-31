@@ -358,6 +358,7 @@
     -fx-min-width: 25;
     -fx-min-height: 25;
     -fx-cursor: hand;
+    -fx-background-color: #f4f4f4;
 }
 
 .note-button {

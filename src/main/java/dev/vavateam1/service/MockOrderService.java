@@ -19,11 +19,11 @@ public class MockOrderService {
         // Get menu categories
 
         List<Category> categories = List.of(
-            new Category(1, "Nealko nápoje", LocalDateTime.now(), LocalDateTime.now()),
-            new Category(2, "Alkoholické nápoje", LocalDateTime.now(), LocalDateTime.now()),
-            new Category(3, "Predjedlá", LocalDateTime.now(), LocalDateTime.now()),
-            new Category(4, "Hlavné jedlá", LocalDateTime.now(), LocalDateTime.now()),
-            new Category(5, "Dezerty", LocalDateTime.now(), LocalDateTime.now())
+            new Category(1, "Non-alcoholic drinks", LocalDateTime.now(), LocalDateTime.now()),
+            new Category(2, "Alcoholic drinks", LocalDateTime.now(), LocalDateTime.now()),
+            new Category(3, "Appetizers", LocalDateTime.now(), LocalDateTime.now()),
+            new Category(4, "Main courses", LocalDateTime.now(), LocalDateTime.now()),
+            new Category(5, "Desserts", LocalDateTime.now(), LocalDateTime.now())
         );
 
         return categories;
@@ -209,5 +209,9 @@ public class MockOrderService {
         orderItem.setUpdatedAt(null);
 
         return orderItem;
+    }
+
+    public void saveOrder() {
+        // Save the current state of the order
     }
 }
