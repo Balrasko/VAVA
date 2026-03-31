@@ -178,9 +178,9 @@ public class DashboardController {
             switch (tabName) {
                 case "tableLayout" -> showTableLayout();
                 case "finances" -> showFinances();
+                case "inventory" -> showInventory();
                 case "users" -> setContent("Users placeholder");
                 case "menu" -> showMenu();
-                case "inventory" -> setContent("Inventory placeholder");
                 default -> {}
             }
         } catch (Exception e) {
@@ -303,6 +303,27 @@ public class DashboardController {
 
             FXMLLoader loader = new FXMLLoader(
                     getClass().getResource("/view/finances.fxml"));
+            loader.setControllerFactory(injector::getInstance);
+
+            contentArea.getChildren().clear();
+            contentArea.getChildren().add(loader.load());
+            tablesController = null;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void showInventory() {
+        if (!isAdmin) {
+            return;
+        }
+
+        try {
+
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/view/inventory.fxml"));
             loader.setControllerFactory(injector::getInstance);
 
             contentArea.getChildren().clear();
