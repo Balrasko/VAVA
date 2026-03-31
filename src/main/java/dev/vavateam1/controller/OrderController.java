@@ -26,6 +26,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collector;
@@ -71,6 +72,7 @@ public class OrderController {
     private List<MenuItem> menuItems;
     private List<Category> categories;
     private List<OrderItemView> orderItemViews;
+    private Map<OrderItemView, Integer> selectedQuantities = new HashMap<>();
 
     // TEMPORARY
     private BigDecimal subtotal = new BigDecimal(0);
@@ -100,7 +102,7 @@ public class OrderController {
     }
 
     private void loadCategories() {
-        // Load all the categories and make a button for eachq one
+        // Load all the categories and make a button for each one
 
         boolean first = true;
 
@@ -202,6 +204,8 @@ public class OrderController {
         else {
             OrderItemView newItem = new OrderItemView(orderService.createOrderFromMenu(menuItem), menuItem);
 
+            this.selectedQuantities.put(newItem, newItem.getQuantity());
+
             orderItemViews.add(newItem);
             orderPanel.getChildren().add(createOrderItemRow(newItem));
 
@@ -236,6 +240,16 @@ public class OrderController {
         // CheckBox
         CheckBox checkBox = new CheckBox();
         checkBox.setVisible(splitBillMode);
+        checkBox.setOnAction(e -> {
+            if (checkBox.isSelected()) {
+                selectedQuantities.put(item, item.getQuantity());
+            }
+            else {
+                selectedQuantities.put(item, 0);
+            }
+
+            refreshOrderPanel();
+        });
 
         // Name label
         Label name = new Label(item.getName());
@@ -253,23 +267,30 @@ public class OrderController {
         //minusBtn.setStyle("-fx-background-color: #dd5656");
 
         // Quantity value
-        Label quantityValue = new Label(item.getQuantity().toString());
+        Label quantityValue = new Label(splitBillMode ? selectedQuantities.getOrDefault(item, 0) + " / " + item.getQuantity() : String.valueOf(item.getQuantity()));
 
         // Minus button functionality
         minusBtn.setOnAction(e -> {
-            var quantity = item.getQuantity();
+            if (splitBillMode) {
+                int selected = selectedQuantities.getOrDefault(item, 0);
 
-            quantity--;
-            subtotal = subtotal.subtract(item.getPrice());
-            updateTotals();
+                if (selected > 0) {
+                    selectedQuantities.put(item, selected - 1);
+                }
+            }
+            else {
+                int quantity = item.getQuantity() - 1;
 
-            if (quantity <= 0) {
-                orderPanel.getChildren().remove(row);
-                orderItemViews.remove(item);
-                return;
+                if (quantity <= 0) {
+                    orderItemViews.remove(item);
+                    selectedQuantities.remove(item);
+                }
+                else {
+                    item.setQuantity(quantity);
+                    selectedQuantities.put(item, quantity);
+                }
             }
 
-            item.setQuantity(quantity);
             refreshOrderPanel();
         });
 
@@ -280,13 +301,18 @@ public class OrderController {
 
         // Plus button functionality
         plusBtn.setOnAction(e -> {
-            var quantity = item.getQuantity();
+            if (splitBillMode) {
+                int selected = selectedQuantities.getOrDefault(item, 0);
 
-            quantity++;
-            subtotal = subtotal.add(item.getPrice());
-            updateTotals();
+                if (selected < item.getQuantity()) {
+                    selectedQuantities.put(item, selected + 1);
+                }
+            }
+            else {
+                item.setQuantity(item.getQuantity() + 1);
+                selectedQuantities.put(item, item.getQuantity());
+            }
 
-            item.setQuantity(quantity);
             refreshOrderPanel();
         });
 
@@ -379,6 +405,9 @@ public class OrderController {
 
         row.getChildren().addAll(checkBox, name, quantityTextLabel, minusBtn, quantityValue, plusBtn, noteBtn, discountBtn, spacer, price);
 
+        int selected = selectedQuantities.getOrDefault(item, 0);
+        checkBox.setSelected(selected == item.getQuantity());
+
         return row;
     }
 
@@ -387,9 +416,15 @@ public class OrderController {
         splitBillMode = !splitBillMode;
 
         if (!splitBillMode) {
+            for (OrderItemView item : orderItemViews) {
+                selectedQuantities.put(item, item.getQuantity());
+            }
             splitButton.setStyle("-fx-background-color: #f4f4f4; -fx-text-fill: #000");
         }
         else {
+            for (OrderItemView item : orderItemViews) {
+                selectedQuantities.put(item, 0);
+            }
             splitButton.setStyle("-fx-background-color: #7997E1; -fx-text-fill: #f4f4f4");
         }
 
@@ -400,6 +435,7 @@ public class OrderController {
         for (OrderItemView orderItemView : orderItemViews) {
             orderPanel.getChildren().add(createOrderItemRow(orderItemView));
             subtotal = subtotal.add(orderItemView.getPrice().multiply(BigDecimal.valueOf(orderItemView.getQuantity())));
+            this.selectedQuantities.put(orderItemView, orderItemView.getQuantity());
         }
 
         updateTotals();
