@@ -14,6 +14,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.CustomMenuItem;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -46,6 +47,9 @@ public class OrderController {
 
     @FXML
     private StackPane rootStack;
+
+    @FXML
+    private StackPane paymentOverlay;
 
     @FXML
     private VBox orderPanel;
@@ -102,7 +106,7 @@ public class OrderController {
     private List<OrderItemView> getOrderItemViews(List<OrderItem> orderItems) {
         List<OrderItemView> orderItemViews = new ArrayList<>();
         for (OrderItem item : orderItems) {
-            MenuItem menuItem = menuItems.stream().filter(m -> m.getId() == item.getMenuItemId()).findFirst().orElse(null);
+            MenuItem menuItem = menuItems.stream().filter(m -> m.getId() == item.getMenuItemId()).findFirst().orElseThrow(() -> new RuntimeException("MenuItem not found."));
 
             orderItemViews.add(new OrderItemView(item, menuItem));
         }
@@ -450,8 +454,52 @@ public class OrderController {
         updateTotals();
     }
 
+    private List<OrderItemView> getItemsForPayment() {
+        List<OrderItemView> result = new ArrayList<>();
+
+        for (OrderItemView item : orderItemViews) {
+            int quantity;
+
+            if (splitBillMode) {
+                quantity = selectedQuantities.getOrDefault(item, 0);
+            }
+            else {
+                quantity = item.getQuantity();
+            }
+
+            if (quantity <= 0) continue;
+
+            OrderItemView copy = item.copy();
+            copy.setQuantity(quantity);
+
+            result.add(copy);
+        }
+
+        return result;
+    }
+
+    private BigDecimal calculatePaymentSubtotal(List<OrderItemView> items) {
+        BigDecimal sum = BigDecimal.ZERO;
+
+        for (OrderItemView item : items) {
+            BigDecimal itemTotal = item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity()));
+
+            sum = sum.add(itemTotal);
+        }
+
+        return sum;
+    }
+
     @FXML
     private void showPaymentOverlay() {
+        // Show a payment popup window
+
+        // Get the selected items
+        List<OrderItemView> itemsToPay = getItemsForPayment();
+
+        // Return if there are no items in the order
+        if (itemsToPay.isEmpty()) return;
+
         Region overlayBg = new Region();
         overlayBg.setStyle("-fx-background-color: #d9d9d9;");
         overlayBg.prefWidthProperty().bind(rootStack.widthProperty());
@@ -467,17 +515,63 @@ public class OrderController {
             -fx-background-radius: 10;
         """);
 
+        // Money values
+        VBox orderInfo = new VBox(15);
+
+        // Buttons
+        VBox paymentButtons = new VBox(25);
+        paymentButtons.setAlignment(Pos.BOTTOM_RIGHT);
+
+        HBox topRow = new HBox(30);
+        HBox bottomRow = new HBox(30);
+
+        Region buttonSpacer = new Region();
+        HBox.setHgrow(buttonSpacer, Priority.ALWAYS);
+
+        Region spacer = new Region();
+        VBox.setVgrow(spacer, Priority.ALWAYS);
+
+        HBox bottomPart = new HBox();
+        bottomPart.setAlignment(Pos.CENTER_LEFT);
+
+        Region horizontalSpacer = new Region();
+        HBox.setHgrow(horizontalSpacer, Priority.ALWAYS);
+
+        // List of selected order items for the payment
+        VBox receiptList = new VBox(8);
+
+        ScrollPane scrollPane = new ScrollPane(receiptList);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setPrefHeight(300);
+
+        // Add all the selected items to the receipt
+        for (OrderItemView item : itemsToPay) {
+            HBox row = new HBox(10);
+
+            Label name = new Label(item.getName() + " x" + item.getQuantity());
+
+            BigDecimal totalPrice = item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity()));
+
+            Label price = new Label("€" + totalPrice.toString());
+
+            Region receiptSpacer = new Region();
+            HBox.setHgrow(receiptSpacer, Priority.ALWAYS);
+
+            row.getChildren().addAll(name, receiptSpacer, price);
+
+            receiptList.getChildren().add(row);
+
+            if (item.getNote() != null) {
+                Label note = new Label("  - " + item.getNote());
+                receiptList.getChildren().add(note);
+            }
+        }
+
+        // Popup title
         Label title = new Label("Table " + this.table.getTableNumber() + " Order Summary");
         title.setStyle("""
             -fx-font-size: 36px;
             -fx-padding: 8;
-        """);
-
-        total = this.subtotal.multiply(tip).divide(new BigDecimal(100)).add(this.subtotal);
-
-        Label totalLabel = new Label("Total: €" + total.toString());
-        totalLabel.setStyle("""
-            -fx-font-size: 26px;
         """);
 
         // Tip
@@ -486,6 +580,22 @@ public class OrderController {
         tipBtn.setStyle("""
             -fx-font-size: 26px;
             -fx-padding: 8;
+        """);
+
+        // Calculate subtotal for the selected items
+        BigDecimal paymentSubtotal = calculatePaymentSubtotal(itemsToPay);
+
+        // Calculate total -> subtotal + subtotal * tip
+        total = paymentSubtotal.multiply(tip).divide(new BigDecimal(100)).add(paymentSubtotal);
+
+        Label totalLabel = new Label("Total: €" + total.toString());
+        totalLabel.setStyle("""
+            -fx-font-size: 26px;
+        """);
+
+        Label subtotalLabel = new Label("Subtotal: €" + paymentSubtotal);
+        subtotalLabel.setStyle("""
+            -fx-font-size: 24px;
         """);
 
         // Tip Popup
@@ -506,15 +616,17 @@ public class OrderController {
         tipSaveBtn.setOnAction(e -> {
             String newTip = tipField.getText();
 
-            if (newTip.isBlank()) {
+            try {
+                tip = newTip.isBlank() ? BigDecimal.ZERO : new BigDecimal(newTip);
+            } catch (NumberFormatException ex) {
                 tip = BigDecimal.ZERO;
             }
-            else {
-                tip = new BigDecimal(newTip);
-            }
+
+            // Don't allow a negative tip
+            tip = tip.max(BigDecimal.ZERO);
 
             tipBtn.setText("Tip: " + tip.toString() + "%");
-            total = this.subtotal.multiply(tip).divide(new BigDecimal(100)).add(this.subtotal);
+            total = paymentSubtotal.multiply(tip).divide(new BigDecimal(100)).add(paymentSubtotal);
             totalLabel.setText("Total: €" + total.toString());
             tipPopup.hide();
         });
@@ -522,11 +634,11 @@ public class OrderController {
         // Also save by pressing "Enter"
         tipField.setOnAction(e -> tipSaveBtn.fire());
 
-        CustomMenuItem noteCMI = new CustomMenuItem(tipBox);
-        noteCMI.setHideOnClick(false);
-        noteCMI.getStyleClass().add("no-hover-menu-item");
+        CustomMenuItem tipCMI = new CustomMenuItem(tipBox);
+        tipCMI.setHideOnClick(false);
+        tipCMI.getStyleClass().add("no-hover-menu-item");
 
-        tipPopup.getItems().add(noteCMI);
+        tipPopup.getItems().add(tipCMI);
 
         // Show the popup
         tipBtn.setOnAction(e -> {
@@ -538,24 +650,79 @@ public class OrderController {
             }
         });
 
-        Label subtotalLabel = new Label("Subtotal: €" + this.subtotal);
-        subtotalLabel.setStyle("""
-            -fx-font-size: 24px;
-        """);
-
         Button cancelBtn = new Button("Cancel");
         cancelBtn.getStyleClass().add("note-button");
+        cancelBtn.setStyle("-fx-font-size: 24;");
 
-        paymentBox.getChildren().addAll(title, tipBtn, totalLabel, subtotalLabel, cancelBtn);
+        Button cardPaymentBtn = new Button("Card Payment");
+        cardPaymentBtn.getStyleClass().add("note-button");
+        cardPaymentBtn.setStyle("-fx-font-size: 24;");
+        // Perform payment
+        cardPaymentBtn.setOnAction(e -> processPayment(2, total, tip));
 
-        StackPane overlayContainer = new StackPane(overlayBg, paymentBox);
+        Button cashPaymentBtn = new Button("Cash Payment");
+        cashPaymentBtn.getStyleClass().add("note-button");
+        cashPaymentBtn.setStyle("-fx-font-size: 24;");
+        // Perform payment
+        cashPaymentBtn.setOnAction(e -> processPayment(1, total, tip));
 
+        orderInfo.getChildren().addAll(tipBtn, totalLabel, subtotalLabel);
+
+        topRow.getChildren().addAll(cardPaymentBtn, buttonSpacer);
+        bottomRow.getChildren().addAll(cashPaymentBtn, cancelBtn);
+
+        paymentButtons.getChildren().addAll(topRow, bottomRow);
+
+        bottomPart.getChildren().addAll(orderInfo, horizontalSpacer, paymentButtons);
+
+        paymentBox.getChildren().addAll(title, scrollPane, spacer, bottomPart);
+
+        paymentOverlay = new StackPane(overlayBg, paymentBox);
+
+        // Close the popup without performing the payment
         cancelBtn.setOnAction(e -> {
-            rootStack.getChildren().remove(overlayContainer);
+            rootStack.getChildren().remove(paymentOverlay);
         });
-        overlayBg.setOnMouseClicked(e -> rootStack.getChildren().remove(overlayContainer));
+        // Also close if you click outside the main popup window
+        overlayBg.setOnMouseClicked(e -> rootStack.getChildren().remove(paymentOverlay));
 
-        rootStack.getChildren().add(overlayContainer);
+        rootStack.getChildren().remove(paymentOverlay);
+        rootStack.getChildren().add(paymentOverlay);
+    }
+
+    private void processPayment(int paymentMethod, BigDecimal totalPrice, BigDecimal tip) {
+
+        List<OrderItem> ordersToProcess = new ArrayList<>();
+        List<OrderItemView> itemsToRemove = new ArrayList<>();
+
+        for (OrderItemView item : orderItemViews) {
+            int selected = splitBillMode ? selectedQuantities.getOrDefault(item, 0) : item.getQuantity();
+
+            if (selected == 0) continue;
+
+            // Using split the bill mode
+            if (selected < item.getQuantity()) {
+                // Update item quantity
+                item.setQuantity(item.getQuantity() - selected);
+
+                // Make a new orderItem entry for the split amount
+                OrderItemView splitCopy = item.copy();
+                splitCopy.setQuantity(selected);
+                splitCopy.setOrderIdToNull();
+                ordersToProcess.add(splitCopy.getOrderItem());
+            }
+            else { // Paying for the whole quantity
+                ordersToProcess.add(item.getOrderItem());
+
+                itemsToRemove.add(item);
+            }
+        }
+
+        orderItemViews.removeAll(itemsToRemove);
+        orderService.processPayment(ordersToProcess, paymentMethod, totalPrice, tip);
+        rootStack.getChildren().remove(paymentOverlay);
+        this.tip = BigDecimal.ZERO;
+        refreshOrderPanel();
     }
 
     @FXML

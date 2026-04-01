@@ -14,6 +14,7 @@ import dev.vavateam1.model.Category;
 
 public class MockOrderService {
     
+    // All of the code here is temporary
     // All mock values made by AI
 
     public List<Category> getCategories() {
@@ -33,6 +34,8 @@ public class MockOrderService {
     public List<MenuItem> getMenuItems() {
 
         // Get all menu items
+        // Only if availability = true
+        //      - I don't know how inventory logic affects this
 
         List<MenuItem> menuItems = List.of(
             // Non-Alcoholic Drinks
@@ -126,6 +129,7 @@ public class MockOrderService {
 
     public List<OrderItem> getOrderItems(Table table) {
         // Get order items for the selected table
+        // Only return order items where paymentID == null
 
         List<OrderItem> orderItems = List.of(
             new OrderItem(
@@ -214,7 +218,17 @@ public class MockOrderService {
 
     public void saveTempOrders(List<OrderItemView> orderItemList) {
         // Save the current state of the orders to the database
-        // If they already exist update them instead (only the ones that changed)
-        // Temporary means there is no PaymentID since these orders are not yet paid
+        // For each order item, check if it was already saved (its ID is not null)
+        //      - If it exists, update it
+        //      - If it doesn't exist, make a new entry
+        // Temporary means each item's payment ID is null
+    }
+
+    public void processPayment(List<OrderItem> ordersToProcess, int paymentMethod, BigDecimal totalPrice, BigDecimal tip) {
+        // Make a new payment in the Payments table with the payment method - I set cash payment to 1 and card payment to 2 - I don't know how it is in the Payment_methods table
+        // For each order in ordersToProcess, check if has an ID, if it does, update it in the Order_items table, if it doesn't make a new entry for it
+        // Attach the payment ID of the new payment entry to each order item in both the new ones and the updated ones
+        // Total price is the price of all the order items WITH the tip added
+        // Tip is the tip in % (so 12.5, 50, etc. - not 0.125 or 0.5)
     }
 }

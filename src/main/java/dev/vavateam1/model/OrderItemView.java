@@ -11,8 +11,16 @@ public class OrderItemView {
         this.menuItem = menuItem;
     }
 
+    public OrderItemView copy() {
+        return new OrderItemView(new OrderItem(this.orderItem), this.menuItem);
+    }
+
     public Integer getMenuItemId() {
         return menuItem.getId();
+    }
+
+    public Integer getOrderItemId() {
+        return orderItem.getId();
     }
 
     public String getName() {
@@ -35,6 +43,18 @@ public class OrderItemView {
         return orderItem.getPrice();
     }
 
+    public OrderItem getOrderItem() {
+        return this.orderItem;
+    }
+
+    public MenuItem getMenuItem() {
+        return this.menuItem;
+    }
+
+    public void setOrderIdToNull() {
+        orderItem.setId(null);
+    }
+
     public void setQuantity(Integer newQuantity) {
         orderItem.setQuantity(newQuantity);
     }
@@ -44,6 +64,6 @@ public class OrderItemView {
     }
 
     public boolean isSameItem(MenuItem menuItem, String note) {
-        return this.getMenuItemId() == menuItem.getId() && (this.getNote() == null && note == null);
+        return this.getMenuItemId().equals(menuItem.getId()) && (this.getNote() == null && note == null);
     }
 }
