@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="dev.vavateam1.controller.UsersController"
+            maxWidth="Infinity"
+            styleClass="page-root">
+
+    <center>
+        <ScrollPane fitToHeight="true"
+                    fitToWidth="true"
+                    hbarPolicy="AS_NEEDED"
+                    vbarPolicy="AS_NEEDED"
+                    styleClass="page-scroll">
+            <content>
+                <HBox spacing="20" styleClass="manager-page-wrap">
+                    <children>
+                        <VBox spacing="18"
+                              minWidth="360"
+                              HBox.hgrow="ALWAYS"
+                              styleClass="manager-shell">
+                            <children>
+                                <VBox fx:id="usersList" spacing="18" VBox.vgrow="ALWAYS"/>
+                                <Region VBox.vgrow="ALWAYS"/>
+                                <HBox alignment="CENTER_RIGHT">
+                                    <children>
+                                        <Button text="Create user"
+                                                onAction="#onCreateUser"
+                                                styleClass="green-action-button"/>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+
+                        <VBox fx:id="userFormPanel"
+                              prefWidth="360"
+                              minWidth="320"
+                              maxWidth="390"
+                              spacing="16"
+                              visible="false"
+                              managed="false"
+                              styleClass="menu-form-panel">
+                            <children>
+                                <HBox alignment="CENTER_RIGHT">
+                                    <children>
+                                        <Button text="✕"
+                                                onAction="#onCloseForm"
+                                                styleClass="form-close-button"/>
+                                    </children>
+                                </HBox>
+
+                                <VBox spacing="8">
+                                    <children>
+                                        <Label text="Name" styleClass="form-label"/>
+                                        <TextField fx:id="nameField" styleClass="form-input"/>
+                                    </children>
+                                </VBox>
+
+                                <VBox spacing="8">
+                                    <children>
+                                        <Label text="Surname" styleClass="form-label"/>
+                                        <TextField fx:id="surnameField" styleClass="form-input"/>
+                                    </children>
+                                </VBox>
+
+                                <VBox spacing="8">
+                                    <children>
+                                        <Label text="Email" styleClass="form-label"/>
+                                        <TextField fx:id="emailField" styleClass="form-input"/>
+                                    </children>
+                                </VBox>
+
+                                <VBox spacing="8">
+                                    <children>
+                                        <Label text="Password" styleClass="form-label"/>
+                                        <PasswordField fx:id="passwordField" styleClass="form-input"/>
+                                    </children>
+                                </VBox>
+
+                                <VBox spacing="8">
+                                    <children>
+                                        <Label text="Repeat password" styleClass="form-label"/>
+                                        <PasswordField fx:id="repeatPasswordField" styleClass="form-input"/>
+                                    </children>
+                                </VBox>
+
+                                <VBox spacing="10">
+                                    <children>
+                                        <Label text="Role" styleClass="form-label"/>
+                                        <CheckBox fx:id="managerCheckBox" text="Manager"/>
+                                        <CheckBox fx:id="waiterCheckBox" text="Waiter"/>
+                                        <CheckBox fx:id="chefCheckBox" text="Chef"/>
+                                    </children>
+                                </VBox>
+
+                                <Region VBox.vgrow="ALWAYS"/>
+
+                                <HBox alignment="CENTER_RIGHT" spacing="12">
+                                    <children>
+                                        <Button text="Cancel"
+                                                onAction="#onCloseForm"
+                                                styleClass="secondary-action-button"/>
+                                        <Button text="Create user"
+                                                onAction="#onSubmitUser"
+                                                fx:id="submitUserButton"
+                                                styleClass="green-action-button"/>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+                    </children>
+                </HBox>
+            </content>
+        </ScrollPane>
+    </center>
+</BorderPane>
