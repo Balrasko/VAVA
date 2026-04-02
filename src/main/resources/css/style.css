@@ -13,19 +13,47 @@
     -fx-background-color: #1c2a78;
 }
 
-.logout-item:hover {
-    -fx-background-color: #b91c1c;
-}
-
 .sidebar-label {
     -fx-text-fill: white;
     -fx-font-size: 14px;
+}
+
+.sidebar-logout-button {
+    -fx-background-color: #b91c1c;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 10;
+    -fx-padding: 12 18;
+    -fx-alignment: CENTER_LEFT;
+    -fx-cursor: hand;
+}
+
+.sidebar-logout-button:hover {
+    -fx-background-color: #991b1b;
+}
+
+.dashboard-top-bar {
+    -fx-background-color: #1c2a78;
+    -fx-padding: 0;
+}
+
+.sidebar-toggle {
+    -fx-text-fill: white;
+    -fx-font-size: 20px;
+    -fx-cursor: hand;
+    -fx-padding: 0 15 0 15;
+}
+
+#topNavbarContainer {
+    -fx-padding: 0;
 }
 
 .top-nav {
     -fx-background-color: #161b8c;
     -fx-padding: 0;
     -fx-background-radius: 0 0 20 0;
+    -fx-alignment: CENTER_LEFT;
 }
 
 .top-nav-zones {
@@ -37,16 +65,23 @@
     -fx-background-color: #1f1ac7;
     -fx-text-fill: white;
     -fx-font-size: 14px;
+
     -fx-background-radius: 0;
     -fx-border-radius: 0;
+    -fx-background-insets: 0;
+    -fx-border-insets: 0;
+
     -fx-min-width: 145px;
     -fx-pref-width: 145px;
     -fx-max-width: 145px;
+
     -fx-min-height: 60px;
     -fx-pref-height: 60px;
     -fx-max-height: 60px;
+
     -fx-padding: 0;
     -fx-cursor: hand;
+    -fx-alignment: CENTER;
 }
 
 .nav-tab:hover {
@@ -524,6 +559,7 @@
     -fx-padding: 0;
     -fx-cursor: hand;
     -fx-border-color: transparent;
+}
 .scroll-no-border {
     -fx-background-color: transparent;
     -fx-border-color: transparent;
