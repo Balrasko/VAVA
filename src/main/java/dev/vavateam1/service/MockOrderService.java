@@ -34,8 +34,8 @@ public class MockOrderService {
     public List<MenuItem> getMenuItems() {
 
         // Get all menu items
-        // Only if availability = true
         //      - I don't know how inventory logic affects this
+        // Availability is currently being filtered in the frontend
 
         List<MenuItem> menuItems = List.of(
             // Non-Alcoholic Drinks
@@ -255,10 +255,10 @@ public class MockOrderService {
     }
 
     public void processPayment(List<OrderItem> ordersToProcess, int paymentMethod, BigDecimal totalPrice, BigDecimal tip) {
-        // Make a new payment in the Payments table with the payment method - I set cash payment to 1 and card payment to 2 - I don't know how it is in the Payment_methods table
-        // For each order in ordersToProcess, check if has an ID, if it does, update it in the Order_items table, if it doesn't make a new entry for it
-        // Attach the payment ID of the new payment entry to each order item in both the new ones and the updated ones
+        // Make a new payment in the Payments table with the payment method - I set cash payment to 1 and card payment to 2 - I don't know how it is set in the Payment_methods table
+        // For each order in ordersToProcess, check if it has an ID, if it does, update it in the Order_items table, if it doesn't make a new entry for it
+        // Attach the payment ID of the new payment entry to each order item in both the new ones and the updated ones (if updating also update UpdatedAt)
         // Total price is the price of all the order items WITH the tip added
-        // Tip is the tip in % (so 12.5, 50, etc. - not 0.125 or 0.5)
+        // Tip is the tip value in % (so 12.5, 50, etc. - not 0.125 or 0.5)
     }
 }
