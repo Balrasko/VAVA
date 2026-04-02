@@ -10,9 +10,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderItem {
-    private int id;
+    private Integer id;
     private int menuItemId;
-    private int paymentId;
+    private Integer paymentId;
     private int waiterId;
     private int tableId;
     private int quantity;
@@ -22,4 +22,20 @@ public class OrderItem {
     private String status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+
+    public OrderItem(OrderItem other) {
+        this.id = other.id;
+        this.menuItemId = other.menuItemId;
+        this.paymentId = other.paymentId;
+        this.waiterId = other.waiterId;
+        this.tableId = other.tableId;
+        this.quantity = other.quantity;
+        this.discount = other.discount;
+        this.price = other.price;
+        this.note = other.note;
+        this.status = other.status;
+        this.createdAt = other.createdAt;
+        this.updatedAt = other.updatedAt;
+    }
 }

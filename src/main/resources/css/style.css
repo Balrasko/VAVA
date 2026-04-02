@@ -277,3 +277,136 @@
     -fx-padding: 10 24 10 24;
     -fx-cursor: hand;
 }
+
+.scroll-no-border {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+
+.scroll-no-border .viewport {
+    -fx-padding: 0;
+    -fx-background-color: #d9d9d9;
+}
+
+.rounded-scroll-menu {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+
+.rounded-scroll-menu .viewport {
+    -fx-background-color: #f4f4f4;
+    -fx-background-radius: 0 0 12 12;
+}
+
+.rounded-scroll-order {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+
+.rounded-scroll-order .viewport {
+    -fx-background-color: #f4f4f4;
+    -fx-background-radius: 12;
+}
+
+.category-button {
+    -fx-font-size: 13px;
+    -fx-padding: 10 25 10 25;
+
+    -fx-background-color: #7997E1;
+    -fx-text-fill: #f4f4f4;
+
+    -fx-background-radius: 12 12 0 0;
+}
+
+.category-button-selected {
+    -fx-font-size: 13px;
+    -fx-padding: 10 25 10 25;
+
+    -fx-background-color: #f4f4f4;
+    -fx-text-fill: #000;
+
+    -fx-background-radius: 12 12 0 0;
+}
+
+.action-button {
+    -fx-background-color: #f4f4f4;
+    -fx-text-fill: #333;
+    -fx-font-size: 22px;
+    -fx-background-radius: 10;
+    -fx-padding: 8 16;
+    -fx-cursor: "hand";
+}
+
+.price-box {
+    -fx-background-color: #f4f4f4;
+    -fx-background-radius: 12;
+    -fx-padding: 10;
+}
+
+.order-row {
+    -fx-background-color: #d9d9d9;
+    -fx-background-radius: 10;
+    -fx-padding: 8;
+    -fx-alignment: center-left;
+}
+
+.quantity-button {
+    -fx-min-width: 25;
+    -fx-min-height: 25;
+    -fx-cursor: hand;
+    -fx-background-color: #f4f4f4;
+}
+
+.note-button {
+    -fx-background-color: #e0e0e0;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+}
+
+.no-hover-menu-item {
+    -fx-background-color: transparent;
+}
+
+.no-hover-menu-item:hover {
+    -fx-background-color: transparent;
+}
+
+.no-hover-menu-item .label {
+    -fx-text-fill: #000;
+}
+
+.no-hover-menu-item:hover .label {
+    -fx-text-fill: #000;
+}
+
+.plu-button {
+    -fx-background-color: #e0e0e0;
+    -fx-background-radius: 1000;
+    
+    -fx-min-width: 70px;
+    -fx-min-height: 70px;
+    -fx-max-width: 70px;
+    -fx-max-height: 70px;
+
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+
+    -fx-cursor: hand;
+}
+
+.plu-keyboard-button {
+    -fx-background-color: #fff;
+    -fx-background-radius: 10;
+    -fx-font-size: 16px;
+
+    -fx-max-width: 70px;
+    -fx-min-width: 70px;
+    -fx-max-height: 50px;
+    -fx-min-height: 50px;
+
+    -fx-cursor: hand;
+}
