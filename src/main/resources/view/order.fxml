@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<StackPane fx:id="rootStack"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="dev.vavateam1.controller.OrderController">
+
+           <HBox  spacing="20"
+              maxWidth="Infinity"
+              style="-fx-padding: 20; -fx-background-color: #f4f4f4;">
+
+              <!-- LEFT PANEL -->
+              <VBox fx:id="menuPanel"
+              spacing="12"
+              prefWidth="500"
+              maxWidth="Infinity"
+              HBox.hgrow="ALWAYS"
+              style="-fx-padding: 10; -fx-background-color: #d9d9d9; -fx-background-radius: 12;">
+
+                     <!-- BACK BUTTON AND TABLE LABEL -->
+                     <HBox alignment="TOP_LEFT" spacing="10">
+                            <Button text="←"
+                                   onAction="#backToTableView"
+                                   style="-fx-background-color: #f4f4f4; -fx-text-fill: #333; -fx-font-size: 22; -fx-cursor: hand; -fx-background-radius: 20; -fx-font-weight: bold;"/>
+
+                            <Label fx:id="tableLabel"
+                                   styleClass="button"
+                                   style="-fx-background-color: #f4f4f4; -fx-text-fill: #333; -fx-font-size: 22; -fx-background-radius: 20;"/>
+                     </HBox>
+
+                     <!-- CATEGORY SELECT BUTTONS -->
+                     <ScrollPane fitToWidth="false"
+                            fitToHeight="true"
+                            hbarPolicy="NEVER"
+                            vbarPolicy="NEVER"
+                            pannable="true"
+                            styleClass="scroll-no-border">
+
+                            <HBox fx:id="categoryBox"
+                            spacing="0"
+                            style="-fx-padding: 0; -fx-background-color: #d9d9d9;"/>
+                     </ScrollPane>
+
+                     <!-- MENU ITEMS -->
+                     <StackPane fx:id="menuContainer"
+                                VBox.vgrow="ALWAYS">
+                            <ScrollPane fitToWidth="true"
+                                   fitToHeight="true"
+                                   VBox.vgrow="ALWAYS"
+                                   styleClass="rounded-scroll-menu">
+
+                                   <VBox.margin>
+                                          <Insets top="-12"/>
+                                   </VBox.margin>
+
+                                   <TilePane fx:id="menuTile"
+                                          prefColumns="5"
+                                          hgap="10"
+                                          vgap="10"
+                                          style="-fx-padding: 10;"/>
+                            </ScrollPane>
+
+                            <!-- PLU KEYBOARD -->
+                            <Button fx:id="pluButton"
+                                    text="PLU"
+                                    onAction="#togglePluKeyboard"
+                                    styleClass="plu-button"
+                                    StackPane.alignment="BOTTOM_RIGHT">
+                            
+                                   <StackPane.margin>
+                                          <Insets bottom="20" right="20"/>
+                                   </StackPane.margin>
+                            </Button>
+                     </StackPane>
+              </VBox>
+
+              <!-- RIGHT PANEL -->
+              <VBox fx:id="orderPanel"
+              spacing="12"
+              prefWidth="500"
+              maxWidth="Infinity"
+              HBox.hgrow="ALWAYS"
+              style="-fx-padding: 10; -fx-background-color: #d9d9d9; -fx-background-radius: 12;">
+
+                     <HBox spacing="10">
+                            
+                            <!-- Buttons -->
+                            <VBox spacing="10">
+
+                                   <Button text="Payment"
+                                          fx:id="paymentButton"
+                                          onAction="#showPaymentOverlay"
+                                          styleClass="action-button"
+                                          VBox.vgrow="NEVER"
+                                          maxWidth="Infinity"/>
+
+                                   <Button text="Split the bill"
+                                          fx:id = "splitButton"
+                                          onAction = "#toggleSplitTheBill"
+                                          styleClass="action-button"
+                                          VBox.vgrow="ALWAYS"
+                                          maxWidth="Infinity"/>
+
+                            </VBox>
+
+                            <Region HBox.hgrow="ALWAYS"/>
+
+                            <!-- PRICE BOX -->
+                            <VBox spacing="5"
+                            styleClass="price-box"
+                            prefWidth="240">
+
+                                   <HBox>
+                                          <Label text="Total:" style="-fx-font-size: 14px"/>
+                                          <Region HBox.hgrow="ALWAYS"/>
+                                          <Label fx:id="totalLabel" text="0.00 €" style="-fx-font-size: 28px"/>
+                                   </HBox>
+
+                                   <HBox>
+                                          <Label text="Subtotal:" style="-fx-font-size: 14px"/>
+                                          <Region HBox.hgrow="ALWAYS"/>
+                                          <Label fx:id="subtotalLabel" style="-fx-font-size: 22px"/>
+                                   </HBox>
+
+                            </VBox>
+                     </HBox>
+
+                     <!-- ORDER ITEMS -->
+                     <ScrollPane fitToWidth="true"
+                            VBox.vgrow="ALWAYS"
+                            vbarPolicy="AS_NEEDED"
+                            styleClass="rounded-scroll-order"
+                            style="-fx-background-radius: 5;">
+
+                            <VBox fx:id="orderPanel"
+                            spacing="8"
+                            style="-fx-padding: 10;"/>
+
+                     </ScrollPane>
+              </VBox>
+
+              
+
+           </HBox>
+</StackPane>
