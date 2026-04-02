@@ -16,29 +16,23 @@ import javafx.scene.control.CustomMenuItem;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
-
 import dev.vavateam1.service.MockOrderService;;
-
-
-// Payment screen needs buttons for discount, tip, actual payment.
 
 
 public class OrderController {
@@ -59,6 +53,9 @@ public class OrderController {
 
     @FXML
     private HBox categoryBox;
+
+    @FXML
+    private StackPane menuContainer;
 
     @FXML
     private TilePane menuTile;
@@ -87,13 +84,21 @@ public class OrderController {
     private Map<OrderItemView, Integer> selectedQuantities = new HashMap<>();
     private BigDecimal tip = BigDecimal.ZERO;
 
+    private Label pluDisplay;
+    private boolean pluOpen = false;
+    private GridPane pluKeyboard;
+    private Button firstCategoryButton;
+    
+    @FXML
+    private Button pluButton;
+
     private BigDecimal subtotal = BigDecimal.ZERO;
     private BigDecimal total = BigDecimal.ZERO;
 
     public void initData(Table table, DashboardController dashboardController) {
-        this.categories = orderService.getCategories();
-        this.menuItems = orderService.getMenuItems();
-        this.orderItemViews = getOrderItemViews(orderService.getOrderItems(table));
+        this.categories = orderService.getCategories(); // Get all categories
+        this.menuItems = orderService.getMenuItems();   // Get all menu items
+        this.orderItemViews = getOrderItemViews(orderService.getOrderItems(table)); // Get order items for the table if there are any
         this.table = table;
         this.dashboardController = dashboardController;
 
@@ -104,6 +109,8 @@ public class OrderController {
     }
 
     private List<OrderItemView> getOrderItemViews(List<OrderItem> orderItems) {
+        // Get available order items for the current table if there are any
+
         List<OrderItemView> orderItemViews = new ArrayList<>();
         for (OrderItem item : orderItems) {
             MenuItem menuItem = menuItems.stream().filter(m -> m.getId() == item.getMenuItemId()).findFirst().orElseThrow(() -> new RuntimeException("MenuItem not found."));
@@ -140,6 +147,8 @@ public class OrderController {
 
             // Automatically select first loaded category
             if (first) {
+                firstCategoryButton = btn;
+
                 selectCategory(btn);
                 showCategory(category.getId());
 
@@ -204,6 +213,8 @@ public class OrderController {
     }
 
     private void addItemToOrder(MenuItem menuItem) {
+        // Add the menu item to the order as an order item
+
         OrderItemView existingItem = orderItemViews.stream()
             .filter(item -> item.isSameItem(menuItem, null))
             .findFirst()
@@ -228,6 +239,8 @@ public class OrderController {
     }
 
     private void refreshOrderPanel() {
+        // Refresh the order panel UI
+
         orderPanel.getChildren().clear();
 
         subtotal = BigDecimal.ZERO;
@@ -245,6 +258,8 @@ public class OrderController {
     }
 
     private HBox createOrderItemRow(OrderItemView item) {
+        // Create a row for each order item in the UI
+
         HBox row = new HBox(8);
         row.setAlignment(Pos.CENTER_LEFT);
         row.setMinHeight(50);
@@ -277,7 +292,6 @@ public class OrderController {
         // Minus button
         Button minusBtn = new Button("-");
         minusBtn.getStyleClass().add("quantity-button");
-        //minusBtn.setStyle("-fx-background-color: #dd5656");
 
         // Quantity value
         Label quantityValue = new Label(splitBillMode ? selectedQuantities.getOrDefault(item, 0) + " / " + item.getQuantity() : String.valueOf(item.getQuantity()));
@@ -310,7 +324,6 @@ public class OrderController {
         // Plus button
         Button plusBtn = new Button("+");
         plusBtn.getStyleClass().add("quantity-button");
-        //plusBtn.setStyle("-fx-background-color: #37ff4b");
 
         // Plus button functionality
         plusBtn.setOnAction(e -> {
@@ -426,6 +439,8 @@ public class OrderController {
 
     @FXML
     private void toggleSplitTheBill() {
+        // Toggle split the bill mode
+
         splitBillMode = !splitBillMode;
 
         if (!splitBillMode) {
@@ -455,6 +470,8 @@ public class OrderController {
     }
 
     private List<OrderItemView> getItemsForPayment() {
+        // Get a list of currently selected order items with their quantities - relevant mainly in split the bill mode
+
         List<OrderItemView> result = new ArrayList<>();
 
         for (OrderItemView item : orderItemViews) {
@@ -479,6 +496,8 @@ public class OrderController {
     }
 
     private BigDecimal calculatePaymentSubtotal(List<OrderItemView> items) {
+        // Calculate the subtotal value of the currently selected items - mainly relevant for split the bill mode
+
         BigDecimal sum = BigDecimal.ZERO;
 
         for (OrderItemView item : items) {
@@ -726,11 +745,190 @@ public class OrderController {
     }
 
     @FXML
+    private void togglePluKeyboard() {
+        if (pluOpen) {
+            closePluKeyboard();
+        }
+        else {
+            openPluKeyboard();
+        }
+    }
+
+    private void openPluKeyboard() {
+        if (pluKeyboard == null) {
+            pluKeyboard = createPluKeyboard();
+        }
+
+        if (!menuContainer.getChildren().contains(pluKeyboard)) {
+            menuContainer.getChildren().add(pluKeyboard);
+            StackPane.setAlignment(pluKeyboard, Pos.BOTTOM_RIGHT);
+            StackPane.setMargin(pluKeyboard, new Insets(10));
+        }
+
+        pluOpen = true;
+    }
+
+    private void closePluKeyboard() {
+        menuContainer.getChildren().remove(pluKeyboard);
+        pluDisplay.setText("");
+
+        pluOpen = false;
+        resetCategory();
+    }
+
+    private void resetCategory() {
+        // Set category back to default (1st category)
+
+        if (firstCategoryButton != null) {
+            selectCategory(firstCategoryButton);
+
+            menuItems = orderService.getMenuItems();
+
+            Category firstCategory = categories.get(0);
+            showCategory(firstCategory.getId());
+        }
+    }
+
+    private void clearSelectedCategory() {
+        // Set category to null (when searching with the PLU keyboard the items aren't necessarily within a category)
+
+        if (selectedCategory != null) {
+            selectedCategory.getStyleClass().remove("category-button-selected");
+
+            if (!selectedCategory.getStyleClass().contains("category-button")) {
+                selectedCategory.getStyleClass().add("category-button");
+            }
+
+            selectedCategory = null;
+        }
+    }
+
+    private GridPane createPluKeyboard() {
+        // Build the keyboard popup
+
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(10));
+        grid.setMaxWidth(300);
+        grid.setMaxHeight(Region.USE_PREF_SIZE);
+
+        grid.setStyle("""
+            -fx-background-color: #e0e0e0;
+            -fx-background-radius: 15;
+        """);
+
+        // Columns
+        for (int i = 0; i < 3; i++) {
+            ColumnConstraints col = new ColumnConstraints();
+            col.setPercentWidth(33.33);
+            col.setHgrow(Priority.ALWAYS);
+            grid.getColumnConstraints().add(col);
+        }
+
+        // Rows
+        for (int i = 0; i < 5; i++) {
+            RowConstraints row = new RowConstraints();
+            row.setPrefHeight(50);
+            grid.getRowConstraints().add(row);
+        }
+
+        // Code display
+        pluDisplay = new Label("");
+        pluDisplay.setMaxWidth(Double.MAX_VALUE);
+        pluDisplay.setMinHeight(50);
+        pluDisplay.setStyle("-fx-background-color: #fff; -fx-padding: 10; -fx-background-radius: 8; -fx-font-size: 18px;");
+
+        grid.add(pluDisplay, 0, 0);
+        GridPane.setColumnSpan(pluDisplay, 2);
+
+        // Close button
+        Button closeBtn = createPluButton("Exit");
+        closeBtn.getStyleClass().add("plu-keyboard-button");
+        closeBtn.setOnAction(e -> closePluKeyboard());
+        grid.add(closeBtn, 2, 0);
+
+        // Layout of the buttons
+        String[][] layout = {
+            {"1", "2", "3"},
+            {"4", "5", "6"},
+            {"7", "8", "9"},
+            {"CLR", "0", "⌫"}
+        };
+
+        // Create a Button for each character from the layout using the layout's position
+        for (int row = 0; row < layout.length; row++) {
+            for (int col = 0; col < layout[row].length; col++) {
+                Button btn = createPluButton(layout[row][col]);
+                grid.add(btn, col, row + 1);
+            
+                btn.setOnAction(r -> handlePluInput(btn.getText()));
+            }
+        }
+
+        return grid;
+    }
+
+    private Button createPluButton(String text) {
+        // Button factory
+
+        Button btn = new Button(text);
+        btn.getStyleClass().add("plu-keyboard-button");
+        return btn;
+    }
+
+    private void handlePluInput(String input) {
+        String current = pluDisplay.getText();
+
+        switch (input) {
+            case "CLR": // Clear the display
+                pluDisplay.setText("");
+                resetCategory();
+                return;
+            
+            case "⌫":   // Remove the last character from the display
+                if (!current.isEmpty()) {
+                    pluDisplay.setText(current.substring(0, current.length() - 1));
+                }
+                break;
+            
+            default:    // Add the selected character to the display
+                pluDisplay.setText(current + input);
+                break;
+        }
+
+        String code = pluDisplay.getText();
+
+        if (code.isEmpty()) {
+            // If the display code is empty show regular categories
+            resetCategory();
+        }
+        else {
+            // Otherwise show items based on code input
+            clearSelectedCategory();
+            showItemsByCode(code);
+        }
+    }
+
+    private void showItemsByCode(String code) {
+        menuTile.getChildren().clear();
+
+        // Get searched items by code from backend
+        menuItems = orderService.getItemsByPluCode(code);
+
+        // Filter by availability and make a display card for each menu item
+        menuItems.stream().filter(item -> item.getAvailability() == true).forEach(item -> {
+            VBox card = createMenuItemCard(item);
+            menuTile.getChildren().add(card);
+        });
+    }
+
+    @FXML
     public void backToTableView() {
         // Return to the table page
 
         try {
-            orderService.saveTempOrders(orderItemViews); // Save orders
+            orderService.saveTempOrders(orderItemViews); // Save order items for inclomplete order
             dashboardController.showTableView();
         } catch (Exception e) {
             e.printStackTrace();

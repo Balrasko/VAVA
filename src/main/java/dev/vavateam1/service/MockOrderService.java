@@ -216,6 +216,36 @@ public class MockOrderService {
         return orderItem;
     }
 
+    public List<MenuItem> getItemsByPluCode(String code) {
+        // Return a list of searched menu items based on PLU code
+        
+
+        // Mock data
+        List<MenuItem> menuList = List.of(
+            new MenuItem(1, 1, 1001, "Coca-Cola", new BigDecimal("2.50"), true,
+                        "Classic Coca-Cola soft drink", false, BigDecimal.ZERO,
+                        LocalDateTime.now(), LocalDateTime.now()),
+
+                // Alcoholic Drinks
+                
+                new MenuItem(61, 2, 2003, "Test1", new BigDecimal("7.00"), true,
+                    "Rum cocktail with mint and lime", false, BigDecimal.ZERO,
+                    LocalDateTime.now(), LocalDateTime.now()),
+
+                new MenuItem(62, 2, 2003, "Test2", new BigDecimal("7.00"), true,
+                    "Rum cocktail with mint and lime", false, BigDecimal.ZERO,
+                    LocalDateTime.now(), LocalDateTime.now()),
+
+                // Appetizers
+
+                new MenuItem(9, 3, 3003, "Fried Calamari", new BigDecimal("7.50"), true,
+                        "Crispy fried squid with dipping sauce", true, BigDecimal.ZERO,
+                        LocalDateTime.now(), LocalDateTime.now())
+        );
+
+        return menuList;
+    }
+
     public void saveTempOrders(List<OrderItemView> orderItemList) {
         // Save the current state of the orders to the database
         // For each order item, check if it was already saved (its ID is not null)

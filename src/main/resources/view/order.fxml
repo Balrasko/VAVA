@@ -45,21 +45,36 @@
                      </ScrollPane>
 
                      <!-- MENU ITEMS -->
-                     <ScrollPane fitToWidth="true"
-                            fitToHeight="true"
-                            VBox.vgrow="ALWAYS"
-                            styleClass="rounded-scroll-menu">
+                     <StackPane fx:id="menuContainer"
+                                VBox.vgrow="ALWAYS">
+                            <ScrollPane fitToWidth="true"
+                                   fitToHeight="true"
+                                   VBox.vgrow="ALWAYS"
+                                   styleClass="rounded-scroll-menu">
 
-                            <VBox.margin>
-                                   <Insets top="-12"/>
-                            </VBox.margin>
+                                   <VBox.margin>
+                                          <Insets top="-12"/>
+                                   </VBox.margin>
 
-                            <TilePane fx:id="menuTile"
-                                   prefColumns="5"
-                                   hgap="10"
-                                   vgap="10"
-                                   style="-fx-padding: 10;"/>
-                     </ScrollPane>
+                                   <TilePane fx:id="menuTile"
+                                          prefColumns="5"
+                                          hgap="10"
+                                          vgap="10"
+                                          style="-fx-padding: 10;"/>
+                            </ScrollPane>
+
+                            <!-- PLU KEYBOARD -->
+                            <Button fx:id="pluButton"
+                                    text="PLU"
+                                    onAction="#togglePluKeyboard"
+                                    styleClass="plu-button"
+                                    StackPane.alignment="BOTTOM_RIGHT">
+                            
+                                   <StackPane.margin>
+                                          <Insets bottom="20" right="20"/>
+                                   </StackPane.margin>
+                            </Button>
+                     </StackPane>
               </VBox>
 
               <!-- RIGHT PANEL -->

@@ -382,3 +382,31 @@
 .no-hover-menu-item:hover .label {
     -fx-text-fill: #000;
 }
+
+.plu-button {
+    -fx-background-color: #e0e0e0;
+    -fx-background-radius: 1000;
+    
+    -fx-min-width: 70px;
+    -fx-min-height: 70px;
+    -fx-max-width: 70px;
+    -fx-max-height: 70px;
+
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+
+    -fx-cursor: hand;
+}
+
+.plu-keyboard-button {
+    -fx-background-color: #fff;
+    -fx-background-radius: 10;
+    -fx-font-size: 16px;
+
+    -fx-max-width: 70px;
+    -fx-min-width: 70px;
+    -fx-max-height: 50px;
+    -fx-min-height: 50px;
+
+    -fx-cursor: hand;
+}
