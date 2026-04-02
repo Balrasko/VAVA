@@ -208,7 +208,7 @@ public class DashboardController {
     @FXML
     public void showOrderView(Table table) throws Exception {
         FXMLLoader loader = new FXMLLoader(
-                getClass().getResource("/view/tempOrder.fxml"));
+                getClass().getResource("/view/order.fxml"));
         loader.setControllerFactory(injector::getInstance);
 
         Parent view = loader.load();

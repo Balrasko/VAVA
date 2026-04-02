@@ -1,8 +1,13 @@
-package dev.vavateam1.model;
+package dev.vavateam1.dto;
 
 import java.math.BigDecimal;
 
+import dev.vavateam1.model.MenuItem;
+import dev.vavateam1.model.OrderItem;
+
 public class OrderItemView {
+    // Combines MenuItem and OrderItem since OrderItem is missing some useful values which MenuItem has - e.g. the item name
+
     private final OrderItem orderItem;
     private final MenuItem menuItem;
 

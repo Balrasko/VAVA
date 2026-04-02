@@ -2,14 +2,12 @@ package dev.vavateam1.service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 import dev.vavateam1.model.MenuItem;
 import dev.vavateam1.model.OrderItem;
-import dev.vavateam1.model.OrderItemView;
 import dev.vavateam1.model.Table;
-import javafx.scene.layout.VBox;
+import dev.vavateam1.dto.OrderItemView;
 import dev.vavateam1.model.Category;
 
 public class MockOrderService {
@@ -204,7 +202,7 @@ public class MockOrderService {
         orderItem.setId(null);
         orderItem.setMenuItemId(menuItem.getId());
         orderItem.setPaymentId(null);
-        orderItem.setWaiterId(null);
+        orderItem.setWaiterId(0);
         orderItem.setQuantity(1);
         orderItem.setDiscount(BigDecimal.ZERO);
         orderItem.setPrice(menuItem.getPrice());

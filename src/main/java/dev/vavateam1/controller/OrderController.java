@@ -3,8 +3,8 @@ package dev.vavateam1.controller;
 import dev.vavateam1.model.MenuItem;
 import dev.vavateam1.model.OrderItem;
 import dev.vavateam1.model.Table;
+import dev.vavateam1.dto.OrderItemView;
 import dev.vavateam1.model.Category;
-import dev.vavateam1.model.OrderItemView;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -181,7 +181,7 @@ public class OrderController {
 
         // Show available items from the category
         menuItems.stream()
-            .filter(item -> (item.getCategoryId() == categoryId && item.getAvailability()))
+            .filter(item -> (item.getCategoryId() == categoryId && item.isAvailability()))
             .forEach(item -> {
                 VBox card = createMenuItemCard(item);
                 menuTile.getChildren().add(card);
@@ -917,7 +917,7 @@ public class OrderController {
         menuItems = orderService.getItemsByPluCode(code);
 
         // Filter by availability and make a display card for each menu item
-        menuItems.stream().filter(item -> item.getAvailability() == true).forEach(item -> {
+        menuItems.stream().filter(item -> item.isAvailability() == true).forEach(item -> {
             VBox card = createMenuItemCard(item);
             menuTile.getChildren().add(card);
         });
