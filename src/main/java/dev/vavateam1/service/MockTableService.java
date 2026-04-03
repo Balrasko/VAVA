@@ -5,62 +5,87 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import dev.vavateam1.model.Location;
 import dev.vavateam1.model.Table;
 
 public class MockTableService implements TableService {
-    public List<Table> getTables() {
-        List<Table> tables = new ArrayList<>();
+        public List<Table> getTables() {
+                List<Table> tables = new ArrayList<>();
 
-        // Mock table attributes made by AI
+                // Mock table attributes made by AI
 
-        tables.add(new Table(
-            1,
-            1,
-            1,
-            new BigDecimal("120.0"),
-            new BigDecimal("80.0"),
-            true,
-            LocalDateTime.now().minusDays(10),
-            LocalDateTime.now()
-        ));
+                tables.add(new Table(
+                                1,
+                                1,
+                                1,
+                                new BigDecimal("120.0"),
+                                new BigDecimal("80.0"),
+                                true,
+                                LocalDateTime.now().minusDays(10),
+                                LocalDateTime.now()));
 
-        tables.add(new Table(
-                2,
-                1,
-                2,
-                new BigDecimal("320.0"),
-                new BigDecimal("80.0"),
-                false,
-                LocalDateTime.now().minusDays(9),
-                LocalDateTime.now()
-        ));
+                tables.add(new Table(
+                                2,
+                                1,
+                                2,
+                                new BigDecimal("320.0"),
+                                new BigDecimal("80.0"),
+                                false,
+                                LocalDateTime.now().minusDays(9),
+                                LocalDateTime.now()));
 
-        tables.add(new Table(
-                3,
-                1,
-                3,
-                new BigDecimal("120.0"),
-                new BigDecimal("220.0"),
-                true,
-                LocalDateTime.now().minusDays(8),
-                LocalDateTime.now()
-        ));
+                tables.add(new Table(
+                                3,
+                                1,
+                                3,
+                                new BigDecimal("120.0"),
+                                new BigDecimal("220.0"),
+                                true,
+                                LocalDateTime.now().minusDays(8),
+                                LocalDateTime.now()));
 
-        tables.add(new Table(
-                4,
-                1,
-                4,
-                new BigDecimal("420.0"),
-                new BigDecimal("220.0"),
-                true,
-                LocalDateTime.now().minusDays(7),
-                LocalDateTime.now()
-        ));
+                tables.add(new Table(
+                                4,
+                                1,
+                                4,
+                                new BigDecimal("420.0"),
+                                new BigDecimal("220.0"),
+                                true,
+                                LocalDateTime.now().minusDays(7),
+                                LocalDateTime.now()));
 
-        return tables;
-    }
+                return tables;
+        }
 
-    @Override
-    public void updateTablePosition(int tableId, BigDecimal posX, BigDecimal posY) {
-    }
+        @Override
+        public void updateTablePosition(int tableId, BigDecimal posX, BigDecimal posY) {
+        }
+
+        @Override
+        public List<Location> getLocations() {
+                return new ArrayList<>();
+        }
+
+        @Override
+        public Table createTable(int locationId) {
+                return new Table(
+                                100,
+                                locationId,
+                                100,
+                                new BigDecimal("0.0"),
+                                new BigDecimal("0.0"),
+                                true,
+                                LocalDateTime.now(),
+                                LocalDateTime.now());
+        }
+
+        @Override
+        public Location createZone(String name) {
+                Location location = new Location();
+                location.setId(100);
+                location.setName(name);
+                location.setCreatedAt(LocalDateTime.now());
+                location.setUpdatedAt(LocalDateTime.now());
+                return location;
+        }
 }

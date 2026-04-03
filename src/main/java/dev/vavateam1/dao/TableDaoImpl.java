@@ -64,4 +64,29 @@ public class TableDaoImpl implements TableDao {
             throw new RuntimeException("Failed to update table position for id=" + tableId, e);
         }
     }
+
+    @Override
+    public Table createTable(int locationId) {
+        String sql = "INSERT INTO tables (location_id, table_number, pos_x, pos_y, availability) VALUES (?, (SELECT COALESCE(MAX(table_number), 0) + 1 FROM tables), 0, 0, true) RETURNING id, location_id, table_number, pos_x, pos_y, availability, created_at, updated_at";
+        try (Connection conn = connectionFactory.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, locationId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                Table t = new Table();
+                t.setId(rs.getInt("id"));
+                t.setLocationId(rs.getInt("location_id"));
+                t.setTableNumber(rs.getInt("table_number"));
+                t.setPosX(rs.getBigDecimal("pos_x"));
+                t.setPosY(rs.getBigDecimal("pos_y"));
+                t.setAvailability((Boolean) rs.getObject("availability"));
+                t.setCreatedAt(SqlUtils.toLocalDateTime(rs.getTimestamp("created_at")));
+                t.setUpdatedAt(SqlUtils.toLocalDateTime(rs.getTimestamp("updated_at")));
+                return t;
+            }
+            throw new RuntimeException("Failed to insert table");
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to create table", e);
+        }
+    }
 }

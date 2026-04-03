@@ -1,23 +1,20 @@
 package dev.vavateam1.controller;
 
-import com.google.inject.Inject;
-
-import javafx.fxml.FXML;
-import javafx.geometry.Pos;
-import javafx.geometry.Insets;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.Node;
-
-import javafx.scene.shape.Circle;
-
-import java.math.BigDecimal;
 import java.util.List;
+
+import com.google.inject.Inject;
 
 import dev.vavateam1.model.Table;
 import dev.vavateam1.service.TableService;
+import javafx.fxml.FXML;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.shape.Circle;
 
 public class TablesController {
 
@@ -105,7 +102,6 @@ public class TablesController {
         box.getChildren().add(status);
         StackPane.setAlignment(status, Pos.TOP_RIGHT);
         StackPane.setMargin(status, new Insets(-4));
-
 
         box.setOnMouseClicked(e -> {
             if (!dragging) {

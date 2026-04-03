@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.StackPane?>
+
+<StackPane xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1">
+    <children>
+        <Button id="zoneButton" styleClass="nav-tab" />
+        <Button id="deleteButton" text="X" managed="false" visible="false"
+            StackPane.alignment="TOP_RIGHT"
+            style="-fx-background-color: #d62828; -fx-text-fill: #e8e8e8; -fx-font-size: 14px; -fx-font-weight: 900; -fx-font-family: 'Arial'; -fx-cursor: hand; -fx-padding: 0 0 1 0; -fx-background-radius: 999; -fx-border-radius: 999; -fx-min-width: 20; -fx-min-height: 20; -fx-max-width: 20; -fx-max-height: 20; -fx-alignment: center; -fx-border-color: transparent; -fx-border-color: #7f1d1d; -fx-border-width: 1;">
+            <StackPane.margin>
+                <Insets top="3" right="6" />
+            </StackPane.margin>
+        </Button>
+    </children>
+</StackPane>

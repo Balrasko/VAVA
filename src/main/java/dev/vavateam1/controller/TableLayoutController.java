@@ -22,6 +22,9 @@ import java.util.Map;
 import dev.vavateam1.model.Table;
 import dev.vavateam1.service.TableService;
 
+import javafx.scene.control.TextInputDialog;
+import java.util.Optional;
+
 public class TableLayoutController {
 
     @FXML
@@ -112,7 +115,8 @@ public class TableLayoutController {
         dragging = true;
         snapshotOriginalPositions();
         dragButton.setText("Exit Edit Mode");
-        dragButton.setStyle("-fx-background-color:#57c84d; -fx-text-fill:#1d1d1d; -fx-background-radius:24; -fx-padding:12 24 12 24; -fx-cursor:hand;");
+        dragButton.setStyle(
+                "-fx-background-color:#57c84d; -fx-text-fill:#1d1d1d; -fx-background-radius:24; -fx-padding:12 24 12 24; -fx-cursor:hand;");
         setUndoButtonState(true);
         setAddButtonState(true);
         if (zonesNavbarController != null) {
@@ -124,13 +128,15 @@ public class TableLayoutController {
     private void endDragMode() {
         dragging = false;
         dragButton.setText("Enter Edit Mode");
-        dragButton.setStyle("-fx-background-color:#57c84d; -fx-text-fill:#1d1d1d; -fx-background-radius:24; -fx-padding:12 24 12 24; -fx-cursor:hand;");
+        dragButton.setStyle(
+                "-fx-background-color:#57c84d; -fx-text-fill:#1d1d1d; -fx-background-radius:24; -fx-padding:12 24 12 24; -fx-cursor:hand;");
         setUndoButtonState(false);
         setAddButtonState(false);
         if (zonesNavbarController != null) {
             zonesNavbarController.setEditMode(false);
         }
-        if (addPopup != null) addPopup.hide();
+        if (addPopup != null)
+            addPopup.hide();
         originalPositions.clear();
         renderTables();
     }
@@ -183,7 +189,8 @@ public class TableLayoutController {
 
     @FXML
     private void onAddClicked() {
-        if (addPopup == null || addButton == null) return;
+        if (addPopup == null || addButton == null)
+            return;
         if (addPopup.isShowing()) {
             addPopup.hide();
             return;
@@ -193,13 +200,28 @@ public class TableLayoutController {
     }
 
     private void onCreateNewTable() {
-        // TODO: prompt for table details and persist
-        System.out.println("Create new table");
+        Table newTable = tableService.createTable(activeZoneId);
+        if (newTable != null) {
+            tables.add(newTable);
+            renderTables();
+        }
     }
 
     private void onCreateNewZone() {
-        // TODO: prompt for zone name and persist
-        System.out.println("Create new zone");
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("New Zone");
+        dialog.setHeaderText("Create a new zone");
+        dialog.setContentText("Please enter the name of the new zone:");
+
+        Optional<String> result = dialog.showAndWait();
+        result.ifPresent(name -> {
+            if (!name.trim().isEmpty()) {
+                dev.vavateam1.model.Location newZone = tableService.createZone(name.trim());
+                if (zonesNavbarController != null && newZone != null) {
+                    zonesNavbarController.loadZones();
+                }
+            }
+        });
     }
 
     private void setUndoButtonState(boolean enabled) {
@@ -274,9 +296,9 @@ public class TableLayoutController {
 
         Button deleteMarker = new Button("X");
         deleteMarker.setStyle("-fx-background-color:#d62828; -fx-text-fill:#e8e8e8; -fx-font-size:14px; "
-            + "-fx-font-weight:900; -fx-font-family:'Arial'; -fx-cursor:hand; -fx-padding:0 0 1 0; "
-            + "-fx-background-radius:999; -fx-border-radius:999; -fx-min-width:20px; -fx-min-height:20px; "
-            + "-fx-max-width:20px; -fx-max-height:20px; -fx-alignment:center; -fx-border-color:transparent; -fx-border-color: #7f1d1d; -fx-border-width: 1");
+                + "-fx-font-weight:900; -fx-font-family:'Arial'; -fx-cursor:hand; -fx-padding:0 0 1 0; "
+                + "-fx-background-radius:999; -fx-border-radius:999; -fx-min-width:20px; -fx-min-height:20px; "
+                + "-fx-max-width:20px; -fx-max-height:20px; -fx-alignment:center; -fx-border-color:transparent; -fx-border-color: #7f1d1d; -fx-border-width: 1");
         deleteMarker.setVisible(dragging);
         deleteMarker.setOnAction(e -> {
             if (!dragging) {
