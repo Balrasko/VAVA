@@ -85,6 +85,32 @@ public class OrderItemDaoImpl implements OrderItemDao {
     }
 
     @Override
+    public List<OrderItem> getUnpaidOrderItems() {
+        String sql = """
+                SELECT id, menu_item_id, payment_id, waiter_id, table_id, quantity, discount, price, note,
+                       status, created_at, updated_at
+                FROM order_items
+                WHERE payment_id IS NULL
+                ORDER BY created_at ASC, id ASC
+                """;
+
+        List<OrderItem> orderItems = new ArrayList<>();
+
+        try (Connection conn = connectionFactory.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                orderItems.add(mapResultSetToOrderItem(rs));
+            }
+
+            return orderItems;
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to fetch unpaid order items", e);
+        }
+    }
+
+    @Override
     public List<OrderItem> getOrderItemsByTableId(int tableId) {
         String sql = """
                 SELECT oi.id, oi.menu_item_id, mi.name AS menu_item_name, oi.payment_id, oi.waiter_id,

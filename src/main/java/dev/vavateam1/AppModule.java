@@ -36,7 +36,7 @@ public class AppModule extends AbstractModule {
         bind(PaymentDao.class).to(PaymentDaoImpl.class).in(Scopes.SINGLETON);
         bind(OrderItemDao.class).to(OrderItemDaoImpl.class).in(Scopes.SINGLETON);
         bind(HistoryService.class).to(HistoryServiceImpl.class).in(Scopes.SINGLETON);
-        bind(KitchenOrderService.class).to(MockKitchenOrderService.class).in(Scopes.SINGLETON);
+        bind(KitchenService.class).in(Scopes.SINGLETON);
         bind(MenuItemDao.class).to(MenuItemDaoImpl.class).in(Scopes.SINGLETON);
         bind(MenuService.class).to(MenuServiceImpl.class).in(Scopes.SINGLETON);
         bind(OrderService.class).to(OrderServiceImpl.class).in(Scopes.SINGLETON);
