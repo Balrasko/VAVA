@@ -1,6 +1,7 @@
 package dev.vavateam1.controller;
 
 import com.google.inject.Inject;
+import dev.vavateam1.model.Category;
 import dev.vavateam1.model.MenuItem;
 import dev.vavateam1.service.MenuService;
 import javafx.fxml.FXML;
@@ -8,33 +9,43 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MenuController {
 
     private final MenuService menuService;
 
-    @FXML private Button foodTabButton;
-    @FXML private Button drinksTabButton;
-    @FXML private Button servicesTabButton;
+    @FXML
+    private HBox categoryTabsContainer;
+    @FXML
+    private VBox categorySectionsContainer;
 
-    @FXML private VBox foodSection;
-    @FXML private VBox drinksSection;
-    @FXML private VBox servicesSection;
+    @FXML
+    private VBox menuFormPanel;
 
-    @FXML private VBox menuFormPanel;
+    @FXML
+    private TextField nameField;
+    @FXML
+    private TextField descriptionField;
+    @FXML
+    private TextField categoryField;
+    @FXML
+    private TextField priceField;
+    @FXML
+    private TextField discountField;
 
-    @FXML private TextField nameField;
-    @FXML private TextField descriptionField;
-    @FXML private TextField categoryField;
-    @FXML private TextField priceField;
-    @FXML private TextField discountField;
-
-    private String selectedCategory = "food";
+    private final Map<Integer, Button> categoryButtons = new HashMap<>();
+    private final Map<Integer, VBox> categorySections = new HashMap<>();
+    private List<Category> categories = List.of();
+    private int selectedCategoryId = -1;
 
     @Inject
     public MenuController(MenuService menuService) {
@@ -43,40 +54,14 @@ public class MenuController {
 
     @FXML
     public void initialize() {
-        setActiveTab("food");
-        showSection("food");
+        loadCategories();
         hideForm();
-        loadItems("food");
-    }
-
-    @FXML
-    private void onFoodTab() {
-        selectedCategory = "food";
-        setActiveTab("food");
-        showSection("food");
-        loadItems("food");
-    }
-
-    @FXML
-    private void onDrinksTab() {
-        selectedCategory = "drinks";
-        setActiveTab("drinks");
-        showSection("drinks");
-        loadItems("drinks");
-    }
-
-    @FXML
-    private void onServicesTab() {
-        selectedCategory = "services";
-        setActiveTab("services");
-        showSection("services");
-        loadItems("services");
     }
 
     @FXML
     private void onAddMenu() {
         clearForm();
-        categoryField.setText(selectedCategory);
+        categoryField.setText(getSelectedCategoryName());
         showForm();
     }
 
@@ -87,9 +72,14 @@ public class MenuController {
 
     @FXML
     private void onSubmitMenu() {
+        int categoryId = resolveCategoryId(categoryField.getText());
+        if (categoryId <= 0) {
+            return;
+        }
+
         MenuItem newItem = new MenuItem(
                 0,
-                mapCategoryToId(categoryField.getText()),
+                categoryId,
                 generateItemCode(),
                 nameField.getText(),
                 new BigDecimal(priceField.getText().isBlank() ? "0.00" : priceField.getText()),
@@ -98,14 +88,12 @@ public class MenuController {
                 isKitchenCategory(categoryField.getText()),
                 new BigDecimal(discountField.getText().isBlank() ? "0.00" : discountField.getText()),
                 LocalDateTime.now(),
-                LocalDateTime.now()
-        );
+                LocalDateTime.now());
 
         menuService.addMenuItem(newItem);
         hideForm();
-        loadItems(selectedCategory);
+        loadItems(selectedCategoryId);
     }
-
 
     private void showForm() {
         menuFormPanel.setVisible(true);
@@ -125,57 +113,99 @@ public class MenuController {
         discountField.clear();
     }
 
-    private void showSection(String section) {
-        boolean food = "food".equals(section);
-        boolean drinks = "drinks".equals(section);
-        boolean services = "services".equals(section);
+    private void loadCategories() {
+        categories = menuService.getCategories();
+        categoryButtons.clear();
+        categorySections.clear();
 
-        foodSection.setVisible(food);
-        foodSection.setManaged(food);
+        categoryTabsContainer.getChildren().clear();
+        categorySectionsContainer.getChildren().clear();
 
-        drinksSection.setVisible(drinks);
-        drinksSection.setManaged(drinks);
+        for (Category category : categories) {
+            int categoryId = category.getId();
 
-        servicesSection.setVisible(services);
-        servicesSection.setManaged(services);
-    }
+            Button tabButton = new Button(category.getName());
+            tabButton.getStyleClass().add("menu-tab");
+            tabButton.setOnAction(e -> setActiveCategory(categoryId));
+            categoryButtons.put(categoryId, tabButton);
+            categoryTabsContainer.getChildren().add(tabButton);
 
-    private void setActiveTab(String tabName) {
-        foodTabButton.getStyleClass().remove("menu-tab-active");
-        drinksTabButton.getStyleClass().remove("menu-tab-active");
-        servicesTabButton.getStyleClass().remove("menu-tab-active");
+            VBox section = new VBox(18);
+            section.setVisible(false);
+            section.setManaged(false);
+            categorySections.put(categoryId, section);
+            categorySectionsContainer.getChildren().add(section);
+        }
 
-        switch (tabName) {
-            case "food" -> foodTabButton.getStyleClass().add("menu-tab-active");
-            case "drinks" -> drinksTabButton.getStyleClass().add("menu-tab-active");
-            case "services" -> servicesTabButton.getStyleClass().add("menu-tab-active");
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+        categoryTabsContainer.getChildren().add(spacer);
+
+        if (!categories.isEmpty()) {
+            setActiveCategory(categories.get(0).getId());
         }
     }
 
-    private int mapCategoryToId(String category) {
-        return switch (category.toLowerCase()) {
-            case "food" -> 1;
-            case "drinks" -> 2;
-            case "services" -> 3;
-            default -> 0;
-        };
+    private void setActiveCategory(int categoryId) {
+        selectedCategoryId = categoryId;
+        setActiveTab(categoryId);
+        showSection(categoryId);
+        loadItems(categoryId);
+    }
+
+    private void setActiveTab(int activeCategoryId) {
+        categoryButtons.forEach((categoryId, button) -> {
+            button.getStyleClass().remove("menu-tab-active");
+            if (categoryId == activeCategoryId) {
+                button.getStyleClass().add("menu-tab-active");
+            }
+        });
+    }
+
+    private void showSection(int activeCategoryId) {
+        categorySections.forEach((categoryId, section) -> {
+            boolean visible = categoryId == activeCategoryId;
+            section.setVisible(visible);
+            section.setManaged(visible);
+        });
+    }
+
+    private int resolveCategoryId(String categoryName) {
+        if (categoryName == null || categoryName.isBlank()) {
+            return selectedCategoryId;
+        }
+
+        String normalized = categoryName.trim();
+        return categories.stream()
+                .filter(category -> category.getName() != null && category.getName().equalsIgnoreCase(normalized))
+                .map(Category::getId)
+                .findFirst()
+                .orElse(selectedCategoryId);
+    }
+
+    private String getSelectedCategoryName() {
+        return categories.stream()
+                .filter(category -> category.getId() == selectedCategoryId)
+                .map(Category::getName)
+                .findFirst()
+                .orElse("");
     }
 
     private boolean isKitchenCategory(String category) {
-        return "food".equalsIgnoreCase(category);
+        return category != null && category.toLowerCase().contains("food");
     }
 
     private int generateItemCode() {
         return (int) (100 + Math.random() * 900);
     }
 
-    private void loadItems(String category) {
-        List<MenuItem> items = menuService.getMenuItemsByCategory(category);
-        renderItems(category, items);
+    private void loadItems(int categoryId) {
+        List<MenuItem> items = menuService.getMenuItemsByCategoryId(categoryId);
+        renderItems(categoryId, items);
     }
 
-    private void renderItems(String category, List<MenuItem> items) {
-        VBox targetSection = getSectionByCategory(category);
+    private void renderItems(int categoryId, List<MenuItem> items) {
+        VBox targetSection = categorySections.get(categoryId);
         if (targetSection == null) {
             return;
         }
@@ -188,15 +218,6 @@ public class MenuController {
         }
     }
 
-    private VBox getSectionByCategory(String category) {
-        return switch (category) {
-            case "food" -> foodSection;
-            case "drinks" -> drinksSection;
-            case "services" -> servicesSection;
-            default -> null;
-        };
-    }
-
     private VBox createMenuItemNode(MenuItem item) {
         VBox wrapper = new VBox(12);
 
@@ -204,8 +225,7 @@ public class MenuController {
         nameLabel.getStyleClass().add("menu-item-title");
 
         Label descriptionLabel = new Label(
-                item.getDescription() != null ? item.getDescription() : ""
-        );
+                item.getDescription() != null ? item.getDescription() : "");
         descriptionLabel.getStyleClass().add("menu-item-description");
 
         VBox textBox = new VBox(3, nameLabel, descriptionLabel);

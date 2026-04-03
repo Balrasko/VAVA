@@ -101,4 +101,27 @@ public class PaymentDaoImpl implements PaymentDao {
             throw new RuntimeException("Failed to mark payment " + payment.getId() + " as refunded", e);
         }
     }
+
+    @Override
+    public int createPayment(int waiterId, int methodId, java.math.BigDecimal amount, boolean refunded,
+            java.math.BigDecimal tip) {
+        String sql = "INSERT INTO payments (waiter_id, method_id, amount, refunded, tip) VALUES (?, ?, ?, ?, ?)";
+        try (Connection conn = connectionFactory.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+            stmt.setInt(1, waiterId);
+            stmt.setInt(2, methodId);
+            stmt.setBigDecimal(3, amount);
+            stmt.setBoolean(4, refunded);
+            stmt.setBigDecimal(5, tip);
+            stmt.executeUpdate();
+            try (ResultSet rs = stmt.getGeneratedKeys()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+            throw new RuntimeException("Failed to get generated key for new payment");
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to create payment", e);
+        }
+    }
 }

@@ -32,12 +32,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import dev.vavateam1.service.MockOrderService;;
-
+import dev.vavateam1.service.OrderService;
+import dev.vavateam1.service.OrderServiceImpl;
+import com.google.inject.Inject;
 
 public class OrderController {
 
-    private MockOrderService orderService = new MockOrderService();
+    @Inject
+    private OrderService orderService;
 
     @FXML
     private StackPane rootStack;
@@ -88,7 +90,7 @@ public class OrderController {
     private boolean pluOpen = false;
     private GridPane pluKeyboard;
     private Button firstCategoryButton;
-    
+
     @FXML
     private Button pluButton;
 
@@ -97,8 +99,9 @@ public class OrderController {
 
     public void initData(Table table, DashboardController dashboardController) {
         this.categories = orderService.getCategories(); // Get all categories
-        this.menuItems = orderService.getMenuItems();   // Get all menu items
-        this.orderItemViews = getOrderItemViews(orderService.getOrderItems(table)); // Get order items for the table if there are any
+        this.menuItems = orderService.getMenuItems(); // Get all menu items
+        this.orderItemViews = getOrderItemViews(orderService.getOrderItems(table)); // Get order items for the table if
+                                                                                    // there are any
         this.table = table;
         this.dashboardController = dashboardController;
 
@@ -113,7 +116,8 @@ public class OrderController {
 
         List<OrderItemView> orderItemViews = new ArrayList<>();
         for (OrderItem item : orderItems) {
-            MenuItem menuItem = menuItems.stream().filter(m -> m.getId() == item.getMenuItemId()).findFirst().orElseThrow(() -> new RuntimeException("MenuItem not found."));
+            MenuItem menuItem = menuItems.stream().filter(m -> m.getId() == item.getMenuItemId()).findFirst()
+                    .orElseThrow(() -> new RuntimeException("MenuItem not found."));
 
             orderItemViews.add(new OrderItemView(item, menuItem));
         }
@@ -133,7 +137,7 @@ public class OrderController {
 
             btn.setOnAction(e -> {
                 selectCategory(btn);
-                
+
                 showCategory(category.getId());
             });
 
@@ -181,11 +185,11 @@ public class OrderController {
 
         // Show available items from the category
         menuItems.stream()
-            .filter(item -> (item.getCategoryId() == categoryId && item.isAvailability()))
-            .forEach(item -> {
-                VBox card = createMenuItemCard(item);
-                menuTile.getChildren().add(card);
-            });
+                .filter(item -> (item.getCategoryId() == categoryId && item.isAvailability()))
+                .forEach(item -> {
+                    VBox card = createMenuItemCard(item);
+                    menuTile.getChildren().add(card);
+                });
     }
 
     private VBox createMenuItemCard(MenuItem item) {
@@ -194,18 +198,18 @@ public class OrderController {
         Label name = new Label(item.getName());
         name.setWrapText(true);
         name.setStyle("-fx-text-alignment: center;");
-        
+
         card.getChildren().addAll(name);
 
         card.setPrefSize(95, 95);
 
         card.setStyle("""
-            -fx-background-color: #d9d9d9;
-            -fx-background-radius: 10;
-            -fx-padding: 10;
-            -fx-alignment: center;
-            -fx-cursor: hand;
-        """);
+                    -fx-background-color: #d9d9d9;
+                    -fx-background-radius: 10;
+                    -fx-padding: 10;
+                    -fx-alignment: center;
+                    -fx-cursor: hand;
+                """);
 
         card.setOnMouseClicked(e -> addItemToOrder(item));
 
@@ -216,16 +220,15 @@ public class OrderController {
         // Add the menu item to the order as an order item
 
         OrderItemView existingItem = orderItemViews.stream()
-            .filter(item -> item.isSameItem(menuItem, null))
-            .findFirst()
-            .orElse(null);
-        
+                .filter(item -> item.isSameItem(menuItem, null))
+                .findFirst()
+                .orElse(null);
+
         if (existingItem != null) {
             existingItem.setQuantity(existingItem.getQuantity() + 1);
-            
+
             refreshOrderPanel();
-        }
-        else {
+        } else {
             OrderItemView newItem = new OrderItemView(orderService.createOrderFromMenu(menuItem), menuItem);
 
             this.selectedQuantities.put(newItem, newItem.getQuantity());
@@ -271,8 +274,7 @@ public class OrderController {
         checkBox.setOnAction(e -> {
             if (checkBox.isSelected()) {
                 selectedQuantities.put(item, item.getQuantity());
-            }
-            else {
+            } else {
                 selectedQuantities.put(item, 0);
             }
 
@@ -281,7 +283,7 @@ public class OrderController {
 
         // Name label
         Label name = new Label(item.getName());
-        //HBox.setHgrow(name, Priority.ALWAYS);
+        // HBox.setHgrow(name, Priority.ALWAYS);
         name.setPrefWidth(70);
         name.setWrapText(true);
 
@@ -294,7 +296,9 @@ public class OrderController {
         minusBtn.getStyleClass().add("quantity-button");
 
         // Quantity value
-        Label quantityValue = new Label(splitBillMode ? selectedQuantities.getOrDefault(item, 0) + " / " + item.getQuantity() : String.valueOf(item.getQuantity()));
+        Label quantityValue = new Label(
+                splitBillMode ? selectedQuantities.getOrDefault(item, 0) + " / " + item.getQuantity()
+                        : String.valueOf(item.getQuantity()));
 
         // Minus button functionality
         minusBtn.setOnAction(e -> {
@@ -304,15 +308,13 @@ public class OrderController {
                 if (selected > 0) {
                     selectedQuantities.put(item, selected - 1);
                 }
-            }
-            else {
+            } else {
                 int quantity = item.getQuantity() - 1;
 
                 if (quantity <= 0) {
                     orderItemViews.remove(item);
                     selectedQuantities.remove(item);
-                }
-                else {
+                } else {
                     item.setQuantity(quantity);
                     selectedQuantities.put(item, quantity);
                 }
@@ -333,8 +335,7 @@ public class OrderController {
                 if (selected < item.getQuantity()) {
                     selectedQuantities.put(item, selected + 1);
                 }
-            }
-            else {
+            } else {
                 item.setQuantity(item.getQuantity() + 1);
                 selectedQuantities.put(item, item.getQuantity());
             }
@@ -368,8 +369,7 @@ public class OrderController {
 
             if (newNote.isBlank()) {
                 item.setNote(null);
-            }
-            else {
+            } else {
                 item.setNote(newNote);
             }
 
@@ -390,8 +390,7 @@ public class OrderController {
         noteBtn.setOnAction(e -> {
             if (!notePopup.isShowing()) {
                 notePopup.show(noteBtn, Side.BOTTOM, 0, 0);
-            }
-            else {
+            } else {
                 notePopup.hide();
             }
         });
@@ -415,12 +414,11 @@ public class OrderController {
         discountBtn.setOnAction(e -> {
             if (!discountPopup.isShowing()) {
                 discountPopup.show(discountBtn, Side.BOTTOM, 0, 0);
-            }
-            else {
+            } else {
                 discountPopup.hide();
             }
         });
-    
+
         // Spacer
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
@@ -429,7 +427,8 @@ public class OrderController {
         Label price = new Label((item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity()))).toString() + " €");
         price.setMinWidth(50);
 
-        row.getChildren().addAll(checkBox, name, quantityTextLabel, minusBtn, quantityValue, plusBtn, noteBtn, discountBtn, spacer, price);
+        row.getChildren().addAll(checkBox, name, quantityTextLabel, minusBtn, quantityValue, plusBtn, noteBtn,
+                discountBtn, spacer, price);
 
         int selected = selectedQuantities.getOrDefault(item, 0);
         checkBox.setSelected(selected == item.getQuantity());
@@ -448,8 +447,7 @@ public class OrderController {
                 selectedQuantities.put(item, item.getQuantity());
             }
             splitButton.setStyle("-fx-background-color: #f4f4f4; -fx-text-fill: #000");
-        }
-        else {
+        } else {
             for (OrderItemView item : orderItemViews) {
                 selectedQuantities.put(item, 0);
             }
@@ -470,7 +468,8 @@ public class OrderController {
     }
 
     private List<OrderItemView> getItemsForPayment() {
-        // Get a list of currently selected order items with their quantities - relevant mainly in split the bill mode
+        // Get a list of currently selected order items with their quantities - relevant
+        // mainly in split the bill mode
 
         List<OrderItemView> result = new ArrayList<>();
 
@@ -479,12 +478,12 @@ public class OrderController {
 
             if (splitBillMode) {
                 quantity = selectedQuantities.getOrDefault(item, 0);
-            }
-            else {
+            } else {
                 quantity = item.getQuantity();
             }
 
-            if (quantity <= 0) continue;
+            if (quantity <= 0)
+                continue;
 
             OrderItemView copy = item.copy();
             copy.setQuantity(quantity);
@@ -496,7 +495,8 @@ public class OrderController {
     }
 
     private BigDecimal calculatePaymentSubtotal(List<OrderItemView> items) {
-        // Calculate the subtotal value of the currently selected items - mainly relevant for split the bill mode
+        // Calculate the subtotal value of the currently selected items - mainly
+        // relevant for split the bill mode
 
         BigDecimal sum = BigDecimal.ZERO;
 
@@ -517,7 +517,8 @@ public class OrderController {
         List<OrderItemView> itemsToPay = getItemsForPayment();
 
         // Return if there are no items in the order
-        if (itemsToPay.isEmpty()) return;
+        if (itemsToPay.isEmpty())
+            return;
 
         Region overlayBg = new Region();
         overlayBg.setStyle("-fx-background-color: #d9d9d9;");
@@ -529,10 +530,10 @@ public class OrderController {
         StackPane.setMargin(paymentBox, new Insets(60, 0, 60, 0));
         paymentBox.setMaxWidth(700);
         paymentBox.setStyle("""
-            -fx-background-color: #fff;
-            -fx-padding: 20;
-            -fx-background-radius: 10;
-        """);
+                    -fx-background-color: #fff;
+                    -fx-padding: 20;
+                    -fx-background-radius: 10;
+                """);
 
         // Money values
         VBox orderInfo = new VBox(15);
@@ -589,17 +590,17 @@ public class OrderController {
         // Popup title
         Label title = new Label("Table " + this.table.getTableNumber() + " Order Summary");
         title.setStyle("""
-            -fx-font-size: 36px;
-            -fx-padding: 8;
-        """);
+                    -fx-font-size: 36px;
+                    -fx-padding: 8;
+                """);
 
         // Tip
         Button tipBtn = new Button("Tip: " + tip.toString() + "%");
         tipBtn.getStyleClass().add("note-button");
         tipBtn.setStyle("""
-            -fx-font-size: 26px;
-            -fx-padding: 8;
-        """);
+                    -fx-font-size: 26px;
+                    -fx-padding: 8;
+                """);
 
         // Calculate subtotal for the selected items
         BigDecimal paymentSubtotal = calculatePaymentSubtotal(itemsToPay);
@@ -609,13 +610,13 @@ public class OrderController {
 
         Label totalLabel = new Label("Total: €" + total.toString());
         totalLabel.setStyle("""
-            -fx-font-size: 26px;
-        """);
+                    -fx-font-size: 26px;
+                """);
 
         Label subtotalLabel = new Label("Subtotal: €" + paymentSubtotal);
         subtotalLabel.setStyle("""
-            -fx-font-size: 24px;
-        """);
+                    -fx-font-size: 24px;
+                """);
 
         // Tip Popup
         ContextMenu tipPopup = new ContextMenu();
@@ -663,8 +664,7 @@ public class OrderController {
         tipBtn.setOnAction(e -> {
             if (!tipPopup.isShowing()) {
                 tipPopup.show(tipBtn, Side.BOTTOM, 0, 0);
-            }
-            else {
+            } else {
                 tipPopup.hide();
             }
         });
@@ -717,7 +717,8 @@ public class OrderController {
         for (OrderItemView item : orderItemViews) {
             int selected = splitBillMode ? selectedQuantities.getOrDefault(item, 0) : item.getQuantity();
 
-            if (selected == 0) continue;
+            if (selected == 0)
+                continue;
 
             // Using split the bill mode
             if (selected < item.getQuantity()) {
@@ -729,8 +730,7 @@ public class OrderController {
                 splitCopy.setQuantity(selected);
                 splitCopy.setOrderIdToNull();
                 ordersToProcess.add(splitCopy.getOrderItem());
-            }
-            else { // Paying for the whole quantity
+            } else { // Paying for the whole quantity
                 ordersToProcess.add(item.getOrderItem());
 
                 itemsToRemove.add(item);
@@ -748,8 +748,7 @@ public class OrderController {
     private void togglePluKeyboard() {
         if (pluOpen) {
             closePluKeyboard();
-        }
-        else {
+        } else {
             openPluKeyboard();
         }
     }
@@ -790,7 +789,8 @@ public class OrderController {
     }
 
     private void clearSelectedCategory() {
-        // Set category to null (when searching with the PLU keyboard the items aren't necessarily within a category)
+        // Set category to null (when searching with the PLU keyboard the items aren't
+        // necessarily within a category)
 
         if (selectedCategory != null) {
             selectedCategory.getStyleClass().remove("category-button-selected");
@@ -814,9 +814,9 @@ public class OrderController {
         grid.setMaxHeight(Region.USE_PREF_SIZE);
 
         grid.setStyle("""
-            -fx-background-color: #e0e0e0;
-            -fx-background-radius: 15;
-        """);
+                    -fx-background-color: #e0e0e0;
+                    -fx-background-radius: 15;
+                """);
 
         // Columns
         for (int i = 0; i < 3; i++) {
@@ -837,7 +837,8 @@ public class OrderController {
         pluDisplay = new Label("");
         pluDisplay.setMaxWidth(Double.MAX_VALUE);
         pluDisplay.setMinHeight(50);
-        pluDisplay.setStyle("-fx-background-color: #fff; -fx-padding: 10; -fx-background-radius: 8; -fx-font-size: 18px;");
+        pluDisplay.setStyle(
+                "-fx-background-color: #fff; -fx-padding: 10; -fx-background-radius: 8; -fx-font-size: 18px;");
 
         grid.add(pluDisplay, 0, 0);
         GridPane.setColumnSpan(pluDisplay, 2);
@@ -850,18 +851,19 @@ public class OrderController {
 
         // Layout of the buttons
         String[][] layout = {
-            {"1", "2", "3"},
-            {"4", "5", "6"},
-            {"7", "8", "9"},
-            {"CLR", "0", "⌫"}
+                { "1", "2", "3" },
+                { "4", "5", "6" },
+                { "7", "8", "9" },
+                { "CLR", "0", "⌫" }
         };
 
-        // Create a Button for each character from the layout using the layout's position
+        // Create a Button for each character from the layout using the layout's
+        // position
         for (int row = 0; row < layout.length; row++) {
             for (int col = 0; col < layout[row].length; col++) {
                 Button btn = createPluButton(layout[row][col]);
                 grid.add(btn, col, row + 1);
-            
+
                 btn.setOnAction(r -> handlePluInput(btn.getText()));
             }
         }
@@ -885,14 +887,14 @@ public class OrderController {
                 pluDisplay.setText("");
                 resetCategory();
                 return;
-            
-            case "⌫":   // Remove the last character from the display
+
+            case "⌫": // Remove the last character from the display
                 if (!current.isEmpty()) {
                     pluDisplay.setText(current.substring(0, current.length() - 1));
                 }
                 break;
-            
-            default:    // Add the selected character to the display
+
+            default: // Add the selected character to the display
                 pluDisplay.setText(current + input);
                 break;
         }
@@ -902,8 +904,7 @@ public class OrderController {
         if (code.isEmpty()) {
             // If the display code is empty show regular categories
             resetCategory();
-        }
-        else {
+        } else {
             // Otherwise show items based on code input
             clearSelectedCategory();
             showItemsByCode(code);

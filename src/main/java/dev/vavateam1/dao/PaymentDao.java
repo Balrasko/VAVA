@@ -9,4 +9,7 @@ public interface PaymentDao {
     PaymentDto findById(int id);
 
     PaymentDto setRefunded(PaymentDto payment);
+
+    int createPayment(int waiterId, int methodId, java.math.BigDecimal amount, boolean refunded,
+            java.math.BigDecimal tip);
 }

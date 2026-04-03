@@ -90,4 +90,25 @@ public class MenuItemDaoImpl implements MenuItemDao {
             throw new RuntimeException("Failed to add menu item", e);
         }
     }
+
+    @Override
+    public List<MenuItem> getItemsByPluCode(int pluCode) {
+        List<MenuItem> items = new ArrayList<>();
+        String sql = "SELECT * FROM menu_items WHERE item_code = ?";
+
+        try (Connection conn = connectionFactory.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, pluCode);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    items.add(mapResultSetToMenuItem(rs));
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to fetch menu item by PLU code", e);
+        }
+        return items;
+    }
 }

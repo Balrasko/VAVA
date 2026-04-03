@@ -9,4 +9,6 @@ public interface MenuItemDao {
     List<MenuItem> getMenuItemsByCategoryId(int categoryId);
 
     void addMenuItem(MenuItem menuItem);
+
+    List<MenuItem> getItemsByPluCode(int pluCode);
 }
