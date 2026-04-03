@@ -40,7 +40,27 @@ public class TableServiceImpl implements TableService {
     }
 
     @Override
+    public void updateZoneName(int zoneId, String name) {
+        locationDao.updateLocationName(zoneId, name);
+    }
+
+    @Override
+    public void softDeleteZone(int zoneId) {
+        locationDao.softDeleteLocation(zoneId);
+    }
+
+    @Override
     public void updateTablePosition(int tableId, BigDecimal posX, BigDecimal posY) {
         tableDao.updatePosition(tableId, posX, posY);
+    }
+
+    @Override
+    public void updateTableDetails(int tableId, int locationId, int tableNumber, boolean availability) {
+        tableDao.updateTableDetails(tableId, locationId, tableNumber, availability);
+    }
+
+    @Override
+    public void softDeleteTable(int tableId) {
+        tableDao.softDeleteTable(tableId);
     }
 }

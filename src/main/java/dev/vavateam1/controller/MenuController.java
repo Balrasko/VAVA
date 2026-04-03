@@ -6,6 +6,7 @@ import dev.vavateam1.model.MenuItem;
 import dev.vavateam1.service.MenuService;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
@@ -30,22 +31,45 @@ public class MenuController {
 
     @FXML
     private VBox menuFormPanel;
+    @FXML
+    private VBox categoryFormPanel;
 
     @FXML
     private TextField nameField;
     @FXML
     private TextField descriptionField;
     @FXML
-    private TextField categoryField;
+    private ComboBox<String> categoryField;
     @FXML
     private TextField priceField;
     @FXML
     private TextField discountField;
+    @FXML
+    private TextField categoryNameField;
+
+    @FXML
+    private Button submitMenuButton;
+    @FXML
+    private Button deleteMenuButton;
+    @FXML
+    private Button submitCategoryButton;
+    @FXML
+    private Button deleteCategoryButton;
+    @FXML
+    private Button editCategoryButton;
+    @FXML
+    private Button deleteCategoryActionButton;
+    @FXML
+    private Label menuFormTitle;
+    @FXML
+    private Label categoryFormTitle;
 
     private final Map<Integer, Button> categoryButtons = new HashMap<>();
     private final Map<Integer, VBox> categorySections = new HashMap<>();
     private List<Category> categories = List.of();
     private int selectedCategoryId = -1;
+    private int editingMenuItemId = -1;
+    private int editingCategoryId = -1;
 
     @Inject
     public MenuController(MenuService menuService) {
@@ -56,13 +80,39 @@ public class MenuController {
     public void initialize() {
         loadCategories();
         hideForm();
+        hideCategoryForm();
     }
 
     @FXML
     private void onAddMenu() {
         clearForm();
-        categoryField.setText(getSelectedCategoryName());
+        categoryField.setValue(getSelectedCategoryName());
+        editingMenuItemId = -1;
+        updateFormMode();
+        hideCategoryForm();
         showForm();
+    }
+
+    @FXML
+    private void onEditCategory() {
+        if (selectedCategoryId <= 0) {
+            return;
+        }
+
+        Category selectedCategory = categories.stream()
+                .filter(category -> category.getId() == selectedCategoryId)
+                .findFirst()
+                .orElse(null);
+
+        if (selectedCategory == null) {
+            return;
+        }
+
+        editingCategoryId = selectedCategory.getId();
+        categoryNameField.setText(selectedCategory.getName());
+        updateCategoryFormMode();
+        hideForm();
+        showCategoryForm();
     }
 
     @FXML
@@ -71,31 +121,100 @@ public class MenuController {
     }
 
     @FXML
+    private void onCloseCategoryForm() {
+        hideCategoryForm();
+    }
+
+    @FXML
     private void onSubmitMenu() {
-        int categoryId = resolveCategoryId(categoryField.getText());
+        int categoryId = resolveCategoryId(categoryField.getValue());
         if (categoryId <= 0) {
             return;
         }
 
-        MenuItem newItem = new MenuItem(
-                0,
+        MenuItem item = new MenuItem(
+                editingMenuItemId > 0 ? editingMenuItemId : 0,
                 categoryId,
-                generateItemCode(),
+                editingMenuItemId > 0 ? 0 : generateItemCode(),
                 nameField.getText(),
-                new BigDecimal(priceField.getText().isBlank() ? "0.00" : priceField.getText()),
+                parseDecimal(priceField.getText()),
                 true,
                 descriptionField.getText(),
-                isKitchenCategory(categoryField.getText()),
-                new BigDecimal(discountField.getText().isBlank() ? "0.00" : discountField.getText()),
+                isKitchenCategory(categoryField.getValue()),
+                parseDecimal(discountField.getText()),
+                false,
                 LocalDateTime.now(),
                 LocalDateTime.now());
 
-        menuService.addMenuItem(newItem);
+        if (editingMenuItemId > 0) {
+            menuService.updateMenuItem(item);
+        } else {
+            menuService.addMenuItem(item);
+        }
         hideForm();
         loadItems(selectedCategoryId);
     }
 
+    @FXML
+    private void onDeleteMenu() {
+        if (editingMenuItemId <= 0) {
+            return;
+        }
+
+        menuService.softDeleteMenuItem(editingMenuItemId);
+        hideForm();
+        loadItems(selectedCategoryId);
+    }
+
+    @FXML
+    private void onSubmitCategory() {
+        String categoryName = categoryNameField.getText() != null ? categoryNameField.getText().trim() : "";
+        if (categoryName.isEmpty()) {
+            return;
+        }
+
+        if (editingCategoryId > 0) {
+            menuService.updateCategory(editingCategoryId, categoryName);
+        } else {
+            Category newCategory = menuService.createCategory(categoryName);
+            if (newCategory != null) {
+                selectedCategoryId = newCategory.getId();
+            }
+        }
+
+        hideCategoryForm();
+        loadCategories();
+    }
+
+    @FXML
+    private void onDeleteCategory() {
+        if (editingCategoryId <= 0) {
+            return;
+        }
+
+        int deletedCategoryId = editingCategoryId;
+        menuService.softDeleteCategory(deletedCategoryId);
+        hideCategoryForm();
+        loadCategories();
+
+        if (selectedCategoryId == deletedCategoryId && !categories.isEmpty()) {
+            setActiveCategory(categories.get(0).getId());
+        }
+    }
+
+    @FXML
+    private void onDeleteCurrentCategory() {
+        if (selectedCategoryId <= 0) {
+            return;
+        }
+
+        menuService.softDeleteCategory(selectedCategoryId);
+        hideCategoryForm();
+        loadCategories();
+    }
+
     private void showForm() {
+        hideCategoryForm();
         menuFormPanel.setVisible(true);
         menuFormPanel.setManaged(true);
     }
@@ -103,18 +222,104 @@ public class MenuController {
     private void hideForm() {
         menuFormPanel.setVisible(false);
         menuFormPanel.setManaged(false);
+        editingMenuItemId = -1;
+        updateFormMode();
+    }
+
+    private void showCategoryForm() {
+        categoryFormPanel.setVisible(true);
+        categoryFormPanel.setManaged(true);
+    }
+
+    private void hideCategoryForm() {
+        categoryFormPanel.setVisible(false);
+        categoryFormPanel.setManaged(false);
+        editingCategoryId = -1;
+        if (categoryNameField != null) {
+            categoryNameField.clear();
+        }
+        updateCategoryFormMode();
     }
 
     private void clearForm() {
         nameField.clear();
         descriptionField.clear();
-        categoryField.clear();
+        if (categoryField != null) {
+            categoryField.getSelectionModel().clearSelection();
+            categoryField.setValue(null);
+        }
         priceField.clear();
         discountField.clear();
     }
 
+    private void updateFormMode() {
+        boolean editing = editingMenuItemId > 0;
+
+        if (submitMenuButton != null) {
+            submitMenuButton.setText(editing ? "Save menu" : "Add menu");
+        }
+
+        if (deleteMenuButton != null) {
+            deleteMenuButton.setVisible(editing);
+            deleteMenuButton.setManaged(editing);
+        }
+
+        if (menuFormTitle != null) {
+            menuFormTitle.setText(editing ? "Edit menu" : "Add menu");
+        }
+    }
+
+    private void updateCategoryFormMode() {
+        boolean editing = editingCategoryId > 0;
+
+        if (submitCategoryButton != null) {
+            submitCategoryButton.setText(editing ? "Save category" : "Add category");
+        }
+
+        if (deleteCategoryButton != null) {
+            deleteCategoryButton.setVisible(editing);
+            deleteCategoryButton.setManaged(editing);
+        }
+
+        if (categoryFormTitle != null) {
+            categoryFormTitle.setText(editing ? "Edit category" : "Add category");
+        }
+    }
+
+    private BigDecimal parseDecimal(String value) {
+        if (value == null || value.isBlank()) {
+            return new BigDecimal("0.00");
+        }
+
+        try {
+            return new BigDecimal(value.trim());
+        } catch (NumberFormatException ex) {
+            return new BigDecimal("0.00");
+        }
+    }
+
+    private void openEditForm(MenuItem item) {
+        editingMenuItemId = item.getId();
+        nameField.setText(item.getName());
+        descriptionField.setText(item.getDescription());
+        categoryField.setValue(resolveCategoryName(item.getCategoryId()));
+        priceField.setText(item.getPrice() != null ? item.getPrice().toString() : "");
+        discountField.setText(item.getDiscount() != null ? item.getDiscount().toString() : "");
+        updateFormMode();
+        showForm();
+    }
+
+    private String resolveCategoryName(int categoryId) {
+        return categories.stream()
+                .filter(category -> category.getId() == categoryId)
+                .map(Category::getName)
+                .findFirst()
+                .orElse("");
+    }
+
     private void loadCategories() {
         categories = menuService.getCategories();
+        refreshCategoryDropdownOptions();
         categoryButtons.clear();
         categorySections.clear();
 
@@ -137,12 +342,48 @@ public class MenuController {
             categorySectionsContainer.getChildren().add(section);
         }
 
+        Button addCategoryTabButton = new Button("+");
+        addCategoryTabButton.getStyleClass().addAll("menu-tab", "menu-tab-add");
+        addCategoryTabButton.setOnAction(e -> {
+            editingCategoryId = -1;
+            categoryNameField.clear();
+            updateCategoryFormMode();
+            hideForm();
+            showCategoryForm();
+        });
+        categoryTabsContainer.getChildren().add(addCategoryTabButton);
+
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
         categoryTabsContainer.getChildren().add(spacer);
 
         if (!categories.isEmpty()) {
             setActiveCategory(categories.get(0).getId());
+        } else {
+            selectedCategoryId = -1;
+        }
+
+        if (editCategoryButton != null) {
+            editCategoryButton.setDisable(categories.isEmpty() || selectedCategoryId <= 0);
+        }
+        if (deleteCategoryActionButton != null) {
+            deleteCategoryActionButton.setDisable(categories.isEmpty() || selectedCategoryId <= 0);
+        }
+    }
+
+    private void refreshCategoryDropdownOptions() {
+        if (categoryField == null) {
+            return;
+        }
+
+        String currentValue = categoryField.getValue();
+        List<String> categoryNames = categories.stream()
+                .map(Category::getName)
+                .toList();
+
+        categoryField.getItems().setAll(categoryNames);
+        if (currentValue != null && categoryNames.stream().anyMatch(name -> name.equalsIgnoreCase(currentValue))) {
+            categoryField.setValue(currentValue);
         }
     }
 
@@ -151,6 +392,13 @@ public class MenuController {
         setActiveTab(categoryId);
         showSection(categoryId);
         loadItems(categoryId);
+
+        if (editCategoryButton != null) {
+            editCategoryButton.setDisable(selectedCategoryId <= 0);
+        }
+        if (deleteCategoryActionButton != null) {
+            deleteCategoryActionButton.setDisable(selectedCategoryId <= 0);
+        }
     }
 
     private void setActiveTab(int activeCategoryId) {
@@ -234,7 +482,21 @@ public class MenuController {
         Label priceLabel = new Label(item.getPrice() != null ? item.getPrice().toString() + " €" : "");
         priceLabel.getStyleClass().add("menu-action-label");
 
-        HBox row = new HBox(20, textBox, priceLabel);
+        Button editButton = new Button("Edit");
+        editButton.getStyleClass().add("secondary-action-button");
+        editButton.setOnAction(e -> openEditForm(item));
+
+        Button deleteButton = new Button("Delete");
+        deleteButton.getStyleClass().add("secondary-action-button");
+        deleteButton.setOnAction(e -> {
+            menuService.softDeleteMenuItem(item.getId());
+            loadItems(selectedCategoryId);
+        });
+
+        HBox actionsBox = new HBox(8, editButton, deleteButton);
+        actionsBox.setAlignment(javafx.geometry.Pos.CENTER_RIGHT);
+
+        HBox row = new HBox(20, textBox, priceLabel, actionsBox);
         row.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
 
         wrapper.getChildren().add(row);

@@ -10,5 +10,9 @@ public interface MenuItemDao {
 
     void addMenuItem(MenuItem menuItem);
 
+    void updateMenuItem(MenuItem menuItem);
+
+    void softDeleteMenuItem(int menuItemId);
+
     List<MenuItem> getItemsByPluCode(int pluCode);
 }

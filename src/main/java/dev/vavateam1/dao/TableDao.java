@@ -9,5 +9,9 @@ public interface TableDao {
 
     void updatePosition(int tableId, BigDecimal posX, BigDecimal posY);
 
+    void updateTableDetails(int tableId, int locationId, int tableNumber, boolean availability);
+
+    void softDeleteTable(int tableId);
+
     Table createTable(int locationId);
 }

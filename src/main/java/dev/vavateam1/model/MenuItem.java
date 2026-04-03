@@ -19,6 +19,7 @@ public class MenuItem {
     private String description;
     private boolean toKitchen;
     private BigDecimal discount;
+    private boolean deleted;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

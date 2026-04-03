@@ -158,6 +158,7 @@ public class DashboardController {
         topNavbarController = null;
 
         if (topNavbarZonesController != null) {
+            topNavbarZonesController.setAddZoneTabVisible(false);
             topNavbarZonesController.setOnZoneSelected(this::handleZoneSelected);
             topNavbarZonesController.setActiveZone(activeZoneId);
         }
@@ -181,7 +182,8 @@ public class DashboardController {
                 case "inventory" -> showInventory();
                 case "users" -> showUsers();
                 case "menu" -> showMenu();
-                default -> {}
+                default -> {
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -234,12 +236,11 @@ public class DashboardController {
         try {
 
             FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/view/closing.fxml")
-            );
+                    getClass().getResource("/view/closing.fxml"));
 
             contentArea.getChildren().clear();
             contentArea.getChildren().add(loader.load());
-                tablesController = null;
+            tablesController = null;
             setTopNavbarVisible(false);
 
         } catch (Exception e) {
@@ -293,7 +294,7 @@ public class DashboardController {
 
             contentArea.getChildren().clear();
             contentArea.getChildren().add(loader.load());
-                tablesController = null;
+            tablesController = null;
             setTopNavbarVisible(false);
 
         } catch (Exception e) {
@@ -316,7 +317,7 @@ public class DashboardController {
             e.printStackTrace();
         }
     }
-    
+
     @FXML
     private void showFinances() {
         try {

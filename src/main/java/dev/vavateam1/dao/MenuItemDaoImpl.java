@@ -32,6 +32,7 @@ public class MenuItemDaoImpl implements MenuItemDao {
         item.setDescription(rs.getString("description"));
         item.setToKitchen(rs.getBoolean("to_kitchen"));
         item.setDiscount(rs.getBigDecimal("discount"));
+        item.setDeleted(rs.getBoolean("is_deleted"));
         item.setCreatedAt(SqlUtils.toLocalDateTime(rs.getTimestamp("created_at")));
         item.setUpdatedAt(SqlUtils.toLocalDateTime(rs.getTimestamp("updated_at")));
         return item;
@@ -39,7 +40,7 @@ public class MenuItemDaoImpl implements MenuItemDao {
 
     @Override
     public List<MenuItem> getAllMenuItems() {
-        String sql = "SELECT * FROM menu_items";
+        String sql = "SELECT * FROM menu_items WHERE is_deleted = FALSE";
         List<MenuItem> items = new ArrayList<>();
         try (Connection conn = connectionFactory.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -55,7 +56,7 @@ public class MenuItemDaoImpl implements MenuItemDao {
 
     @Override
     public List<MenuItem> getMenuItemsByCategoryId(int categoryId) {
-        String sql = "SELECT * FROM menu_items WHERE category_id = ?";
+        String sql = "SELECT * FROM menu_items WHERE category_id = ? AND is_deleted = FALSE";
         List<MenuItem> items = new ArrayList<>();
         try (Connection conn = connectionFactory.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -92,9 +93,41 @@ public class MenuItemDaoImpl implements MenuItemDao {
     }
 
     @Override
+    public void updateMenuItem(MenuItem menuItem) {
+        String sql = "UPDATE menu_items SET category_id = ?, name = ?, price = ?, availability = ?, description = ?, to_kitchen = ?, discount = ?, updated_at = NOW() "
+                + "WHERE id = ? AND is_deleted = FALSE";
+        try (Connection conn = connectionFactory.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, menuItem.getCategoryId());
+            stmt.setString(2, menuItem.getName());
+            stmt.setBigDecimal(3, menuItem.getPrice());
+            stmt.setBoolean(4, menuItem.isAvailability());
+            stmt.setString(5, menuItem.getDescription());
+            stmt.setBoolean(6, menuItem.isToKitchen());
+            stmt.setBigDecimal(7, menuItem.getDiscount());
+            stmt.setInt(8, menuItem.getId());
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to update menu item", e);
+        }
+    }
+
+    @Override
+    public void softDeleteMenuItem(int menuItemId) {
+        String sql = "UPDATE menu_items SET is_deleted = TRUE, updated_at = NOW() WHERE id = ? AND is_deleted = FALSE";
+        try (Connection conn = connectionFactory.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, menuItemId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to soft delete menu item", e);
+        }
+    }
+
+    @Override
     public List<MenuItem> getItemsByPluCode(int pluCode) {
         List<MenuItem> items = new ArrayList<>();
-        String sql = "SELECT * FROM menu_items WHERE item_code = ?";
+        String sql = "SELECT * FROM menu_items WHERE item_code = ? AND is_deleted = FALSE";
 
         try (Connection conn = connectionFactory.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql)) {

@@ -26,10 +26,10 @@ public class TopNavbarZonesController {
     private final TableService tableService;
 
     private IntConsumer zoneSelectionHandler;
-    private boolean editMode = false;
+    private Runnable addZoneRequestHandler;
+    private boolean addZoneTabVisible = true;
 
     private Map<Integer, Button> zoneButtons = new HashMap<>();
-    private Map<Integer, Button> deleteButtons = new HashMap<>();
 
     @Inject
     public TopNavbarZonesController(TableService tableService) {
@@ -45,7 +45,6 @@ public class TopNavbarZonesController {
         List<Location> locations = tableService.getLocations();
         zonesContainer.getChildren().clear();
         zoneButtons.clear();
-        deleteButtons.clear();
 
         try {
             for (Location location : locations) {
@@ -60,17 +59,18 @@ public class TopNavbarZonesController {
                 });
                 zoneButtons.put(location.getId(), zoneButton);
 
-                Button deleteButton = (Button) node.lookup("#deleteButton");
-                deleteButton.setVisible(editMode);
-                deleteButton.setManaged(editMode);
-                deleteButton.setOnAction(e -> {
-                    if (!editMode)
-                        return;
-                    System.out.println("Delete zone: " + location.getName());
-                });
-                deleteButtons.put(location.getId(), deleteButton);
-
                 zonesContainer.getChildren().add(node);
+            }
+
+            if (addZoneTabVisible) {
+                Button addZoneTabButton = new Button("+");
+                addZoneTabButton.getStyleClass().addAll("nav-tab", "zone-nav-button", "zone-nav-button-add");
+                addZoneTabButton.setOnAction(e -> {
+                    if (addZoneRequestHandler != null) {
+                        addZoneRequestHandler.run();
+                    }
+                });
+                zonesContainer.getChildren().add(addZoneTabButton);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -85,9 +85,13 @@ public class TopNavbarZonesController {
         this.zoneSelectionHandler = zoneSelectionHandler;
     }
 
-    public void setEditMode(boolean enabled) {
-        editMode = enabled;
-        setDeleteButtonsVisible(enabled);
+    public void setOnAddZoneRequested(Runnable addZoneRequestHandler) {
+        this.addZoneRequestHandler = addZoneRequestHandler;
+    }
+
+    public void setAddZoneTabVisible(boolean visible) {
+        this.addZoneTabVisible = visible;
+        loadZones();
     }
 
     public void setActiveZone(int zoneId) {
@@ -95,13 +99,6 @@ public class TopNavbarZonesController {
         if (zoneButtons.containsKey(zoneId)) {
             zoneButtons.get(zoneId).getStyleClass().add("nav-tab-active");
         }
-    }
-
-    private void setDeleteButtonsVisible(boolean visible) {
-        deleteButtons.values().forEach(btn -> {
-            btn.setVisible(visible);
-            btn.setManaged(visible);
-        });
     }
 
     private void notifyZoneSelection(int zoneId) {

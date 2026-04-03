@@ -1,31 +1,39 @@
 package dev.vavateam1.controller;
 
 import com.google.inject.Inject;
-
+import dev.vavateam1.model.Location;
+import dev.vavateam1.model.Table;
+import dev.vavateam1.service.TableService;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import javafx.fxml.FXML;
-import javafx.geometry.Pos;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.Node;
 import javafx.scene.shape.Circle;
-import javafx.stage.Popup;
-
-import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import dev.vavateam1.model.Table;
-import dev.vavateam1.service.TableService;
-
-import javafx.scene.control.TextInputDialog;
-import java.util.Optional;
 
 public class TableLayoutController {
+
+    private enum FormMode {
+        NONE,
+        ADD_TABLE,
+        ADD_ZONE,
+        EDIT_TABLE,
+        EDIT_ZONE
+    }
 
     @FXML
     private Pane tablesPane;
@@ -33,52 +41,95 @@ public class TableLayoutController {
     @FXML
     private TopNavbarZonesController zonesNavbarController;
 
-    private DashboardController dashboard;
-
     @FXML
     private Button dragButton;
 
     @FXML
-    private Button undoButton;
+    private Button editCancelButton;
 
     @FXML
-    private Button addButton;
+    private Button addTableButton;
+    @FXML
+    private Button editZoneButton;
+    @FXML
+    private Button deleteZoneButton;
 
-    private Popup addPopup;
+    @FXML
+    private VBox layoutFormPanel;
+
+    @FXML
+    private Label layoutFormTitle;
+
+    @FXML
+    private Label layoutFormHint;
+
+    @FXML
+    private VBox tableFieldsContainer;
+
+    @FXML
+    private VBox zoneFieldsContainer;
+
+    @FXML
+    private TextField tableNumberField;
+
+    @FXML
+    private CheckBox tableAvailabilityCheck;
+
+    @FXML
+    private ComboBox<ZoneOption> tableZoneComboBox;
+
+    @FXML
+    private TextField zoneNameField;
+
+    @FXML
+    private Button submitLayoutButton;
+
+    @FXML
+    private Button deleteLayoutButton;
+
+    private DashboardController dashboard;
 
     private final TableService tableService;
+
+    private List<Table> tables;
+    private int activeZoneId = 1;
+    private boolean dragging = false;
+    private FormMode formMode = FormMode.NONE;
+    private Table selectedTable;
+    private Location selectedZone;
+
+    private final Map<Integer, TablePosition> originalPositions = new HashMap<>();
+    private final Map<Integer, Node> tableNodesById = new HashMap<>();
+    private final Set<Integer> pendingDeletedTableIds = new HashSet<>();
+
+    private double mouseX;
+    private double mouseY;
 
     @Inject
     public TableLayoutController(TableService tableService) {
         this.tableService = tableService;
     }
 
-    private List<Table> tables;
-    private int activeZoneId = 1;
-
-    private Boolean dragging = false;
-    private final Map<Integer, TablePosition> originalPositions = new HashMap<>();
-    private final Map<Integer, Node> tableNodesById = new HashMap<>();
-
     @FXML
     public void initialize() {
-
-        // Get list of tables
         tables = tableService.getTables();
 
         if (zonesNavbarController != null) {
+            zonesNavbarController.setAddZoneTabVisible(true);
             zonesNavbarController.setOnZoneSelected(this::setActiveZone);
+            zonesNavbarController.setOnAddZoneRequested(this::onOpenAddZoneForm);
             zonesNavbarController.setActiveZone(activeZoneId);
-            zonesNavbarController.setEditMode(false);
         }
 
         renderTables();
-        setUndoButtonState(false);
-        buildAddPopup();
+        setEditModeActionButtonsVisible(false);
+        setAddTableButtonVisible(true);
+        hideForm();
     }
 
     private void setActiveZone(int zoneId) {
         activeZoneId = zoneId;
+        updateZoneActionButtonsState();
         renderTables();
     }
 
@@ -90,13 +141,14 @@ public class TableLayoutController {
         tablesPane.getChildren().clear();
         tableNodesById.clear();
 
-        if (!tables.isEmpty()) {
-            for (Table table : tables) {
-                if (table.getLocationId() == activeZoneId) {
-                    Node node = createTableNode(table);
-                    tablesPane.getChildren().add(node);
-                    tableNodesById.put(table.getId(), node);
-                }
+        for (Table table : tables) {
+            if (pendingDeletedTableIds.contains(table.getId())) {
+                continue;
+            }
+            if (table.getLocationId() == activeZoneId) {
+                Node node = createTableNode(table);
+                tablesPane.getChildren().add(node);
+                tableNodesById.put(table.getId(), node);
             }
         }
     }
@@ -105,130 +157,385 @@ public class TableLayoutController {
     private void toggleDragging() {
         if (!dragging) {
             beginDragMode();
-        } else {
-            saveTablePositions();
-            endDragMode();
+            return;
         }
+
+        saveAndExitTableEditMode();
     }
 
     private void beginDragMode() {
         dragging = true;
         snapshotOriginalPositions();
-        dragButton.setText("Exit Edit Mode");
-        dragButton.setStyle(
-                "-fx-background-color:#57c84d; -fx-text-fill:#1d1d1d; -fx-background-radius:24; -fx-padding:12 24 12 24; -fx-cursor:hand;");
-        setUndoButtonState(true);
-        setAddButtonState(true);
-        if (zonesNavbarController != null) {
-            zonesNavbarController.setEditMode(true);
-        }
+        pendingDeletedTableIds.clear();
+        dragButton.setText("Save");
+        setEditModeActionButtonsVisible(true);
+        setAddTableButtonVisible(false);
+        setZoneActionButtonsVisible(false);
+        hideForm();
         renderTables();
     }
 
     private void endDragMode() {
         dragging = false;
         dragButton.setText("Enter Edit Mode");
-        dragButton.setStyle(
-                "-fx-background-color:#57c84d; -fx-text-fill:#1d1d1d; -fx-background-radius:24; -fx-padding:12 24 12 24; -fx-cursor:hand;");
-        setUndoButtonState(false);
-        setAddButtonState(false);
-        if (zonesNavbarController != null) {
-            zonesNavbarController.setEditMode(false);
-        }
-        if (addPopup != null)
-            addPopup.hide();
+        setEditModeActionButtonsVisible(false);
+        setAddTableButtonVisible(true);
+        setZoneActionButtonsVisible(true);
         originalPositions.clear();
+        pendingDeletedTableIds.clear();
         renderTables();
     }
 
-    private void setAddButtonState(boolean enabled) {
-        if (addButton != null) {
-            addButton.setVisible(enabled);
-            addButton.setManaged(enabled);
+    private void setEditModeActionButtonsVisible(boolean visible) {
+        if (editCancelButton != null) {
+            editCancelButton.setVisible(visible);
+            editCancelButton.setManaged(visible);
         }
-    }
-
-    private void buildAddPopup() {
-        addPopup = new Popup();
-        addPopup.setAutoHide(true);
-
-        Button newTableBtn = new Button("New Table");
-        Button newZoneBtn = new Button("New Zone");
-
-        String itemStyle = "-fx-background-color: white; -fx-text-fill: #1d1d1d; -fx-font-size: 14px; "
-                + "-fx-alignment: CENTER_LEFT; -fx-padding: 10 20 10 20; -fx-pref-width: 180px; "
-                + "-fx-cursor: hand; -fx-border-color: transparent;";
-        String itemHover = "-fx-background-color: #f0f0f0; -fx-text-fill: #1d1d1d; -fx-font-size: 14px; "
-                + "-fx-alignment: CENTER_LEFT; -fx-padding: 10 20 10 20; -fx-pref-width: 180px; "
-                + "-fx-cursor: hand; -fx-border-color: transparent;";
-
-        newTableBtn.setStyle(itemStyle);
-        newZoneBtn.setStyle(itemStyle);
-
-        newTableBtn.setOnMouseEntered(e -> newTableBtn.setStyle(itemHover));
-        newTableBtn.setOnMouseExited(e -> newTableBtn.setStyle(itemStyle));
-        newZoneBtn.setOnMouseEntered(e -> newZoneBtn.setStyle(itemHover));
-        newZoneBtn.setOnMouseExited(e -> newZoneBtn.setStyle(itemStyle));
-
-        newTableBtn.setOnAction(e -> {
-            addPopup.hide();
-            onCreateNewTable();
-        });
-        newZoneBtn.setOnAction(e -> {
-            addPopup.hide();
-            onCreateNewZone();
-        });
-
-        VBox menu = new VBox(newTableBtn, newZoneBtn);
-        menu.setStyle("-fx-background-color: white; -fx-background-radius: 8; "
-                + "-fx-border-radius: 8; -fx-border-color: #d0d0d0; -fx-border-width: 1; "
-                + "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 8, 0, 0, 2);");
-
-        addPopup.getContent().add(menu);
     }
 
     @FXML
-    private void onAddClicked() {
-        if (addPopup == null || addButton == null)
-            return;
-        if (addPopup.isShowing()) {
-            addPopup.hide();
+    private void onCancelTableEditMode() {
+        if (!dragging) {
             return;
         }
-        javafx.geometry.Bounds bounds = addButton.localToScreen(addButton.getBoundsInLocal());
-        addPopup.show(addButton, bounds.getMinX() - 136, bounds.getMaxY() + 4);
+
+        revertTablePositions();
+        endDragMode();
     }
 
-    private void onCreateNewTable() {
-        Table newTable = tableService.createTable(activeZoneId);
-        if (newTable != null) {
-            tables.add(newTable);
-            renderTables();
+    private void saveAndExitTableEditMode() {
+        persistStagedTableChanges();
+        reloadTables();
+        endDragMode();
+    }
+
+    private void setAddTableButtonVisible(boolean visible) {
+        if (addTableButton != null) {
+            addTableButton.setVisible(visible);
+            addTableButton.setManaged(visible);
         }
     }
 
-    private void onCreateNewZone() {
-        TextInputDialog dialog = new TextInputDialog();
-        dialog.setTitle("New Zone");
-        dialog.setHeaderText("Create a new zone");
-        dialog.setContentText("Please enter the name of the new zone:");
+    private void setZoneActionButtonsVisible(boolean visible) {
+        if (editZoneButton != null) {
+            editZoneButton.setVisible(visible);
+            editZoneButton.setManaged(visible);
+        }
 
-        Optional<String> result = dialog.showAndWait();
-        result.ifPresent(name -> {
-            if (!name.trim().isEmpty()) {
-                dev.vavateam1.model.Location newZone = tableService.createZone(name.trim());
-                if (zonesNavbarController != null && newZone != null) {
-                    zonesNavbarController.loadZones();
+        if (deleteZoneButton != null) {
+            deleteZoneButton.setVisible(visible);
+            deleteZoneButton.setManaged(visible);
+        }
+    }
+
+    private void updateZoneActionButtonsState() {
+        boolean hasActiveZone = activeZoneId > 0;
+        if (editZoneButton != null) {
+            editZoneButton.setDisable(!hasActiveZone);
+        }
+        if (deleteZoneButton != null) {
+            deleteZoneButton.setDisable(!hasActiveZone);
+        }
+    }
+
+    @FXML
+    private void onEditCurrentZone() {
+        if (activeZoneId <= 0) {
+            return;
+        }
+
+        Location activeZone = tableService.getLocations().stream()
+                .filter(zone -> zone.getId() == activeZoneId)
+                .findFirst()
+                .orElse(null);
+        if (activeZone == null) {
+            return;
+        }
+
+        onOpenEditZoneForm(activeZone);
+    }
+
+    @FXML
+    private void onDeleteCurrentZone() {
+        if (activeZoneId <= 0) {
+            return;
+        }
+        onDeleteZoneById(activeZoneId);
+    }
+
+    @FXML
+    private void onOpenAddTableForm() {
+        formMode = FormMode.ADD_TABLE;
+        selectedTable = null;
+        selectedZone = null;
+
+        layoutFormTitle.setText("Add table");
+        layoutFormHint.setText("Create a table in the active zone.");
+        submitLayoutButton.setText("Add table");
+
+        showTableFields(true);
+        showZoneFields(false);
+        setDeleteButtonVisible(false);
+
+        loadZoneOptions(activeZoneId);
+        tableNumberField.clear();
+        tableAvailabilityCheck.setSelected(true);
+        showForm();
+    }
+
+    @FXML
+    private void onOpenAddZoneForm() {
+        formMode = FormMode.ADD_ZONE;
+        selectedTable = null;
+        selectedZone = null;
+
+        layoutFormTitle.setText("Add zone");
+        layoutFormHint.setText("Create a new zone tab.");
+        submitLayoutButton.setText("Add zone");
+
+        showTableFields(false);
+        showZoneFields(true);
+        setDeleteButtonVisible(false);
+
+        zoneNameField.clear();
+        showForm();
+    }
+
+    private void onOpenEditZoneForm(Location zone) {
+        formMode = FormMode.EDIT_ZONE;
+        selectedTable = null;
+        selectedZone = zone;
+
+        layoutFormTitle.setText("Edit zone");
+        layoutFormHint.setText("Editing zone " + zone.getName() + ".");
+        submitLayoutButton.setText("Save zone");
+
+        showTableFields(false);
+        showZoneFields(true);
+        setDeleteButtonVisible(true);
+
+        zoneNameField.setText(zone.getName());
+        showForm();
+    }
+
+    @FXML
+    private void onCloseLayoutForm() {
+        hideForm();
+    }
+
+    private void showForm() {
+        layoutFormPanel.setVisible(true);
+        layoutFormPanel.setManaged(true);
+    }
+
+    private void hideForm() {
+        layoutFormPanel.setVisible(false);
+        layoutFormPanel.setManaged(false);
+        formMode = FormMode.NONE;
+        selectedTable = null;
+        selectedZone = null;
+        setDeleteButtonVisible(false);
+    }
+
+    private void setDeleteButtonVisible(boolean visible) {
+        if (deleteLayoutButton != null) {
+            deleteLayoutButton.setVisible(visible);
+            deleteLayoutButton.setManaged(visible);
+        }
+    }
+
+    private void showTableFields(boolean visible) {
+        tableFieldsContainer.setVisible(visible);
+        tableFieldsContainer.setManaged(visible);
+    }
+
+    private void showZoneFields(boolean visible) {
+        zoneFieldsContainer.setVisible(visible);
+        zoneFieldsContainer.setManaged(visible);
+    }
+
+    @FXML
+    private void onSubmitLayoutForm() {
+        switch (formMode) {
+            case ADD_TABLE -> submitAddTable();
+            case ADD_ZONE -> submitAddZone();
+            case EDIT_TABLE -> submitEditTable();
+            case EDIT_ZONE -> submitEditZone();
+            case NONE -> {
+                return;
+            }
+        }
+
+        hideForm();
+        reloadTables();
+        renderTables();
+    }
+
+    private void submitAddTable() {
+        int targetZoneId = resolveSelectedZoneId(activeZoneId);
+        Table newTable = tableService.createTable(targetZoneId);
+        if (newTable == null) {
+            return;
+        }
+
+        Integer parsedNumber = parseTableNumber(tableNumberField.getText(), false);
+        if (parsedNumber != null) {
+            newTable.setTableNumber(parsedNumber);
+        }
+
+        boolean available = tableAvailabilityCheck.isSelected();
+        newTable.setAvailability(available);
+        newTable.setLocationId(targetZoneId);
+
+        tableService.updateTableDetails(newTable.getId(), targetZoneId, newTable.getTableNumber(), available);
+
+        TablePosition targetPosition = findAvailablePosition(targetZoneId, newTable.getId());
+        newTable.setPosX(targetPosition.posX());
+        newTable.setPosY(targetPosition.posY());
+        tableService.updateTablePosition(newTable.getId(), targetPosition.posX(), targetPosition.posY());
+    }
+
+    private void submitAddZone() {
+        String zoneName = zoneNameField.getText() != null ? zoneNameField.getText().trim() : "";
+        if (zoneName.isEmpty()) {
+            return;
+        }
+
+        Location newZone = tableService.createZone(zoneName);
+        if (newZone != null) {
+            reloadZonesAndSelect(newZone.getId());
+        }
+    }
+
+    private void submitEditZone() {
+        if (selectedZone == null) {
+            return;
+        }
+
+        String zoneName = zoneNameField.getText() != null ? zoneNameField.getText().trim() : "";
+        if (zoneName.isEmpty()) {
+            return;
+        }
+
+        tableService.updateZoneName(selectedZone.getId(), zoneName);
+        reloadZonesAndSelect(selectedZone.getId());
+    }
+
+    private void submitEditTable() {
+        if (selectedTable == null) {
+            return;
+        }
+
+        Integer parsedNumber = parseTableNumber(tableNumberField.getText(), true);
+        if (parsedNumber == null) {
+            return;
+        }
+
+        int sourceZoneId = selectedTable.getLocationId();
+        int targetZoneId = resolveSelectedZoneId(selectedTable.getLocationId());
+        boolean available = tableAvailabilityCheck.isSelected();
+        tableService.updateTableDetails(selectedTable.getId(), targetZoneId, parsedNumber, available);
+
+        selectedTable.setLocationId(targetZoneId);
+        selectedTable.setTableNumber(parsedNumber);
+        selectedTable.setAvailability(available);
+
+        if (sourceZoneId != targetZoneId) {
+            TablePosition targetPosition = findAvailablePosition(targetZoneId, selectedTable.getId());
+            selectedTable.setPosX(targetPosition.posX());
+            selectedTable.setPosY(targetPosition.posY());
+            tableService.updateTablePosition(selectedTable.getId(), targetPosition.posX(), targetPosition.posY());
+        }
+    }
+
+    private void reloadTables() {
+        tables = tableService.getTables();
+    }
+
+    private TablePosition findAvailablePosition(int zoneId, int movingTableId) {
+        final double width = 160;
+        final double height = 80;
+        final double gapX = 24;
+        final double gapY = 24;
+        final int maxColumns = 5;
+
+        int row = 0;
+        int col = 0;
+        while (row < 100) {
+            double x = col * (width + gapX);
+            double y = row * (height + gapY);
+
+            boolean occupied = false;
+            for (Table table : tables) {
+                if (table.getId() == movingTableId || table.getLocationId() != zoneId) {
+                    continue;
+                }
+
+                if (table.getPosX() == null || table.getPosY() == null) {
+                    continue;
+                }
+
+                if (Math.abs(table.getPosX().doubleValue() - x) < 1
+                        && Math.abs(table.getPosY().doubleValue() - y) < 1) {
+                    occupied = true;
+                    break;
                 }
             }
-        });
+
+            if (!occupied) {
+                return new TablePosition(BigDecimal.valueOf(x), BigDecimal.valueOf(y));
+            }
+
+            col++;
+            if (col >= maxColumns) {
+                col = 0;
+                row++;
+            }
+        }
+
+        return new TablePosition(BigDecimal.ZERO, BigDecimal.ZERO);
     }
 
-    private void setUndoButtonState(boolean enabled) {
-        if (undoButton != null) {
-            undoButton.setVisible(enabled);
-            undoButton.setManaged(enabled);
-            undoButton.setDisable(!enabled);
+    private void loadZoneOptions(int selectedZoneId) {
+        if (tableZoneComboBox == null) {
+            return;
+        }
+
+        List<Location> zones = tableService.getLocations();
+        List<ZoneOption> options = new ArrayList<>();
+        for (Location zone : zones) {
+            options.add(new ZoneOption(zone.getId(), zone.getName()));
+        }
+
+        tableZoneComboBox.getItems().setAll(options);
+
+        ZoneOption selected = options.stream()
+                .filter(option -> option.id() == selectedZoneId)
+                .findFirst()
+                .orElse(options.isEmpty() ? null : options.get(0));
+        tableZoneComboBox.getSelectionModel().select(selected);
+    }
+
+    private int resolveSelectedZoneId(int fallbackZoneId) {
+        if (tableZoneComboBox == null || tableZoneComboBox.getSelectionModel() == null) {
+            return fallbackZoneId;
+        }
+
+        ZoneOption selectedOption = tableZoneComboBox.getSelectionModel().getSelectedItem();
+        return selectedOption != null ? selectedOption.id() : fallbackZoneId;
+    }
+
+    private Integer parseTableNumber(String value, boolean required) {
+        String normalized = value != null ? value.trim() : "";
+        if (normalized.isEmpty()) {
+            return required ? null : null;
+        }
+
+        try {
+            int number = Integer.parseInt(normalized);
+            return number > 0 ? number : null;
+        } catch (NumberFormatException ex) {
+            return null;
         }
     }
 
@@ -241,12 +548,7 @@ public class TableLayoutController {
         }
     }
 
-    @FXML
-    private void undoTableLayoutChanges() {
-        if (!dragging || originalPositions.isEmpty()) {
-            return;
-        }
-
+    private void revertTablePositions() {
         for (Table table : tables) {
             TablePosition original = originalPositions.get(table.getId());
             if (original == null) {
@@ -264,9 +566,14 @@ public class TableLayoutController {
         }
     }
 
-    private void saveTablePositions() {
+    private void persistStagedTableChanges() {
         for (Table table : tables) {
-            if (table.getLocationId() == activeZoneId) {
+            if (pendingDeletedTableIds.contains(table.getId())) {
+                tableService.softDeleteTable(table.getId());
+                continue;
+            }
+
+            if (table.getLocationId() == activeZoneId && originalPositions.containsKey(table.getId())) {
                 tableService.updateTablePosition(table.getId(), table.getPosX(), table.getPosY());
             }
         }
@@ -275,24 +582,18 @@ public class TableLayoutController {
     private Node createTableNode(Table table) {
         StackPane box = new StackPane();
         box.setPrefSize(160, 80);
+        box.getStyleClass().add("table-card");
 
         Label label = new Label("Table " + table.getTableNumber());
-
+        label.getStyleClass().add("table-card-label");
         box.getChildren().add(label);
 
         box.setLayoutX(table.getPosX().doubleValue());
         box.setLayoutY(table.getPosY().doubleValue());
 
-        box.setStyle("""
-                    -fx-background-color: lightblue;
-                    -fx-border-color: black;
-                    -fx-border-radius: 3;
-                    -fx-background-radius: 5;
-                """);
-
         Circle status = new Circle(6);
-        status.setStyle("-fx-fill: LIMEGREEN");
-        status.setVisible(!dragging && table.getAvailability());
+        status.getStyleClass().add("table-status-dot");
+        status.setVisible(!dragging && Boolean.TRUE.equals(table.getAvailability()));
 
         Button deleteMarker = new Button("X");
         deleteMarker.setStyle("-fx-background-color:#d62828; -fx-text-fill:#e8e8e8; -fx-font-size:14px; "
@@ -304,7 +605,8 @@ public class TableLayoutController {
             if (!dragging) {
                 return;
             }
-            System.out.println("Delete table " + table.getTableNumber());
+            pendingDeletedTableIds.add(table.getId());
+            renderTables();
         });
 
         box.getChildren().add(status);
@@ -315,40 +617,39 @@ public class TableLayoutController {
         StackPane.setMargin(deleteMarker, new Insets(-8, -8, 0, 0));
 
         enableTableDrag(box, table);
-        box.setOnMouseClicked(e -> {
-            if (!dragging) {
-                try {
-                    dashboard.showOrderView(table);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-            }
-        });
 
         return box;
     }
 
-    private double mouseX;
-    private double mouseY;
-
     private void enableTableDrag(Node node, Table table) {
+        final double[] pressSceneX = new double[1];
+        final double[] pressSceneY = new double[1];
+        final boolean[] pointerMoved = new boolean[1];
 
         node.setOnMousePressed(e -> {
-            if (!dragging)
-                return;
+            pressSceneX[0] = e.getSceneX();
+            pressSceneY[0] = e.getSceneY();
+            pointerMoved[0] = false;
 
+            if (!dragging) {
+                return;
+            }
             mouseX = e.getSceneX() - node.getLayoutX();
             mouseY = e.getSceneY() - node.getLayoutY();
         });
 
         node.setOnMouseDragged(e -> {
-            if (!dragging)
+            if (Math.abs(e.getSceneX() - pressSceneX[0]) > 2 || Math.abs(e.getSceneY() - pressSceneY[0]) > 2) {
+                pointerMoved[0] = true;
+            }
+
+            if (!dragging) {
                 return;
+            }
 
             node.setLayoutX(e.getSceneX() - mouseX);
             node.setLayoutY(e.getSceneY() - mouseY);
 
-            // Don't let tables leave the screen
             if (node.getLayoutX() < 0) {
                 node.setLayoutX(0);
             }
@@ -364,18 +665,92 @@ public class TableLayoutController {
         });
 
         node.setOnMouseReleased(e -> {
+            if (!dragging) {
+                if (!pointerMoved[0]) {
+                    openEditTableFor(table);
+                }
+                return;
+            }
 
-            // Set new position
             table.setPosX(BigDecimal.valueOf(node.getLayoutX()));
             table.setPosY(BigDecimal.valueOf(node.getLayoutY()));
-
-            // Save to DB - maybe could be done with its own button
-
-            // System.out.println("X: " + table.getPosX());
-            // System.out.println("Y: " + table.getPosY());
         });
     }
 
+    private void openEditTableFor(Table table) {
+        formMode = FormMode.EDIT_TABLE;
+        selectedTable = table;
+        selectedZone = null;
+
+        layoutFormTitle.setText("Edit table");
+        layoutFormHint.setText("Editing table " + table.getTableNumber() + ".");
+        submitLayoutButton.setText("Save table");
+
+        showTableFields(true);
+        showZoneFields(false);
+        setDeleteButtonVisible(false);
+
+        loadZoneOptions(table.getLocationId());
+        tableNumberField.setText(String.valueOf(table.getTableNumber()));
+        tableAvailabilityCheck.setSelected(Boolean.TRUE.equals(table.getAvailability()));
+        showForm();
+    }
+
+    @FXML
+    private void onDeleteLayoutEntity() {
+        if (formMode != FormMode.EDIT_ZONE || selectedZone == null) {
+            return;
+        }
+
+        onDeleteZoneById(selectedZone.getId());
+        hideForm();
+    }
+
+    private void onDeleteZoneById(int zoneId) {
+        tableService.softDeleteZone(zoneId);
+
+        int fallbackZoneId = resolveFallbackZoneId(zoneId);
+        reloadZonesAndSelect(fallbackZoneId);
+    }
+
+    private int resolveFallbackZoneId(int deletedZoneId) {
+        List<Location> zones = tableService.getLocations();
+        if (zones.isEmpty()) {
+            return -1;
+        }
+
+        for (Location zone : zones) {
+            if (zone.getId() != deletedZoneId) {
+                return zone.getId();
+            }
+        }
+
+        return zones.get(0).getId();
+    }
+
+    private void reloadZonesAndSelect(int zoneId) {
+        if (zonesNavbarController != null) {
+            zonesNavbarController.loadZones();
+            if (zoneId > 0) {
+                zonesNavbarController.setActiveZone(zoneId);
+            }
+        }
+
+        if (zoneId > 0) {
+            setActiveZone(zoneId);
+        } else {
+            activeZoneId = -1;
+            renderTables();
+        }
+    }
+
     private record TablePosition(BigDecimal posX, BigDecimal posY) {
+    }
+
+    private record ZoneOption(int id, String name) {
+        @Override
+        public String toString() {
+            return name;
+        }
     }
 }

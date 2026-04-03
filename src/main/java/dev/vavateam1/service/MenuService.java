@@ -12,4 +12,14 @@ public interface MenuService {
     List<MenuItem> getMenuItemsByCategoryId(int categoryId);
 
     void addMenuItem(MenuItem menuItem);
+
+    void updateMenuItem(MenuItem menuItem);
+
+    void softDeleteMenuItem(int menuItemId);
+
+    Category createCategory(String name);
+
+    void updateCategory(int categoryId, String name);
+
+    void softDeleteCategory(int categoryId);
 }

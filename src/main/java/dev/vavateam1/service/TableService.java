@@ -12,7 +12,15 @@ public interface TableService {
 
     void updateTablePosition(int tableId, BigDecimal posX, BigDecimal posY);
 
+    void updateTableDetails(int tableId, int locationId, int tableNumber, boolean availability);
+
+    void softDeleteTable(int tableId);
+
     Table createTable(int locationId);
 
     Location createZone(String name);
+
+    void updateZoneName(int zoneId, String name);
+
+    void softDeleteZone(int zoneId);
 }

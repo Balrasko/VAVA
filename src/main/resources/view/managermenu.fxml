@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.BorderPane?>
@@ -40,6 +41,14 @@
 
                                 <HBox alignment="CENTER_RIGHT">
                                     <children>
+                                        <Button fx:id="editCategoryButton"
+                                            text="Edit category"
+                                            onAction="#onEditCategory"
+                                            styleClass="secondary-action-button" />
+                                        <Button fx:id="deleteCategoryActionButton"
+                                            text="Delete category"
+                                            onAction="#onDeleteCurrentCategory"
+                                            styleClass="secondary-action-button" />
                                         <Button fx:id="addMenuButton"
                                             text="Add menu"
                                             onAction="#onAddMenu"
@@ -72,6 +81,9 @@
                             </children>
                         </HBox>
 
+                        <Label fx:id="menuFormTitle" text="Add menu"
+                            styleClass="menu-category-title" />
+
                         <VBox spacing="8">
                             <children>
                                 <Label text="Name" styleClass="form-label" />
@@ -96,7 +108,7 @@
                         <VBox spacing="8">
                             <children>
                                 <Label text="Category" styleClass="form-label" />
-                                <TextField fx:id="categoryField" styleClass="form-input" />
+                                <ComboBox fx:id="categoryField" styleClass="form-input" />
                             </children>
                         </VBox>
 
@@ -125,8 +137,66 @@
                                 <Button text="Cancel"
                                     onAction="#onCloseForm"
                                     styleClass="secondary-action-button" />
-                                <Button text="Add menu"
+                                <Button fx:id="deleteMenuButton"
+                                    text="Delete"
+                                    visible="false"
+                                    managed="false"
+                                    onAction="#onDeleteMenu"
+                                    styleClass="secondary-action-button" />
+                                <Button fx:id="submitMenuButton"
+                                    text="Add menu"
                                     onAction="#onSubmitMenu"
+                                    styleClass="green-action-button" />
+                            </children>
+                        </HBox>
+
+                    </children>
+                </VBox>
+
+                <VBox fx:id="categoryFormPanel"
+                    prefWidth="420"
+                    minWidth="420"
+                    maxWidth="420"
+                    spacing="18"
+                    visible="false"
+                    managed="false"
+                    styleClass="menu-form-panel">
+                    <children>
+
+                        <HBox alignment="CENTER_RIGHT">
+                            <children>
+                                <Button text="✕"
+                                    onAction="#onCloseCategoryForm"
+                                    styleClass="form-close-button" />
+                            </children>
+                        </HBox>
+
+                        <Label fx:id="categoryFormTitle" text="Add category"
+                            styleClass="menu-category-title" />
+
+                        <VBox spacing="8">
+                            <children>
+                                <Label text="Category name" styleClass="form-label" />
+                                <TextField fx:id="categoryNameField" styleClass="form-input" />
+                            </children>
+                        </VBox>
+
+                        <Region VBox.vgrow="ALWAYS" />
+
+                        <HBox alignment="CENTER_RIGHT" spacing="12">
+                            <children>
+                                <Button text="Cancel"
+                                    onAction="#onCloseCategoryForm"
+                                    styleClass="secondary-action-button" />
+                                <Button fx:id="deleteCategoryButton"
+                                    text="Delete"
+                                    visible="false"
+                                    managed="false"
+                                    onAction="#onDeleteCategory"
+                                    styleClass="secondary-action-button" />
+                                <Button fx:id="submitCategoryButton"
+                                    text="Add category"
+                                    onAction="#onSubmitCategory"
                                     styleClass="green-action-button" />
                             </children>
                         </HBox>

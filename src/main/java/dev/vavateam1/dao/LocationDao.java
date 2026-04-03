@@ -7,4 +7,8 @@ public interface LocationDao {
     List<Location> findAll();
 
     Location createLocation(String name);
+
+    void updateLocationName(int locationId, String name);
+
+    void softDeleteLocation(int locationId);
 }

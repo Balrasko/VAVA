@@ -21,7 +21,7 @@ public class LocationDaoImpl implements LocationDao {
 
     @Override
     public List<Location> findAll() {
-        String sql = "SELECT id, name, created_at, updated_at FROM locations ORDER BY id ASC";
+        String sql = "SELECT id, name, is_deleted, created_at, updated_at FROM locations WHERE is_deleted = FALSE ORDER BY id ASC";
         List<Location> locations = new ArrayList<>();
 
         try (Connection conn = connectionFactory.getConnection();
@@ -32,6 +32,7 @@ public class LocationDaoImpl implements LocationDao {
                 Location loc = new Location();
                 loc.setId(rs.getInt("id"));
                 loc.setName(rs.getString("name"));
+                loc.setDeleted(rs.getBoolean("is_deleted"));
                 loc.setCreatedAt(SqlUtils.toLocalDateTime(rs.getTimestamp("created_at")));
                 loc.setUpdatedAt(SqlUtils.toLocalDateTime(rs.getTimestamp("updated_at")));
 
@@ -46,7 +47,7 @@ public class LocationDaoImpl implements LocationDao {
 
     @Override
     public Location createLocation(String name) {
-        String sql = "INSERT INTO locations (name) VALUES (?) RETURNING id, name, created_at, updated_at";
+        String sql = "INSERT INTO locations (name, is_deleted) VALUES (?, FALSE) RETURNING id, name, is_deleted, created_at, updated_at";
         try (Connection conn = connectionFactory.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -56,6 +57,7 @@ public class LocationDaoImpl implements LocationDao {
                 Location loc = new Location();
                 loc.setId(rs.getInt("id"));
                 loc.setName(rs.getString("name"));
+                loc.setDeleted(rs.getBoolean("is_deleted"));
                 loc.setCreatedAt(SqlUtils.toLocalDateTime(rs.getTimestamp("created_at")));
                 loc.setUpdatedAt(SqlUtils.toLocalDateTime(rs.getTimestamp("updated_at")));
                 return loc;
@@ -63,6 +65,31 @@ public class LocationDaoImpl implements LocationDao {
             throw new RuntimeException("Failed to insert location");
         } catch (SQLException e) {
             throw new RuntimeException("Failed to create location", e);
+        }
+    }
+
+    @Override
+    public void updateLocationName(int locationId, String name) {
+        String sql = "UPDATE locations SET name = ?, updated_at = NOW() WHERE id = ? AND is_deleted = FALSE";
+        try (Connection conn = connectionFactory.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, name);
+            stmt.setInt(2, locationId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to update location name", e);
+        }
+    }
+
+    @Override
+    public void softDeleteLocation(int locationId) {
+        String sql = "UPDATE locations SET is_deleted = TRUE, updated_at = NOW() WHERE id = ? AND is_deleted = FALSE";
+        try (Connection conn = connectionFactory.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, locationId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to soft delete location", e);
         }
     }
 }

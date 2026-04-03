@@ -23,7 +23,7 @@ public class TableDaoImpl implements TableDao {
     }
 
     public List<Table> findAll() {
-        String sql = "SELECT id, location_id, table_number, pos_x, pos_y, availability, created_at, updated_at FROM tables";
+        String sql = "SELECT id, location_id, table_number, pos_x, pos_y, availability, is_deleted, created_at, updated_at FROM tables WHERE is_deleted = FALSE";
         List<Table> tables = new ArrayList<>();
 
         try (Connection conn = connectionFactory.getConnection();
@@ -38,6 +38,7 @@ public class TableDaoImpl implements TableDao {
                 t.setPosX(rs.getBigDecimal("pos_x"));
                 t.setPosY(rs.getBigDecimal("pos_y"));
                 t.setAvailability((Boolean) rs.getObject("availability"));
+                t.setDeleted((Boolean) rs.getObject("is_deleted"));
                 t.setCreatedAt(SqlUtils.toLocalDateTime(rs.getTimestamp("created_at")));
                 t.setUpdatedAt(SqlUtils.toLocalDateTime(rs.getTimestamp("updated_at")));
 
@@ -52,7 +53,7 @@ public class TableDaoImpl implements TableDao {
 
     @Override
     public void updatePosition(int tableId, BigDecimal posX, BigDecimal posY) {
-        String sql = "UPDATE tables SET pos_x = ?, pos_y = ?, updated_at = NOW() WHERE id = ?";
+        String sql = "UPDATE tables SET pos_x = ?, pos_y = ?, updated_at = NOW() WHERE id = ? AND is_deleted = FALSE";
 
         try (Connection conn = connectionFactory.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -66,8 +67,35 @@ public class TableDaoImpl implements TableDao {
     }
 
     @Override
+    public void updateTableDetails(int tableId, int locationId, int tableNumber, boolean availability) {
+        String sql = "UPDATE tables SET location_id = ?, table_number = ?, availability = ?, updated_at = NOW() WHERE id = ? AND is_deleted = FALSE";
+        try (Connection conn = connectionFactory.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, locationId);
+            stmt.setInt(2, tableNumber);
+            stmt.setBoolean(3, availability);
+            stmt.setInt(4, tableId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to update table details for id=" + tableId, e);
+        }
+    }
+
+    @Override
+    public void softDeleteTable(int tableId) {
+        String sql = "UPDATE tables SET is_deleted = TRUE, updated_at = NOW() WHERE id = ? AND is_deleted = FALSE";
+        try (Connection conn = connectionFactory.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, tableId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to soft delete table for id=" + tableId, e);
+        }
+    }
+
+    @Override
     public Table createTable(int locationId) {
-        String sql = "INSERT INTO tables (location_id, table_number, pos_x, pos_y, availability) VALUES (?, (SELECT COALESCE(MAX(table_number), 0) + 1 FROM tables), 0, 0, true) RETURNING id, location_id, table_number, pos_x, pos_y, availability, created_at, updated_at";
+        String sql = "INSERT INTO tables (location_id, table_number, pos_x, pos_y, availability, is_deleted) VALUES (?, (SELECT COALESCE(MAX(table_number), 0) + 1 FROM tables), 0, 0, true, false) RETURNING id, location_id, table_number, pos_x, pos_y, availability, is_deleted, created_at, updated_at";
         try (Connection conn = connectionFactory.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, locationId);
@@ -80,6 +108,7 @@ public class TableDaoImpl implements TableDao {
                 t.setPosX(rs.getBigDecimal("pos_x"));
                 t.setPosY(rs.getBigDecimal("pos_y"));
                 t.setAvailability((Boolean) rs.getObject("availability"));
+                t.setDeleted((Boolean) rs.getObject("is_deleted"));
                 t.setCreatedAt(SqlUtils.toLocalDateTime(rs.getTimestamp("created_at")));
                 t.setUpdatedAt(SqlUtils.toLocalDateTime(rs.getTimestamp("updated_at")));
                 return t;

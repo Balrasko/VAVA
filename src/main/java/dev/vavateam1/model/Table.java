@@ -16,6 +16,7 @@ public class Table {
     private BigDecimal posX;
     private BigDecimal posY;
     private Boolean availability;
+    private Boolean deleted;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

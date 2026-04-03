@@ -39,4 +39,29 @@ public class MenuServiceImpl implements MenuService {
     public void addMenuItem(MenuItem menuItem) {
         menuItemDao.addMenuItem(menuItem);
     }
+
+    @Override
+    public void updateMenuItem(MenuItem menuItem) {
+        menuItemDao.updateMenuItem(menuItem);
+    }
+
+    @Override
+    public void softDeleteMenuItem(int menuItemId) {
+        menuItemDao.softDeleteMenuItem(menuItemId);
+    }
+
+    @Override
+    public Category createCategory(String name) {
+        return categoryDao.createCategory(name);
+    }
+
+    @Override
+    public void updateCategory(int categoryId, String name) {
+        categoryDao.updateCategory(categoryId, name);
+    }
+
+    @Override
+    public void softDeleteCategory(int categoryId) {
+        categoryDao.softDeleteCategory(categoryId);
+    }
 }
