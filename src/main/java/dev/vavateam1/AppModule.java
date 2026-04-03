@@ -5,6 +5,8 @@ import com.google.inject.Scopes;
 
 import dev.vavateam1.dao.LocationDao;
 import dev.vavateam1.dao.LocationDaoImpl;
+import dev.vavateam1.dao.MenuItemDao;
+import dev.vavateam1.dao.MenuItemDaoImpl;
 import dev.vavateam1.dao.OrderItemDao;
 import dev.vavateam1.dao.OrderItemDaoImpl;
 import dev.vavateam1.dao.PaymentDao;
@@ -32,6 +34,7 @@ public class AppModule extends AbstractModule {
         bind(OrderItemDao.class).to(OrderItemDaoImpl.class).in(Scopes.SINGLETON);
         bind(HistoryService.class).to(HistoryServiceImpl.class).in(Scopes.SINGLETON);
         bind(KitchenOrderService.class).to(MockKitchenOrderService.class).in(Scopes.SINGLETON);
-        bind(MenuService.class).to(MockMenuService.class).in(Scopes.SINGLETON);
+        bind(MenuItemDao.class).to(MenuItemDaoImpl.class).in(Scopes.SINGLETON);
+        bind(MenuService.class).to(MenuServiceImpl.class).in(Scopes.SINGLETON);
     }
 }
