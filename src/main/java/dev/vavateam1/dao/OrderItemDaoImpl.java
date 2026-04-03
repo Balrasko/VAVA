@@ -10,6 +10,7 @@ import java.util.List;
 import com.google.inject.Inject;
 
 import dev.vavateam1.data.connection.ConnectionFactory;
+import dev.vavateam1.dto.CreateOrder;
 import dev.vavateam1.model.OrderItem;
 import dev.vavateam1.util.SqlUtils;
 
@@ -47,7 +48,7 @@ public class OrderItemDaoImpl implements OrderItemDao {
                 OrderItem orderItem = new OrderItem();
                 orderItem.setId(rs.getInt("id"));
                 orderItem.setMenuItemId(rs.getInt("menu_item_id"));
-                orderItem.setPaymentId(rs.getInt("payment_id"));
+                orderItem.setPaymentId(rs.getObject("payment_id", Integer.class));
                 orderItem.setWaiterId(rs.getInt("waiter_id"));
                 orderItem.setTableId(rs.getInt("table_id"));
                 orderItem.setQuantity(rs.getInt("quantity"));
@@ -70,7 +71,7 @@ public class OrderItemDaoImpl implements OrderItemDao {
         OrderItem orderItem = new OrderItem();
         orderItem.setId(rs.getInt("id"));
         orderItem.setMenuItemId(rs.getInt("menu_item_id"));
-        orderItem.setPaymentId(rs.getInt("payment_id"));
+        orderItem.setPaymentId(rs.getObject("payment_id", Integer.class));
         orderItem.setWaiterId(rs.getInt("waiter_id"));
         orderItem.setTableId(rs.getInt("table_id"));
         orderItem.setQuantity(rs.getInt("quantity"));
@@ -115,7 +116,7 @@ public class OrderItemDaoImpl implements OrderItemDao {
     }
 
     @Override
-    public void addOrderItem(OrderItem orderItem) {
+    public OrderItem createOrderItem(CreateOrder orderCreateDto) {
         String sql = """
                 INSERT INTO order_items (menu_item_id, payment_id, waiter_id, table_id, quantity, discount, price, note, status)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -123,28 +124,48 @@ public class OrderItemDaoImpl implements OrderItemDao {
         try (Connection conn = connectionFactory.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
 
-            stmt.setInt(1, orderItem.getMenuItemId());
-            if (orderItem.getPaymentId() != null) {
-                stmt.setInt(2, orderItem.getPaymentId());
+            stmt.setInt(1, orderCreateDto.getMenuItemId());
+            if (orderCreateDto.getPaymentId() != null) {
+                stmt.setInt(2, orderCreateDto.getPaymentId());
             } else {
                 stmt.setNull(2, java.sql.Types.INTEGER);
             }
-            stmt.setInt(3, orderItem.getWaiterId());
-            stmt.setInt(4, orderItem.getTableId());
-            stmt.setInt(5, orderItem.getQuantity());
-            stmt.setBigDecimal(6, orderItem.getDiscount());
-            stmt.setBigDecimal(7, orderItem.getPrice());
-            stmt.setString(8, orderItem.getNote());
-            stmt.setString(9, orderItem.getStatus());
+            stmt.setInt(3, orderCreateDto.getWaiterId());
+            stmt.setInt(4, orderCreateDto.getTableId());
+            stmt.setInt(5, orderCreateDto.getQuantity());
+            stmt.setBigDecimal(6, orderCreateDto.getDiscount());
+            stmt.setBigDecimal(7, orderCreateDto.getPrice());
+            stmt.setString(8, orderCreateDto.getNote());
+            stmt.setString(9, orderCreateDto.getStatus());
 
             stmt.executeUpdate();
-            ResultSet rs = stmt.getGeneratedKeys();
-            if (rs.next()) {
-                orderItem.setId(rs.getInt(1));
+            try (ResultSet rs = stmt.getGeneratedKeys()) {
+                if (rs.next()) {
+                    int id = rs.getInt(1);
+                    return findOrderItemById(id, conn);
+                }
             }
+
+            throw new RuntimeException("Failed to create order item: no generated key returned.");
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to add order item", e);
+            throw new RuntimeException("Failed to create order item", e);
         }
+    }
+
+    private OrderItem findOrderItemById(int id, Connection conn) throws SQLException {
+        String sql = "SELECT * FROM order_items WHERE id = ?";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSetToOrderItem(rs);
+                }
+            }
+        }
+
+        throw new RuntimeException("Failed to load created order item " + id);
     }
 
     @Override
@@ -175,6 +196,20 @@ public class OrderItemDaoImpl implements OrderItemDao {
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("Failed to update order item " + orderItem.getId(), e);
+        }
+    }
+
+    @Override
+    public void deleteOrderItem(int orderItemId) {
+        String sql = "DELETE FROM order_items WHERE id = ? AND payment_id IS NULL";
+
+        try (Connection conn = connectionFactory.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, orderItemId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to delete order item " + orderItemId, e);
         }
     }
 }

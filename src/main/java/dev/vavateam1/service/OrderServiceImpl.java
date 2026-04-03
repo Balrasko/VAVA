@@ -3,15 +3,15 @@ package dev.vavateam1.service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.time.LocalDateTime;
 
 import com.google.inject.Inject;
 
-import dev.vavateam1.dao.MenuItemDao;
 import dev.vavateam1.dao.CategoryDao;
-import dev.vavateam1.dao.PaymentDao;
+import dev.vavateam1.dao.MenuItemDao;
 import dev.vavateam1.dao.OrderItemDao;
-import dev.vavateam1.dto.OrderItemView;
+import dev.vavateam1.dao.PaymentDao;
+import dev.vavateam1.dto.CreateOrder;
+import dev.vavateam1.dto.OrderItemDto;
 import dev.vavateam1.model.Category;
 import dev.vavateam1.model.MenuItem;
 import dev.vavateam1.model.OrderItem;
@@ -51,23 +51,28 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderItem createOrderFromMenu(MenuItem menuItem) {
-        OrderItem orderItem = new OrderItem();
-
-        orderItem.setMenuItemId(menuItem.getId());
+    public OrderItem createOrderFromMenu(MenuItem menuItem, Table table) {
+        if (table == null) {
+            throw new IllegalArgumentException("Table is required to create an order item.");
+        }
 
         int waiterId = 0;
         if (authService != null && authService.getUser() != null) {
             waiterId = authService.getUser().getId();
         }
-        orderItem.setWaiterId(waiterId);
 
-        orderItem.setQuantity(1);
-        orderItem.setDiscount(BigDecimal.ZERO);
-        orderItem.setPrice(menuItem.getPrice());
-        orderItem.setStatus("WAITING");
+        CreateOrder createDto = new CreateOrder(
+                menuItem.getId(),
+                null,
+                waiterId,
+                table.getId(),
+                1,
+                BigDecimal.ZERO,
+                menuItem.getPrice(),
+                null,
+                "WAITING");
 
-        return orderItem;
+        return orderItemDao.createOrderItem(createDto);
     }
 
     @Override
@@ -81,15 +86,23 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void saveTempOrders(List<OrderItemView> orderItemList) {
-        for (OrderItemView view : orderItemList) {
+    public void saveTempOrders(List<OrderItemDto> orderItemList) {
+        for (OrderItemDto view : orderItemList) {
             OrderItem item = view.getOrderItem();
             if (item.getId() != null) {
                 orderItemDao.updateOrderItem(item);
             } else {
-                orderItemDao.addOrderItem(item);
+                OrderItem createdItem = orderItemDao.createOrderItem(toCreateDto(item));
+                item.setId(createdItem.getId());
+                item.setCreatedAt(createdItem.getCreatedAt());
+                item.setUpdatedAt(createdItem.getUpdatedAt());
             }
         }
+    }
+
+    @Override
+    public void deleteOrderItem(int orderItemId) {
+        orderItemDao.deleteOrderItem(orderItemId);
     }
 
     @Override
@@ -108,8 +121,24 @@ public class OrderServiceImpl implements OrderService {
             if (item.getId() != null) {
                 orderItemDao.updateOrderItem(item);
             } else {
-                orderItemDao.addOrderItem(item);
+                OrderItem createdItem = orderItemDao.createOrderItem(toCreateDto(item));
+                item.setId(createdItem.getId());
+                item.setCreatedAt(createdItem.getCreatedAt());
+                item.setUpdatedAt(createdItem.getUpdatedAt());
             }
         }
+    }
+
+    private CreateOrder toCreateDto(OrderItem item) {
+        return new CreateOrder(
+                item.getMenuItemId(),
+                item.getPaymentId(),
+                item.getWaiterId(),
+                item.getTableId(),
+                item.getQuantity(),
+                item.getDiscount(),
+                item.getPrice(),
+                item.getNote(),
+                item.getStatus());
     }
 }

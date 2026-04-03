@@ -3,7 +3,7 @@ package dev.vavateam1.controller;
 import dev.vavateam1.model.MenuItem;
 import dev.vavateam1.model.OrderItem;
 import dev.vavateam1.model.Table;
-import dev.vavateam1.dto.OrderItemView;
+import dev.vavateam1.dto.OrderItemDto;
 import dev.vavateam1.model.Category;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -33,7 +33,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import dev.vavateam1.service.OrderService;
-import dev.vavateam1.service.OrderServiceImpl;
 import com.google.inject.Inject;
 
 public class OrderController {
@@ -82,8 +81,8 @@ public class OrderController {
     private Table table;
     private List<MenuItem> menuItems;
     private List<Category> categories;
-    private List<OrderItemView> orderItemViews;
-    private Map<OrderItemView, Integer> selectedQuantities = new HashMap<>();
+    private List<OrderItemDto> orderItemViews;
+    private Map<OrderItemDto, Integer> selectedQuantities = new HashMap<>();
     private BigDecimal tip = BigDecimal.ZERO;
 
     private Label pluDisplay;
@@ -111,15 +110,15 @@ public class OrderController {
         loadOrderItems();
     }
 
-    private List<OrderItemView> getOrderItemViews(List<OrderItem> orderItems) {
+    private List<OrderItemDto> getOrderItemViews(List<OrderItem> orderItems) {
         // Get available order items for the current table if there are any
 
-        List<OrderItemView> orderItemViews = new ArrayList<>();
+        List<OrderItemDto> orderItemViews = new ArrayList<>();
         for (OrderItem item : orderItems) {
             MenuItem menuItem = menuItems.stream().filter(m -> m.getId() == item.getMenuItemId()).findFirst()
                     .orElseThrow(() -> new RuntimeException("MenuItem not found."));
 
-            orderItemViews.add(new OrderItemView(item, menuItem));
+            orderItemViews.add(new OrderItemDto(item, menuItem));
         }
 
         return orderItemViews;
@@ -219,7 +218,7 @@ public class OrderController {
     private void addItemToOrder(MenuItem menuItem) {
         // Add the menu item to the order as an order item
 
-        OrderItemView existingItem = orderItemViews.stream()
+        OrderItemDto existingItem = orderItemViews.stream()
                 .filter(item -> item.isSameItem(menuItem, null))
                 .findFirst()
                 .orElse(null);
@@ -229,7 +228,7 @@ public class OrderController {
 
             refreshOrderPanel();
         } else {
-            OrderItemView newItem = new OrderItemView(orderService.createOrderFromMenu(menuItem), menuItem);
+            OrderItemDto newItem = new OrderItemDto(orderService.createOrderFromMenu(menuItem, table), menuItem);
 
             this.selectedQuantities.put(newItem, newItem.getQuantity());
 
@@ -248,7 +247,7 @@ public class OrderController {
 
         subtotal = BigDecimal.ZERO;
 
-        for (OrderItemView item : orderItemViews) {
+        for (OrderItemDto item : orderItemViews) {
             orderPanel.getChildren().add(createOrderItemRow(item));
             subtotal = subtotal.add(item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())));
         }
@@ -260,7 +259,7 @@ public class OrderController {
         subtotalLabel.setText(subtotal.toString() + " €");
     }
 
-    private HBox createOrderItemRow(OrderItemView item) {
+    private HBox createOrderItemRow(OrderItemDto item) {
         // Create a row for each order item in the UI
 
         HBox row = new HBox(8);
@@ -312,6 +311,9 @@ public class OrderController {
                 int quantity = item.getQuantity() - 1;
 
                 if (quantity <= 0) {
+                    if (item.getOrderItemId() != null) {
+                        orderService.deleteOrderItem(item.getOrderItemId());
+                    }
                     orderItemViews.remove(item);
                     selectedQuantities.remove(item);
                 } else {
@@ -443,12 +445,12 @@ public class OrderController {
         splitBillMode = !splitBillMode;
 
         if (!splitBillMode) {
-            for (OrderItemView item : orderItemViews) {
+            for (OrderItemDto item : orderItemViews) {
                 selectedQuantities.put(item, item.getQuantity());
             }
             splitButton.setStyle("-fx-background-color: #f4f4f4; -fx-text-fill: #000");
         } else {
-            for (OrderItemView item : orderItemViews) {
+            for (OrderItemDto item : orderItemViews) {
                 selectedQuantities.put(item, 0);
             }
             splitButton.setStyle("-fx-background-color: #7997E1; -fx-text-fill: #f4f4f4");
@@ -458,7 +460,7 @@ public class OrderController {
     }
 
     private void loadOrderItems() {
-        for (OrderItemView orderItemView : orderItemViews) {
+        for (OrderItemDto orderItemView : orderItemViews) {
             orderPanel.getChildren().add(createOrderItemRow(orderItemView));
             subtotal = subtotal.add(orderItemView.getPrice().multiply(BigDecimal.valueOf(orderItemView.getQuantity())));
             this.selectedQuantities.put(orderItemView, orderItemView.getQuantity());
@@ -467,13 +469,13 @@ public class OrderController {
         updateTotals();
     }
 
-    private List<OrderItemView> getItemsForPayment() {
+    private List<OrderItemDto> getItemsForPayment() {
         // Get a list of currently selected order items with their quantities - relevant
         // mainly in split the bill mode
 
-        List<OrderItemView> result = new ArrayList<>();
+        List<OrderItemDto> result = new ArrayList<>();
 
-        for (OrderItemView item : orderItemViews) {
+        for (OrderItemDto item : orderItemViews) {
             int quantity;
 
             if (splitBillMode) {
@@ -485,7 +487,7 @@ public class OrderController {
             if (quantity <= 0)
                 continue;
 
-            OrderItemView copy = item.copy();
+            OrderItemDto copy = item.copy();
             copy.setQuantity(quantity);
 
             result.add(copy);
@@ -494,13 +496,13 @@ public class OrderController {
         return result;
     }
 
-    private BigDecimal calculatePaymentSubtotal(List<OrderItemView> items) {
+    private BigDecimal calculatePaymentSubtotal(List<OrderItemDto> items) {
         // Calculate the subtotal value of the currently selected items - mainly
         // relevant for split the bill mode
 
         BigDecimal sum = BigDecimal.ZERO;
 
-        for (OrderItemView item : items) {
+        for (OrderItemDto item : items) {
             BigDecimal itemTotal = item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity()));
 
             sum = sum.add(itemTotal);
@@ -514,7 +516,7 @@ public class OrderController {
         // Show a payment popup window
 
         // Get the selected items
-        List<OrderItemView> itemsToPay = getItemsForPayment();
+        List<OrderItemDto> itemsToPay = getItemsForPayment();
 
         // Return if there are no items in the order
         if (itemsToPay.isEmpty())
@@ -565,7 +567,7 @@ public class OrderController {
         scrollPane.setPrefHeight(300);
 
         // Add all the selected items to the receipt
-        for (OrderItemView item : itemsToPay) {
+        for (OrderItemDto item : itemsToPay) {
             HBox row = new HBox(10);
 
             Label name = new Label(item.getName() + " x" + item.getQuantity());
@@ -712,9 +714,9 @@ public class OrderController {
     private void processPayment(int paymentMethod, BigDecimal totalPrice, BigDecimal tip) {
 
         List<OrderItem> ordersToProcess = new ArrayList<>();
-        List<OrderItemView> itemsToRemove = new ArrayList<>();
+        List<OrderItemDto> itemsToRemove = new ArrayList<>();
 
-        for (OrderItemView item : orderItemViews) {
+        for (OrderItemDto item : orderItemViews) {
             int selected = splitBillMode ? selectedQuantities.getOrDefault(item, 0) : item.getQuantity();
 
             if (selected == 0)
@@ -726,7 +728,7 @@ public class OrderController {
                 item.setQuantity(item.getQuantity() - selected);
 
                 // Make a new orderItem entry for the split amount
-                OrderItemView splitCopy = item.copy();
+                OrderItemDto splitCopy = item.copy();
                 splitCopy.setQuantity(selected);
                 splitCopy.setOrderIdToNull();
                 ordersToProcess.add(splitCopy.getOrderItem());

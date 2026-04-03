@@ -6,9 +6,12 @@ import java.util.List;
 
 import com.google.inject.Inject;
 
+import dev.vavateam1.dto.OrderItemDto;
 import dev.vavateam1.dto.PaymentDto;
 import dev.vavateam1.service.HistoryService;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -28,7 +31,11 @@ public class HistoryController {
     @FXML
     private VBox detailContainer;
 
+    @FXML
+    private Button refundButton;
+
     private final HistoryService historyService;
+    private PaymentDto selectedPayment;
 
     @Inject
     public HistoryController(HistoryService historyService) {
@@ -37,6 +44,14 @@ public class HistoryController {
 
     @FXML
     public void initialize() {
+        loadPayments();
+
+        detailPanel.setVisible(false);
+        detailPanel.setManaged(false);
+    }
+
+    private void loadPayments() {
+        ordersContainer.getChildren().clear();
         List<PaymentDto> payments = historyService.getPayments();
 
         LocalDate today = LocalDate.now();
@@ -61,9 +76,6 @@ public class HistoryController {
 
             addOrder(payment);
         }
-
-        detailPanel.setVisible(false);
-        detailPanel.setManaged(false);
     }
 
     private void addDay(String day) {
@@ -86,27 +98,36 @@ public class HistoryController {
         Label orderId = new Label("#" + payment.getId());
         Label orderDate = new Label(payment.getCreatedAt().format(DISPLAY_FORMAT));
         Label orderTotal = new Label(payment.getAmount().toPlainString() + "€");
+        Label refundedLabel = new Label("REFUNDED");
 
         orderTotal.setStyle("-fx-font-weight:bold;");
+        refundedLabel.setStyle("-fx-text-fill:#c62828; -fx-font-weight:bold;");
+        refundedLabel.setVisible(Boolean.TRUE.equals(payment.getRefunded()));
+        refundedLabel.setManaged(Boolean.TRUE.equals(payment.getRefunded()));
         HBox.setHgrow(orderDate, Priority.ALWAYS);
 
-        card.getChildren().addAll(orderId, orderDate, orderTotal);
+        card.getChildren().addAll(orderId, orderDate, refundedLabel, orderTotal);
         card.setOnMouseClicked(e -> showDetail(payment));
 
         ordersContainer.getChildren().add(card);
     }
 
     private void showDetail(PaymentDto payment) {
+        selectedPayment = payment;
         detailPanel.setVisible(true);
         detailPanel.setManaged(true);
+        refundButton.setDisable(Boolean.TRUE.equals(payment.getRefunded()));
 
         detailContainer.getChildren().clear();
+        List<OrderItemDto> orderItems = historyService.getOrderItemsByPaymentId(payment.getId());
 
         Label title = new Label("Order summary");
         title.setStyle("-fx-font-size:20; -fx-font-weight:bold;");
 
         Label orderId = new Label("Order: #" + payment.getId());
         Label orderDate = new Label("Date: " + payment.getCreatedAt().format(DISPLAY_FORMAT));
+        Label waiter = new Label("Waiter: #" + payment.getWaiterId());
+        Label methodId = new Label("Payment method ID: " + payment.getMethodId());
         Label orderTotal = new Label("Total: " + payment.getAmount().toPlainString() + "€");
 
         String tipText = payment.getTip() != null
@@ -119,12 +140,78 @@ public class HistoryController {
                 : "-";
         Label paymentMethod = new Label("Payment: " + methodText);
 
-        detailContainer.getChildren().addAll(title, orderId, orderDate, orderTotal, tip, paymentMethod);
+        String refundedText = Boolean.TRUE.equals(payment.getRefunded()) ? "Yes" : "No";
+        Label refunded = new Label("Refunded: " + refundedText);
+        if (Boolean.TRUE.equals(payment.getRefunded())) {
+            refunded.setStyle("-fx-text-fill:#c62828; -fx-font-weight:bold;");
+        }
+
+        Label itemsTitle = new Label("Items");
+        itemsTitle.setStyle("-fx-font-size:16; -fx-font-weight:bold;");
+
+        detailContainer.getChildren().addAll(
+                title,
+                orderId,
+                orderDate,
+                waiter,
+                methodId,
+                orderTotal,
+                tip,
+                paymentMethod,
+                refunded,
+                itemsTitle);
+
+        if (orderItems.isEmpty()) {
+            detailContainer.getChildren().add(new Label("No items found."));
+            return;
+        }
+
+        for (OrderItemDto orderItem : orderItems) {
+            String priceText = orderItem.getPrice() != null
+                    ? orderItem.getPrice().stripTrailingZeros().toPlainString() + "€"
+                    : "-";
+            Label itemLabel = new Label(orderItem.getName() + " x" + orderItem.getQuantity() + " - " + priceText);
+            detailContainer.getChildren().add(itemLabel);
+        }
+    }
+
+    @FXML
+    private void refundSelectedOrder() {
+        if (selectedPayment == null || Boolean.TRUE.equals(selectedPayment.getRefunded())) {
+            return;
+        }
+
+        try {
+            historyService.refund(selectedPayment.getId());
+        } catch (IllegalStateException e) {
+            showWarning("Order already refunded.");
+        }
+
+        loadPayments();
+        PaymentDto refreshedPayment = historyService.getPayments().stream()
+                .filter(payment -> payment.getId() == selectedPayment.getId())
+                .findFirst()
+                .orElse(null);
+
+        if (refreshedPayment != null) {
+            showDetail(refreshedPayment);
+            return;
+        }
+
+        closeDetail();
+    }
+
+    private void showWarning(String message) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 
     @FXML
     private void closeDetail() {
         detailPanel.setVisible(false);
         detailPanel.setManaged(false);
+        selectedPayment = null;
     }
 }
