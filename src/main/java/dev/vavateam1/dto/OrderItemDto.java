@@ -5,19 +5,20 @@ import java.math.BigDecimal;
 import dev.vavateam1.model.MenuItem;
 import dev.vavateam1.model.OrderItem;
 
-public class OrderItemView {
-    // Combines MenuItem and OrderItem since OrderItem is missing some useful values which MenuItem has - e.g. the item name
+// Combines MenuItem and OrderItem since OrderItem is missing some useful values
+// which MenuItem has - e.g. the item name
+public class OrderItemDto {
 
     private final OrderItem orderItem;
     private final MenuItem menuItem;
 
-    public OrderItemView(OrderItem orderItem, MenuItem menuItem) {
+    public OrderItemDto(OrderItem orderItem, MenuItem menuItem) {
         this.orderItem = orderItem;
         this.menuItem = menuItem;
     }
 
-    public OrderItemView copy() {
-        return new OrderItemView(new OrderItem(this.orderItem), this.menuItem);
+    public OrderItemDto copy() {
+        return new OrderItemDto(new OrderItem(this.orderItem), this.menuItem);
     }
 
     public Integer getMenuItemId() {

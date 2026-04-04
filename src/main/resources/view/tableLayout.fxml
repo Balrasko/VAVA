@@ -1,73 +1,148 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 
-<StackPane xmlns:fx="http://javafx.com/fxml"
-           fx:id="contentArea"
-           fx:controller="dev.vavateam1.controller.TableLayoutController"
-           alignment="TOP_LEFT"
-           style="-fx-background-color: #f4f4f4;">
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+    fx:id="contentArea"
+    fx:controller="dev.vavateam1.controller.TableLayoutController"
+    styleClass="page-root">
 
-    <HBox fx:id="zonesNavbarContainer"
-          StackPane.alignment="TOP_LEFT">
-        <children>
-            <fx:include fx:id="zonesNavbar" source="top-navbar-zones.fxml" />
-        </children>
-    </HBox>
+    <center>
+        <HBox spacing="16" styleClass="page-content">
+            <padding>
+                <Insets top="0" right="20" bottom="20" left="20" />
+            </padding>
+            <children>
+                <VBox spacing="0" HBox.hgrow="ALWAYS" styleClass="menu-outer-panel">
+                    <children>
 
-    <!-- MAIN PAGE AREA -->
-    <Pane fx:id="tablesPane"
-          prefWidth="800"
-          prefHeight="600">
-        <StackPane.margin>
-            <Insets top="56"/>
-        </StackPane.margin>
-    </Pane>
+                        <HBox fx:id="zonesTabsContainer" spacing="0" styleClass="menu-tabs-bar">
+                            <children>
+                                <fx:include fx:id="zonesNavbar" source="top-navbar-zones.fxml" />
+                            </children>
+                        </HBox>
 
-    <!-- DRAG TOGGLE BUTTON -->
-    
-    <Button fx:id="dragButton"
-            text="Enter Edit Mode"
-            onAction="#toggleDragging"
-            StackPane.alignment="BOTTOM_RIGHT"
-            style="-fx-background-color:#57c84d; -fx-text-fill:#1d1d1d; -fx-background-radius:24; -fx-padding:12 24 12 24; -fx-cursor:hand;">
-            
-        <StackPane.margin>
-            <Insets bottom="15" right="15"/>
-       </StackPane.margin>
+                        <VBox spacing="18" VBox.vgrow="ALWAYS" styleClass="menu-inner-panel">
+                            <children>
 
-    </Button>
+                                <StackPane VBox.vgrow="ALWAYS">
+                                    <children>
 
-    <Button fx:id="undoButton"
-            text="Undo"
-            onAction="#undoTableLayoutChanges"
-            visible="false"
-            managed="false"
-            disable="true"
-            StackPane.alignment="BOTTOM_RIGHT"
-            style="-fx-background-color:#ffd166; -fx-text-fill:#1d1d1d; -fx-background-radius:24; -fx-padding:12 24 12 24; -fx-cursor:hand;">
+                                        <Pane fx:id="tablesPane" prefWidth="800" prefHeight="600"
+                                            styleClass="table-layout-pane" />
 
-        <StackPane.margin>
-            <Insets bottom="15" right="180"/>
-        </StackPane.margin>
+                                    </children>
+                                </StackPane>
 
-    </Button>
+                                <Region VBox.vgrow="ALWAYS" />
 
-    <Button fx:id="addButton"
-            text="+"
-            onAction="#onAddClicked"
-            visible="false"
-            managed="false"
-            StackPane.alignment="TOP_RIGHT"
-            style="-fx-background-color:#e0e0e0; -fx-text-fill:#1d1d1d; -fx-font-size:24px; -fx-font-weight:bold; -fx-background-radius:999; -fx-min-width:44px; -fx-min-height:44px; -fx-max-width:44px; -fx-max-height:44px; -fx-padding: 0; -fx-alignment: center; -fx-cursor:hand; -fx-border-color:transparent;">
+                                <HBox alignment="CENTER_RIGHT" spacing="12">
+                                    <children>
+                                        <Button fx:id="editCancelButton" text="Cancel"
+                                            onAction="#onCancelTableEditMode"
+                                            visible="false" managed="false"
+                                            styleClass="secondary-action-button" />
 
-        <StackPane.margin>
-            <Insets top="12" right="12"/>
-        </StackPane.margin>
+                                        <Button fx:id="editZoneButton" text="Edit zone"
+                                            onAction="#onEditCurrentZone"
+                                            styleClass="secondary-action-button" />
 
-    </Button>
+                                        <Button fx:id="deleteZoneButton" text="Delete zone"
+                                            onAction="#onDeleteCurrentZone"
+                                            styleClass="secondary-action-button" />
 
-</StackPane>
+                                        <Button fx:id="addTableButton" text="Add table"
+                                            onAction="#onOpenAddTableForm"
+                                            styleClass="green-action-button" />
+
+                                        <Button fx:id="dragButton" text="Enter Edit Mode"
+                                            onAction="#toggleDragging"
+                                            styleClass="green-action-button" />
+                                    </children>
+                                </HBox>
+
+                            </children>
+                        </VBox>
+
+                    </children>
+                </VBox>
+
+                <VBox fx:id="layoutFormPanel"
+                    prefWidth="420" minWidth="420" maxWidth="420"
+                    maxHeight="Infinity"
+                    spacing="18"
+                    visible="false" managed="false"
+                    styleClass="menu-form-panel">
+                    <children>
+
+                        <HBox alignment="CENTER_RIGHT">
+                            <children>
+                                <Button text="✕" onAction="#onCloseLayoutForm"
+                                    styleClass="form-close-button" />
+                            </children>
+                        </HBox>
+
+                        <Label fx:id="layoutFormTitle" text="Manage layout"
+                            styleClass="menu-category-title" />
+                        <Label fx:id="layoutFormHint" styleClass="menu-item-description" />
+
+                        <VBox fx:id="tableFieldsContainer" spacing="12">
+                            <children>
+                                <VBox spacing="8">
+                                    <children>
+                                        <Label text="Zone" styleClass="form-label" />
+                                        <ComboBox fx:id="tableZoneComboBox" styleClass="form-input" />
+                                    </children>
+                                </VBox>
+                                <VBox spacing="8">
+                                    <children>
+                                        <Label text="Table number" styleClass="form-label" />
+                                        <TextField fx:id="tableNumberField" styleClass="form-input" />
+                                    </children>
+                                </VBox>
+                                <CheckBox fx:id="tableAvailabilityCheck" text="Available"
+                                    styleClass="form-label" />
+                            </children>
+                        </VBox>
+
+                        <VBox fx:id="zoneFieldsContainer" spacing="8">
+                            <children>
+                                <Label text="Zone name" styleClass="form-label" />
+                                <TextField fx:id="zoneNameField" styleClass="form-input" />
+                            </children>
+                        </VBox>
+
+                        <Region VBox.vgrow="ALWAYS" />
+
+                        <HBox alignment="CENTER_RIGHT" spacing="12">
+                            <children>
+                                <Button text="Cancel" onAction="#onCloseLayoutForm"
+                                    styleClass="secondary-action-button" />
+                                <Button fx:id="deleteLayoutButton" text="Delete"
+                                    visible="false" managed="false"
+                                    onAction="#onDeleteLayoutEntity"
+                                    styleClass="secondary-action-button" />
+                                <Button fx:id="submitLayoutButton" text="Save"
+                                    onAction="#onSubmitLayoutForm"
+                                    styleClass="green-action-button" />
+                            </children>
+                        </HBox>
+
+                    </children>
+                </VBox>
+            </children>
+        </HBox>
+    </center>
+</BorderPane>

@@ -1,110 +1,103 @@
 package dev.vavateam1.controller;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.IntConsumer;
 
+import com.google.inject.Inject;
+
+import dev.vavateam1.model.Location;
+import dev.vavateam1.service.TableService;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 
 public class TopNavbarZonesController {
 
     @FXML
-    private Button restaurantButton;
+    private HBox zonesContainer;
 
-    @FXML
-    private Button teraceButton;
-
-    @FXML
-    private Button barButton;
-
-    @FXML
-    private Button restaurantDeleteButton;
-
-    @FXML
-    private Button teraceDeleteButton;
-
-    @FXML
-    private Button barDeleteButton;
+    private final TableService tableService;
 
     private IntConsumer zoneSelectionHandler;
-    private boolean editMode = false;
+    private Runnable addZoneRequestHandler;
+    private boolean addZoneTabVisible = true;
 
-    @FXML
-    private void onRestaurant() {
-        setActiveZone(1);
-        notifyZoneSelection(1);
+    private Map<Integer, Button> zoneButtons = new HashMap<>();
+
+    @Inject
+    public TopNavbarZonesController(TableService tableService) {
+        this.tableService = tableService;
     }
 
     @FXML
-    private void onTerace() {
-        setActiveZone(2);
-        notifyZoneSelection(2);
+    public void initialize() {
+        loadZones();
     }
 
-    @FXML
-    private void onBar() {
-        setActiveZone(3);
-        notifyZoneSelection(3);
+    public void loadZones() {
+        List<Location> locations = tableService.getLocations();
+        zonesContainer.getChildren().clear();
+        zoneButtons.clear();
+
+        try {
+            for (Location location : locations) {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/top-navbar-zone-item.fxml"));
+                Node node = loader.load();
+
+                Button zoneButton = (Button) node.lookup("#zoneButton");
+                zoneButton.setText(location.getName());
+                zoneButton.setOnAction(e -> {
+                    setActiveZone(location.getId());
+                    notifyZoneSelection(location.getId());
+                });
+                zoneButtons.put(location.getId(), zoneButton);
+
+                zonesContainer.getChildren().add(node);
+            }
+
+            if (addZoneTabVisible) {
+                Button addZoneTabButton = new Button("+");
+                addZoneTabButton.getStyleClass().addAll("nav-tab", "zone-nav-button", "zone-nav-button-add");
+                addZoneTabButton.setOnAction(e -> {
+                    if (addZoneRequestHandler != null) {
+                        addZoneRequestHandler.run();
+                    }
+                });
+                zonesContainer.getChildren().add(addZoneTabButton);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+        zonesContainer.getChildren().add(spacer);
     }
 
     public void setOnZoneSelected(IntConsumer zoneSelectionHandler) {
         this.zoneSelectionHandler = zoneSelectionHandler;
     }
 
-    public void setEditMode(boolean enabled) {
-        editMode = enabled;
-        setDeleteButtonsVisible(enabled);
+    public void setOnAddZoneRequested(Runnable addZoneRequestHandler) {
+        this.addZoneRequestHandler = addZoneRequestHandler;
+    }
+
+    public void setAddZoneTabVisible(boolean visible) {
+        this.addZoneTabVisible = visible;
+        loadZones();
     }
 
     public void setActiveZone(int zoneId) {
-        restaurantButton.getStyleClass().remove("nav-tab-active");
-        teraceButton.getStyleClass().remove("nav-tab-active");
-        barButton.getStyleClass().remove("nav-tab-active");
-
-        switch (zoneId) {
-            case 1 -> restaurantButton.getStyleClass().add("nav-tab-active");
-            case 2 -> teraceButton.getStyleClass().add("nav-tab-active");
-            case 3 -> barButton.getStyleClass().add("nav-tab-active");
-            default -> {
-            }
-        }
-    }
-
-    @FXML
-    private void onDeleteRestaurant() {
-        if (!editMode) {
-            return;
-        }
-        System.out.println("Delete zone Restaurant");
-    }
-
-    @FXML
-    private void onDeleteTerace() {
-        if (!editMode) {
-            return;
-        }
-        System.out.println("Delete zone Terace");
-    }
-
-    @FXML
-    private void onDeleteBar() {
-        if (!editMode) {
-            return;
-        }
-        System.out.println("Delete zone Bar");
-    }
-
-    private void setDeleteButtonsVisible(boolean visible) {
-        if (restaurantDeleteButton != null) {
-            restaurantDeleteButton.setVisible(visible);
-            restaurantDeleteButton.setManaged(visible);
-        }
-        if (teraceDeleteButton != null) {
-            teraceDeleteButton.setVisible(visible);
-            teraceDeleteButton.setManaged(visible);
-        }
-        if (barDeleteButton != null) {
-            barDeleteButton.setVisible(visible);
-            barDeleteButton.setManaged(visible);
+        zoneButtons.values().forEach(btn -> btn.getStyleClass().remove("nav-tab-active"));
+        if (zoneButtons.containsKey(zoneId)) {
+            zoneButtons.get(zoneId).getStyleClass().add("nav-tab-active");
         }
     }
 

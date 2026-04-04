@@ -52,7 +52,11 @@ INSERT INTO users (role_id, name, email, password) VALUES
 (2, 'Waiter1', 'waiter1@vava.com', 'waiter123'),
 (2, 'Waiter2', 'waiter2@vava.com', 'waiter123'),
 (3, 'Le Chef1', 'chef1@vava.com', 'chef123'),
-(3, 'Le Chef2', 'chef2@vava.com', 'chef123')
+(3, 'Le Chef2', 'chef2@vava.com', 'chef123'),
+-- TODO: delete these
+(1, 'a', 'a', 'a'),
+(2, 'w', 'w', 'w'),
+(3, 'c', 'c', 'c')
 ON CONFLICT (email) DO NOTHING;
 
 

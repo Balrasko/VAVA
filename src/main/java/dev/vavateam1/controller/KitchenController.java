@@ -4,11 +4,11 @@ import java.util.List;
 
 import com.google.inject.Inject;
 
-import dev.vavateam1.model.KitchenOrder;
-import dev.vavateam1.model.KitchenOrderItem;
+import dev.vavateam1.dto.KitchenOrder;
+import dev.vavateam1.dto.OrderItemDto;
 import dev.vavateam1.model.OrderStatus;
 import dev.vavateam1.service.AuthService;
-import dev.vavateam1.service.KitchenOrderService;
+import dev.vavateam1.service.KitchenService;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -19,7 +19,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
-public class ChefController {
+public class KitchenController {
 
     @FXML
     private VBox firstColumn;
@@ -31,13 +31,13 @@ public class ChefController {
     private VBox thirdColumn;
 
     private final AuthService authService;
-    private final KitchenOrderService kitchenOrderService;
+    private final KitchenService kitchenService;
     private final ViewSwitcher viewSwitcher;
 
     @Inject
-    public ChefController(AuthService authService, KitchenOrderService kitchenOrderService, ViewSwitcher viewSwitcher) {
+    public KitchenController(AuthService authService, KitchenService kitchenService, ViewSwitcher viewSwitcher) {
         this.authService = authService;
-        this.kitchenOrderService = kitchenOrderService;
+        this.kitchenService = kitchenService;
         this.viewSwitcher = viewSwitcher;
     }
 
@@ -49,7 +49,7 @@ public class ChefController {
     private void refreshOrders() {
         clearColumns();
 
-        List<KitchenOrder> orders = kitchenOrderService.getAllOrders();
+        List<KitchenOrder> orders = kitchenService.getAllOrders();
 
         for (int index = 0; index < orders.size(); index++) {
             KitchenOrder order = orders.get(index);
@@ -104,7 +104,7 @@ public class ChefController {
             Button deleteButton = new Button("DEL");
             deleteButton.getStyleClass().add("chef-delete-button");
             deleteButton.setOnAction(event -> {
-                kitchenOrderService.deleteDoneOrder(order.getId());
+                kitchenService.deleteDoneOrder(order.getId());
                 refreshOrders();
             });
             header.getChildren().addAll(titleBox, spacer, deleteButton);
@@ -114,7 +114,7 @@ public class ChefController {
 
         VBox itemsBox = new VBox(10);
         itemsBox.getStyleClass().add("chef-card-body");
-        for (KitchenOrderItem item : order.getItems()) {
+        for (OrderItemDto item : order.getItems()) {
             itemsBox.getChildren().add(createOrderItem(item, order.getStatus()));
         }
 
@@ -124,7 +124,7 @@ public class ChefController {
             statusButton.setDisable(true);
         } else {
             statusButton.setOnAction(event -> {
-                kitchenOrderService.advanceOrderStatus(order.getId());
+                kitchenService.advanceOrderStatus(order.getId());
                 refreshOrders();
             });
         }
@@ -138,7 +138,7 @@ public class ChefController {
         return card;
     }
 
-    private VBox createOrderItem(KitchenOrderItem item, OrderStatus status) {
+    private VBox createOrderItem(OrderItemDto item, OrderStatus status) {
         VBox itemBox = new VBox(4);
 
         Label itemLabel = new Label(item.getQuantity() + "x " + item.getName());

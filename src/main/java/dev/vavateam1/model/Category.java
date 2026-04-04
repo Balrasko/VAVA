@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 public class Category {
     private int id;
     private String name;
+    private boolean deleted;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

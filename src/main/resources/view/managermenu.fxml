@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.BorderPane?>
@@ -11,61 +12,50 @@
 <?import javafx.scene.layout.VBox?>
 
 <BorderPane xmlns:fx="http://javafx.com/fxml"
-            fx:controller="dev.vavateam1.controller.MenuController"
-            maxWidth="Infinity"
-            styleClass="page-root">
+    fx:controller="dev.vavateam1.controller.MenuController"
+    maxWidth="Infinity"
+    styleClass="page-root">
 
     <center>
         <HBox spacing="16"
-              maxWidth="Infinity"
-              styleClass="page-content">
+            maxWidth="Infinity"
+            styleClass="page-content">
             <children>
 
                 <VBox fx:id="menuListPanel"
-                      spacing="0"
-                      HBox.hgrow="ALWAYS"
-                      styleClass="menu-outer-panel">
+                    spacing="0"
+                    HBox.hgrow="ALWAYS"
+                    styleClass="menu-outer-panel">
                     <children>
 
-                        <HBox spacing="0" styleClass="menu-tabs-bar">
-                            <children>
-                                <Button fx:id="foodTabButton"
-                                        text="Food"
-                                        onAction="#onFoodTab"
-                                        styleClass="menu-tab"/>
-
-                                <Button fx:id="drinksTabButton"
-                                        text="Drinks"
-                                        onAction="#onDrinksTab"
-                                        styleClass="menu-tab"/>
-
-                                <Button fx:id="servicesTabButton"
-                                        text="Services"
-                                        onAction="#onServicesTab"
-                                        styleClass="menu-tab"/>
-                            </children>
-                        </HBox>
+                        <HBox fx:id="categoryTabsContainer" spacing="0" styleClass="menu-tabs-bar" />
 
                         <VBox spacing="18"
-                              VBox.vgrow="ALWAYS"
-                              styleClass="menu-inner-panel">
+                            VBox.vgrow="ALWAYS"
+                            styleClass="menu-inner-panel">
                             <children>
 
-                                <VBox fx:id="foodSection" spacing="18"/>
-                                <VBox fx:id="drinksSection" spacing="18" visible="false" managed="false"/>
-                                <VBox fx:id="servicesSection" spacing="18" visible="false" managed="false"/>
+                                <VBox fx:id="categorySectionsContainer" spacing="18" />
 
-                                <Region VBox.vgrow="ALWAYS"/>
+                                <Region VBox.vgrow="ALWAYS" />
 
                                 <HBox alignment="CENTER_RIGHT">
                                     <children>
+                                        <Button fx:id="editCategoryButton"
+                                            text="Edit category"
+                                            onAction="#onEditCategory"
+                                            styleClass="secondary-action-button" />
+                                        <Button fx:id="deleteCategoryActionButton"
+                                            text="Delete category"
+                                            onAction="#onDeleteCurrentCategory"
+                                            styleClass="secondary-action-button" />
                                         <Button fx:id="addMenuButton"
-                                                text="Add menu"
-                                                onAction="#onAddMenu"
-                                                styleClass="green-action-button"/>
+                                            text="Add menu"
+                                            onAction="#onAddMenu"
+                                            styleClass="green-action-button" />
                                     </children>
                                     <padding>
-                                        <Insets top="0" right="0" bottom="4" left="0"/>
+                                        <Insets top="0" right="0" bottom="4" left="0" />
                                     </padding>
                                 </HBox>
                             </children>
@@ -74,48 +64,51 @@
                 </VBox>
 
                 <VBox fx:id="menuFormPanel"
-                      prefWidth="420"
-                      minWidth="420"
-                      maxWidth="420"
-                      spacing="18"
-                      visible="false"
-                      managed="false"
-                      styleClass="menu-form-panel">
+                    prefWidth="420"
+                    minWidth="420"
+                    maxWidth="420"
+                    spacing="18"
+                    visible="false"
+                    managed="false"
+                    styleClass="menu-form-panel">
                     <children>
 
                         <HBox alignment="CENTER_RIGHT">
                             <children>
                                 <Button text="✕"
-                                        onAction="#onCloseForm"
-                                        styleClass="form-close-button"/>
+                                    onAction="#onCloseForm"
+                                    styleClass="form-close-button" />
                             </children>
                         </HBox>
 
+                        <Label fx:id="menuFormTitle" text="Add menu"
+                            styleClass="menu-category-title" />
+
                         <VBox spacing="8">
                             <children>
-                                <Label text="Name" styleClass="form-label"/>
-                                <TextField fx:id="nameField" styleClass="form-input"/>
+                                <Label text="Name" styleClass="form-label" />
+                                <TextField fx:id="nameField" styleClass="form-input" />
                             </children>
                         </VBox>
 
                         <VBox spacing="8">
                             <children>
-                                <Label text="Description" styleClass="form-label"/>
-                                <TextField fx:id="descriptionField" styleClass="form-input"/>
+                                <Label text="Description" styleClass="form-label" />
+                                <TextField fx:id="descriptionField" styleClass="form-input" />
                             </children>
                         </VBox>
 
                         <VBox spacing="8">
                             <children>
-                                <Label text="Ingredients" styleClass="form-label"/>
-                                <TextField fx:id="ingredientsField" styleClass="form-input"/>
+                                <Label text="Ingredients" styleClass="form-label" />
+                                <TextField fx:id="ingredientsField" styleClass="form-input" />
                             </children>
                         </VBox>
 
                         <VBox spacing="8">
                             <children>
-                                <Label text="Category" styleClass="form-label"/>
-                                <TextField fx:id="categoryField" styleClass="form-input"/>
+                                <Label text="Category" styleClass="form-label" />
+                                <ComboBox fx:id="categoryField" styleClass="form-input" />
                             </children>
                         </VBox>
 
@@ -123,30 +116,88 @@
                             <children>
                                 <VBox spacing="8" HBox.hgrow="ALWAYS">
                                     <children>
-                                        <Label text="Price" styleClass="form-label"/>
-                                        <TextField fx:id="priceField" styleClass="form-input"/>
+                                        <Label text="Price" styleClass="form-label" />
+                                        <TextField fx:id="priceField" styleClass="form-input" />
                                     </children>
                                 </VBox>
 
                                 <VBox spacing="8" HBox.hgrow="ALWAYS">
                                     <children>
-                                        <Label text="Discount" styleClass="form-label"/>
-                                        <TextField fx:id="discountField" styleClass="form-input"/>
+                                        <Label text="Discount" styleClass="form-label" />
+                                        <TextField fx:id="discountField" styleClass="form-input" />
                                     </children>
                                 </VBox>
                             </children>
                         </HBox>
 
-                        <Region VBox.vgrow="ALWAYS"/>
+                        <Region VBox.vgrow="ALWAYS" />
 
                         <HBox alignment="CENTER_RIGHT" spacing="12">
                             <children>
                                 <Button text="Cancel"
-                                        onAction="#onCloseForm"
-                                        styleClass="secondary-action-button"/>
-                                <Button text="Add menu"
-                                        onAction="#onSubmitMenu"
-                                        styleClass="green-action-button"/>
+                                    onAction="#onCloseForm"
+                                    styleClass="secondary-action-button" />
+                                <Button fx:id="deleteMenuButton"
+                                    text="Delete"
+                                    visible="false"
+                                    managed="false"
+                                    onAction="#onDeleteMenu"
+                                    styleClass="secondary-action-button" />
+                                <Button fx:id="submitMenuButton"
+                                    text="Add menu"
+                                    onAction="#onSubmitMenu"
+                                    styleClass="green-action-button" />
+                            </children>
+                        </HBox>
+
+                    </children>
+                </VBox>
+
+                <VBox fx:id="categoryFormPanel"
+                    prefWidth="420"
+                    minWidth="420"
+                    maxWidth="420"
+                    spacing="18"
+                    visible="false"
+                    managed="false"
+                    styleClass="menu-form-panel">
+                    <children>
+
+                        <HBox alignment="CENTER_RIGHT">
+                            <children>
+                                <Button text="✕"
+                                    onAction="#onCloseCategoryForm"
+                                    styleClass="form-close-button" />
+                            </children>
+                        </HBox>
+
+                        <Label fx:id="categoryFormTitle" text="Add category"
+                            styleClass="menu-category-title" />
+
+                        <VBox spacing="8">
+                            <children>
+                                <Label text="Category name" styleClass="form-label" />
+                                <TextField fx:id="categoryNameField" styleClass="form-input" />
+                            </children>
+                        </VBox>
+
+                        <Region VBox.vgrow="ALWAYS" />
+
+                        <HBox alignment="CENTER_RIGHT" spacing="12">
+                            <children>
+                                <Button text="Cancel"
+                                    onAction="#onCloseCategoryForm"
+                                    styleClass="secondary-action-button" />
+                                <Button fx:id="deleteCategoryButton"
+                                    text="Delete"
+                                    visible="false"
+                                    managed="false"
+                                    onAction="#onDeleteCategory"
+                                    styleClass="secondary-action-button" />
+                                <Button fx:id="submitCategoryButton"
+                                    text="Add category"
+                                    onAction="#onSubmitCategory"
+                                    styleClass="green-action-button" />
                             </children>
                         </HBox>
 

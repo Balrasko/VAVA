@@ -61,7 +61,7 @@ public class DashboardController {
     @FXML
     public void initialize() {
         User currentUser = authService.getUser();
-        boolean isChef = currentUser != null && currentUser.getRoleId() == 3;
+        boolean isKitchenStaff = currentUser != null && currentUser.getRoleId() == 3;
         isAdmin = currentUser != null && currentUser.getRoleId() == 1;
 
         sidebar.setPrefWidth(0);
@@ -81,8 +81,8 @@ public class DashboardController {
         setTopNavbarVisible(false);
 
         try {
-            if (isChef) {
-                showChefView();
+            if (isKitchenStaff) {
+                showKitchenView();
                 sidebar.setVisible(false);
                 sidebar.setManaged(false);
                 topSection.setVisible(false);
@@ -158,6 +158,7 @@ public class DashboardController {
         topNavbarController = null;
 
         if (topNavbarZonesController != null) {
+            topNavbarZonesController.setAddZoneTabVisible(false);
             topNavbarZonesController.setOnZoneSelected(this::handleZoneSelected);
             topNavbarZonesController.setActiveZone(activeZoneId);
         }
@@ -181,7 +182,8 @@ public class DashboardController {
                 case "inventory" -> showInventory();
                 case "users" -> showUsers();
                 case "menu" -> showMenu();
-                default -> {}
+                default -> {
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -220,9 +222,9 @@ public class DashboardController {
         setTopNavbarVisible(false);
     }
 
-    private void showChefView() throws Exception {
+    private void showKitchenView() throws Exception {
         FXMLLoader loader = new FXMLLoader(
-                getClass().getResource("/view/chef.fxml"));
+                getClass().getResource("/view/kitchen.xml"));
         loader.setControllerFactory(injector::getInstance);
 
         Parent view = loader.load();
@@ -234,12 +236,11 @@ public class DashboardController {
         try {
 
             FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/view/closing.fxml")
-            );
+                    getClass().getResource("/view/closing.fxml"));
 
             contentArea.getChildren().clear();
             contentArea.getChildren().add(loader.load());
-                tablesController = null;
+            tablesController = null;
             setTopNavbarVisible(false);
 
         } catch (Exception e) {
@@ -293,7 +294,7 @@ public class DashboardController {
 
             contentArea.getChildren().clear();
             contentArea.getChildren().add(loader.load());
-                tablesController = null;
+            tablesController = null;
             setTopNavbarVisible(false);
 
         } catch (Exception e) {
@@ -316,7 +317,7 @@ public class DashboardController {
             e.printStackTrace();
         }
     }
-    
+
     @FXML
     private void showFinances() {
         try {

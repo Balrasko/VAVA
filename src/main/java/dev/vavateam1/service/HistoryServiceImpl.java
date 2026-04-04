@@ -1,26 +1,32 @@
 package dev.vavateam1.service;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.google.inject.Inject;
 
+import dev.vavateam1.dao.MenuItemDao;
 import dev.vavateam1.dao.OrderItemDao;
 import dev.vavateam1.dao.PaymentDao;
+import dev.vavateam1.dto.OrderItemDto;
 import dev.vavateam1.dto.PaymentDto;
+import dev.vavateam1.model.MenuItem;
 import dev.vavateam1.model.OrderItem;
-import dev.vavateam1.model.Payment;
 import dev.vavateam1.model.PaymentSummary;
 
 public class HistoryServiceImpl implements HistoryService {
 
     private final PaymentDao paymentDao;
     private final OrderItemDao orderItemDao;
+    private final MenuItemDao menuItemDao;
 
     @Inject
-    public HistoryServiceImpl(PaymentDao paymentDao, OrderItemDao orderItemDao) {
+    public HistoryServiceImpl(PaymentDao paymentDao, OrderItemDao orderItemDao, MenuItemDao menuItemDao) {
         this.paymentDao = paymentDao;
         this.orderItemDao = orderItemDao;
+        this.menuItemDao = menuItemDao;
     }
 
     @Override
@@ -47,6 +53,21 @@ public class HistoryServiceImpl implements HistoryService {
         }
 
         return new PaymentSummary(payment, orderItems, orderItemsTotal, totalQuantity);
+    }
+
+    @Override
+    public List<OrderItemDto> getOrderItemsByPaymentId(int paymentId) {
+        List<OrderItem> orderItems = orderItemDao.findByPayment(paymentId);
+        Map<Integer, MenuItem> menuItemsById = new HashMap<>();
+
+        for (MenuItem menuItem : menuItemDao.getAllMenuItems()) {
+            menuItemsById.put(menuItem.getId(), menuItem);
+        }
+
+        return orderItems.stream()
+                .filter(orderItem -> menuItemsById.containsKey(orderItem.getMenuItemId()))
+                .map(orderItem -> new OrderItemDto(orderItem, menuItemsById.get(orderItem.getMenuItemId())))
+                .toList();
     }
 
     @Override
