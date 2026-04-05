@@ -40,8 +40,10 @@
                         <Region HBox.hgrow="ALWAYS" />
 
                         <Button text="Import"
+                                onAction="#onImportInventory"
                                 style="-fx-background-color:#57c84d; -fx-text-fill:#1d1d1d; -fx-background-radius:24; -fx-padding:10 24 10 24; -fx-cursor:hand; -fx-font-size:14;" />
                         <Button text="Export"
+                                onAction="#onExportInventory"
                                 style="-fx-background-color:#57c84d; -fx-text-fill:#1d1d1d; -fx-background-radius:24; -fx-padding:10 24 10 24; -fx-cursor:hand; -fx-font-size:14;" />
                     </children>
                 </HBox>
@@ -51,9 +53,11 @@
                     <children>
                         <TextField fx:id="searchField"
                                    promptText="Search item..."
+                                   onAction="#onApplyFilter"
                                    prefWidth="300"
                                    style="-fx-background-color:#ffffff; -fx-background-radius:24; -fx-border-radius:24; -fx-padding:10 16 10 16; -fx-font-size:14; -fx-text-fill:#1d1d1d; -fx-prompt-text-fill:#7a7a7a;" />
                         <Button text="Filter"
+                                onAction="#onApplyFilter"
                                 style="-fx-background-color:#ffffff; -fx-text-fill:#1d1d1d; -fx-background-radius:24; -fx-border-color:#1e88e5; -fx-border-radius:24; -fx-padding:10 20 10 20; -fx-cursor:hand;" />
                     </children>
                 </HBox>

@@ -13,6 +13,7 @@ public class InventoryIngredient {
     private int id;
     private String name;
     private BigDecimal quantity;
+    private BigDecimal minimalQuantity;
     private String unit;
     private BigDecimal costPerUnit;
     private LocalDateTime createdAt;

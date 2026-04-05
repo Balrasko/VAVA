@@ -32,11 +32,15 @@ CREATE TABLE IF NOT EXISTS inventory_ingredients (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     quantity NUMERIC DEFAULT 0,
+    minimal_quantity NUMERIC DEFAULT 0,
     unit VARCHAR,
     cost_per_unit NUMERIC,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP
     );
+
+ALTER TABLE inventory_ingredients
+    ADD COLUMN IF NOT EXISTS minimal_quantity NUMERIC DEFAULT 0;
 
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
