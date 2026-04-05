@@ -29,10 +29,13 @@
                     <children>
                         <HBox spacing="12" alignment="CENTER_LEFT">
                             <children>
-                                <TextField promptText="Search item..."
+                                <TextField fx:id="searchField"
+                                           promptText="Search item..."
+                                           onAction="#onApplyFilter"
                                            HBox.hgrow="ALWAYS"
                                            style="-fx-background-color:#f4f4f4; -fx-background-radius:24; -fx-border-radius:24; -fx-padding:10 16 10 16; -fx-font-size:14; -fx-text-fill:#1d1d1d; -fx-prompt-text-fill:#7a7a7a;" />
                                 <Button text="Filter"
+                                        onAction="#onApplyFilter"
                                         style="-fx-background-color:#f4f4f4; -fx-text-fill:#1d1d1d; -fx-background-radius:24; -fx-border-color:#1e88e5; -fx-border-radius:24; -fx-padding:10 20 10 20; -fx-cursor:hand;" />
                             </children>
                         </HBox>
@@ -148,4 +151,3 @@
     </center>
 
 </BorderPane>
-
