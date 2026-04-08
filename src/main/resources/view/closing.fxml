@@ -5,6 +5,7 @@
 
 <HBox xmlns:fx="http://javafx.com/fxml"
       fx:controller="dev.vavateam1.controller.ClosingController"
+      fx:id="rootContainer"
       spacing="20"
       maxWidth="Infinity"
       style="-fx-padding:20; -fx-background-color:#f4f4f4;">
@@ -23,28 +24,28 @@
                     <!-- ACTION BUTTONS -->
                     <Button fx:id="closingButton"
                             text="Closing"
-                            
+                            onAction="#onClosing"
                             prefWidth="122.0"
                             prefHeight="50.0"
                             style="-fx-background-color: #f5f5f5; -fx-background-radius: 16; -fx-text-fill: #1d1d1d; -fx-font-size: 12px; -fx-cursor: hand;"/>
 
                     <Button fx:id="printButton"
                             text="Print"
-                            
+                            onAction="#onPrint"
                             prefWidth="122.0"
                             prefHeight="50.0"
                             style="-fx-background-color: #f5f5f5; -fx-background-radius: 16; -fx-text-fill: #1d1d1d; -fx-font-size: 12px; -fx-cursor: hand;"/>
 
                     <Button fx:id="cashFloatButton"
                             text="Cash float"
-                            
+                            onAction="#onCashFloat"
                             prefWidth="122.0"
                             prefHeight="50.0"
                             style="-fx-background-color: #f5f5f5; -fx-background-radius: 16; -fx-text-fill: #1d1d1d; -fx-font-size: 12px; -fx-cursor: hand;"/>
 
                     <Button fx:id="withdrawalButton"
                             text="Withdrawal"
-                            
+                            onAction="#onWithdrawal"
                             prefWidth="122.0"
                             prefHeight="50.0"
                             style="-fx-background-color: #f5f5f5; -fx-background-radius: 16; -fx-text-fill: #1d1d1d; -fx-font-size: 12px; -fx-cursor: hand;"/>
@@ -137,4 +138,3 @@
 
 
 </HBox>
-
