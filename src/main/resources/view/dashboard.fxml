@@ -11,7 +11,7 @@
     <left>
     <VBox fx:id="sidebar"
       spacing="10"
-      prefWidth="220"
+      prefWidth="208"
       styleClass="sidebar"
       style="-fx-padding: 20;"
       fillWidth="true">
