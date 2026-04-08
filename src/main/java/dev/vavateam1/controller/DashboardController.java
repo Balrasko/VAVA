@@ -20,6 +20,8 @@ import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
 public class DashboardController {
+    private static final double SIDEBAR_OPEN_WIDTH = 208;
+
     private final AuthService authService;
     private final ViewSwitcher viewSwitcher;
     private final Injector injector;
@@ -102,7 +104,7 @@ public class DashboardController {
             return;
         }
 
-        double endWidth = sidebarVisible ? 0 : 220;
+        double endWidth = sidebarVisible ? 0 : SIDEBAR_OPEN_WIDTH;
 
         Timeline timeline = new Timeline(new KeyFrame(Duration.millis(250),
                 new KeyValue(sidebar.prefWidthProperty(), endWidth),
