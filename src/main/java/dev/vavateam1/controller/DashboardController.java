@@ -237,6 +237,7 @@ public class DashboardController {
 
             FXMLLoader loader = new FXMLLoader(
                     getClass().getResource("/view/closing.fxml"));
+            loader.setControllerFactory(injector::getInstance);
 
             contentArea.getChildren().clear();
             contentArea.getChildren().add(loader.load());

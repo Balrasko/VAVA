@@ -109,6 +109,31 @@ CREATE TABLE IF NOT EXISTS payments (
     updated_at TIMESTAMP
     );
 
+CREATE TABLE IF NOT EXISTS cash_movements (
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL REFERENCES users(id),
+    operation_type VARCHAR(50) NOT NULL,
+    amount NUMERIC NOT NULL,
+    note TEXT,
+    business_date DATE NOT NULL DEFAULT CURRENT_DATE,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP
+    );
+
+CREATE TABLE IF NOT EXISTS daily_closings (
+    id SERIAL PRIMARY KEY,
+    closed_by_user_id INT NOT NULL REFERENCES users(id),
+    business_date DATE NOT NULL UNIQUE,
+    total_paid NUMERIC NOT NULL,
+    total_tips NUMERIC NOT NULL,
+    grand_total NUMERIC NOT NULL,
+    cash_float NUMERIC NOT NULL,
+    cash NUMERIC NOT NULL,
+    card NUMERIC NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP
+    );
+
 CREATE TABLE IF NOT EXISTS order_items (
     id SERIAL PRIMARY KEY,
     menu_item_id INT NOT NULL REFERENCES menu_items(id),
