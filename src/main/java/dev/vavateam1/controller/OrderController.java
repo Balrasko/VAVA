@@ -62,6 +62,9 @@ public class OrderController {
     private TilePane menuTile;
 
     @FXML
+    private Label totalLabelText;
+    
+    @FXML
     private Label totalLabel;
 
     @FXML
@@ -88,7 +91,6 @@ public class OrderController {
     private Label pluDisplay;
     private boolean pluOpen = false;
     private GridPane pluKeyboard;
-    private Button firstCategoryButton;
 
     @FXML
     private Button pluButton;
@@ -106,6 +108,8 @@ public class OrderController {
 
         this.tableLabel.setText("Table " + table.getTableNumber());
 
+        this.totalLabelText.setVisible(splitBillMode);
+        this.totalLabel.setVisible(splitBillMode);
         loadCategories();
         loadOrderItems();
     }
@@ -150,8 +154,6 @@ public class OrderController {
 
             // Automatically select first loaded category
             if (first) {
-                firstCategoryButton = btn;
-
                 selectCategory(btn);
                 showCategory(category.getId());
 
@@ -236,6 +238,7 @@ public class OrderController {
             orderPanel.getChildren().add(createOrderItemRow(newItem));
 
             subtotal = subtotal.add(menuItem.getPrice());
+            total = calculateSplitSubtotal();
             updateTotals();
         }
     }
@@ -246,16 +249,22 @@ public class OrderController {
         orderPanel.getChildren().clear();
 
         subtotal = BigDecimal.ZERO;
+        total = BigDecimal.ZERO;
 
         for (OrderItemDto item : orderItemViews) {
             orderPanel.getChildren().add(createOrderItemRow(item));
             subtotal = subtotal.add(item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())));
         }
 
+        total = calculateSplitSubtotal();
+
         updateTotals();
     }
 
     private void updateTotals() {
+
+        totalLabel.setText(total.toString() + " €");
+
         subtotalLabel.setText(subtotal.toString() + " €");
     }
 
@@ -456,6 +465,8 @@ public class OrderController {
             splitButton.setStyle("-fx-background-color: #7997E1; -fx-text-fill: #f4f4f4");
         }
 
+        totalLabel.setVisible(splitBillMode);
+        totalLabelText.setVisible(splitBillMode);
         refreshOrderPanel();
     }
 
@@ -466,6 +477,7 @@ public class OrderController {
             this.selectedQuantities.put(orderItemView, orderItemView.getQuantity());
         }
 
+        total = calculateSplitSubtotal();
         updateTotals();
     }
 
@@ -494,6 +506,21 @@ public class OrderController {
         }
 
         return result;
+    }
+
+    private BigDecimal calculateSplitSubtotal() {
+        // Calculate the subtotal value of currenlty selected items in "split the bill" mode
+
+        BigDecimal sum = BigDecimal.ZERO;
+
+        for (OrderItemDto item : orderItemViews) {
+            int quantity = selectedQuantities.get(item);
+
+            BigDecimal splitSubtotal = item.getPrice().multiply(BigDecimal.valueOf(quantity));
+            sum = sum.add(splitSubtotal);
+        }
+
+        return sum;
     }
 
     private BigDecimal calculatePaymentSubtotal(List<OrderItemDto> items) {
@@ -762,7 +789,7 @@ public class OrderController {
 
         if (!menuContainer.getChildren().contains(pluKeyboard)) {
             menuContainer.getChildren().add(pluKeyboard);
-            StackPane.setAlignment(pluKeyboard, Pos.BOTTOM_RIGHT);
+            StackPane.setAlignment(pluKeyboard, Pos.CENTER_RIGHT);
             StackPane.setMargin(pluKeyboard, new Insets(10));
         }
 
@@ -774,35 +801,6 @@ public class OrderController {
         pluDisplay.setText("");
 
         pluOpen = false;
-        resetCategory();
-    }
-
-    private void resetCategory() {
-        // Set category back to default (1st category)
-
-        if (firstCategoryButton != null) {
-            selectCategory(firstCategoryButton);
-
-            menuItems = orderService.getMenuItems();
-
-            Category firstCategory = categories.get(0);
-            showCategory(firstCategory.getId());
-        }
-    }
-
-    private void clearSelectedCategory() {
-        // Set category to null (when searching with the PLU keyboard the items aren't
-        // necessarily within a category)
-
-        if (selectedCategory != null) {
-            selectedCategory.getStyleClass().remove("category-button-selected");
-
-            if (!selectedCategory.getStyleClass().contains("category-button")) {
-                selectedCategory.getStyleClass().add("category-button");
-            }
-
-            selectedCategory = null;
-        }
     }
 
     private GridPane createPluKeyboard() {
@@ -846,10 +844,10 @@ public class OrderController {
         GridPane.setColumnSpan(pluDisplay, 2);
 
         // Close button
-        Button closeBtn = createPluButton("Exit");
-        closeBtn.getStyleClass().add("plu-keyboard-button");
-        closeBtn.setOnAction(e -> closePluKeyboard());
-        grid.add(closeBtn, 2, 0);
+        Button enterBtn = createPluButton("Enter");
+        enterBtn.getStyleClass().add("plu-keyboard-button");
+        enterBtn.setOnAction(e -> enterPluCode());
+        grid.add(enterBtn, 2, 0);
 
         // Layout of the buttons
         String[][] layout = {
@@ -887,7 +885,6 @@ public class OrderController {
         switch (input) {
             case "CLR": // Clear the display
                 pluDisplay.setText("");
-                resetCategory();
                 return;
 
             case "⌫": // Remove the last character from the display
@@ -900,30 +897,18 @@ public class OrderController {
                 pluDisplay.setText(current + input);
                 break;
         }
-
-        String code = pluDisplay.getText();
-
-        if (code.isEmpty()) {
-            // If the display code is empty show regular categories
-            resetCategory();
-        } else {
-            // Otherwise show items based on code input
-            clearSelectedCategory();
-            showItemsByCode(code);
-        }
     }
 
-    private void showItemsByCode(String code) {
-        menuTile.getChildren().clear();
-
-        // Get searched items by code from backend
-        menuItems = orderService.getItemsByPluCode(code);
-
-        // Filter by availability and make a display card for each menu item
-        menuItems.stream().filter(item -> item.isAvailability() == true).forEach(item -> {
-            VBox card = createMenuItemCard(item);
-            menuTile.getChildren().add(card);
-        });
+    private void enterPluCode() {
+        String code = pluDisplay.getText();
+        
+        try {
+            addItemToOrder(orderService.getItemsByPluCode(code).getFirst());
+            
+        }
+        catch (RuntimeException e) {
+            System.out.println("Wrong code");
+        }
     }
 
     @FXML
