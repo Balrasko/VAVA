@@ -14,7 +14,7 @@
 <BorderPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="dev.vavateam1.controller.InventoryController"
             maxWidth="Infinity"
-            style="-fx-background-color:#f4f4f4;">
+            styleClass="page-root">
 
     <center>
         <VBox spacing="16"
