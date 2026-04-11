@@ -185,7 +185,7 @@ public class KitchenController {
         return switch (status) {
             case RECEIVED -> "chef-status-received";
             case IN_PROGRESS -> "chef-status-progress";
-            case DONE -> "chef-status-done";
+            case DONE, SERVED -> "chef-status-done";
         };
     }
 
@@ -193,7 +193,7 @@ public class KitchenController {
         return switch (status) {
             case RECEIVED -> "Start";
             case IN_PROGRESS -> "Mark done";
-            case DONE -> "Done";
+            case DONE, SERVED -> "Done";
         };
     }
 

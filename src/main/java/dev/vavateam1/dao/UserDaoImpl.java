@@ -23,7 +23,7 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public Optional<User> findByEmailOrUsername(String emailOrUsername) {
-        String sql = "SELECT id, role_id, name, email, password, status, created_at, updated_at "
+        String sql = "SELECT id, role_id, name, email, password, status, created_at, updated_at, deleted_at "
                 + "FROM users WHERE LOWER(email) = LOWER(?) OR LOWER(name) = LOWER(?)";
 
         try (Connection conn = connectionFactory.getConnection();

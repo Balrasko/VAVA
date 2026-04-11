@@ -38,7 +38,7 @@ public class TableDaoImpl implements TableDao {
     }
 
     public List<Table> findAll() {
-        String sql = "SELECT id, location_id, table_number, pos_x, pos_y, availability, is_deleted, created_at, updated_at FROM tables WHERE is_deleted = FALSE";
+        String sql = "SELECT id, location_id, table_number, pos_x, pos_y, availability, created_at, updated_at, deleted_at FROM tables WHERE deleted_at IS NULL";
         List<Table> tables = new ArrayList<>();
 
         try (Connection conn = connectionFactory.getConnection();
