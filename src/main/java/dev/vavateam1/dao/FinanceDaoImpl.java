@@ -13,8 +13,8 @@ import java.util.List;
 import com.google.inject.Inject;
 
 import dev.vavateam1.data.connection.ConnectionFactory;
-import dev.vavateam1.model.FinanceItemReport;
-import dev.vavateam1.model.FinanceReport;
+import dev.vavateam1.report.FinanceItemReport;
+import dev.vavateam1.report.FinanceReport;
 
 public class FinanceDaoImpl implements FinanceDao {
 

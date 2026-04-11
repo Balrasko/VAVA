@@ -133,7 +133,7 @@ CREATE TABLE IF NOT EXISTS payments (
 CREATE TABLE IF NOT EXISTS cash_movements (
     id SERIAL PRIMARY KEY,
     user_id INT NOT NULL REFERENCES users(id),
-    operation_type cash_operation_type NOT NULL
+    operation_type cash_operation_type NOT NULL,
     amount NUMERIC(10,2) NOT NULL,
     note TEXT,
     business_date DATE NOT NULL DEFAULT CURRENT_DATE,

@@ -14,8 +14,8 @@ import java.util.regex.PatternSyntaxException;
 import com.google.inject.Inject;
 
 import dev.vavateam1.dao.FinanceDao;
-import dev.vavateam1.model.FinanceItemReport;
-import dev.vavateam1.model.FinanceReport;
+import dev.vavateam1.report.FinanceItemReport;
+import dev.vavateam1.report.FinanceReport;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
 import javafx.scene.control.Alert;
