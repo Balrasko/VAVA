@@ -81,7 +81,8 @@ CREATE TABLE IF NOT EXISTS tables (
     availability BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ,
-    deleted_at TIMESTAMPTZ
+    deleted_at TIMESTAMPTZ,
+    UNIQUE (location_id, table_number)
     );
 
 CREATE TABLE IF NOT EXISTS menu_items (
