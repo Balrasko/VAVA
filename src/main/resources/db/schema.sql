@@ -1,31 +1,33 @@
 CREATE TABLE IF NOT EXISTS roles (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL UNIQUE,
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ,
+    deleted_at TIMESTAMPTZ
     );
 
 CREATE TABLE IF NOT EXISTS locations (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
-    is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ,
+    deleted_at TIMESTAMPTZ
     );
 
 CREATE TABLE IF NOT EXISTS categories (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
-    is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ,
+    deleted_at TIMESTAMPTZ
     );
 
 CREATE TABLE IF NOT EXISTS payment_methods (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL UNIQUE,
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ,
+    deleted_at TIMESTAMPTZ
     );
 
 CREATE TABLE IF NOT EXISTS inventory_ingredients (
@@ -35,12 +37,10 @@ CREATE TABLE IF NOT EXISTS inventory_ingredients (
     minimal_quantity NUMERIC DEFAULT 0,
     unit VARCHAR,
     cost_per_unit NUMERIC,
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ,
+    deleted_at TIMESTAMPTZ
     );
-
-ALTER TABLE inventory_ingredients
-    ADD COLUMN IF NOT EXISTS minimal_quantity NUMERIC DEFAULT 0;
 
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
@@ -49,8 +49,9 @@ CREATE TABLE IF NOT EXISTS users (
     email VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     status BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ,
+    deleted_at TIMESTAMPTZ
     );
 
 CREATE TABLE IF NOT EXISTS tables (
@@ -60,9 +61,9 @@ CREATE TABLE IF NOT EXISTS tables (
     pos_x NUMERIC,
     pos_y NUMERIC,
     availability BOOLEAN DEFAULT TRUE,
-    is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ,
+    deleted_at TIMESTAMPTZ
     );
 
 CREATE TABLE IF NOT EXISTS menu_items (
@@ -75,18 +76,19 @@ CREATE TABLE IF NOT EXISTS menu_items (
     description TEXT,
     to_kitchen BOOLEAN,
     discount NUMERIC DEFAULT 0,
-    is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ,
+    deleted_at TIMESTAMPTZ
     );
 
 CREATE TABLE IF NOT EXISTS user_sessions (
     id SERIAL PRIMARY KEY,
     user_id INT NOT NULL REFERENCES users(id),
-    login_time TIMESTAMP,
-    logout_time TIMESTAMP,
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP
+    login_time TIMESTAMPTZ,
+    logout_time TIMESTAMPTZ,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ,
+    deleted_at TIMESTAMPTZ
     );
 
 CREATE TABLE IF NOT EXISTS menu_item_ingredients (
@@ -94,8 +96,9 @@ CREATE TABLE IF NOT EXISTS menu_item_ingredients (
     ingredient_id INT NOT NULL REFERENCES inventory_ingredients(id),
     menu_item_id INT NOT NULL REFERENCES menu_items(id),
     quantity_needed NUMERIC NOT NULL,
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ,
+    deleted_at TIMESTAMPTZ
     );
 
 CREATE TABLE IF NOT EXISTS payments (
@@ -105,8 +108,9 @@ CREATE TABLE IF NOT EXISTS payments (
     amount NUMERIC NOT NULL,
     refunded BOOLEAN DEFAULT FALSE,
     tip NUMERIC DEFAULT 0,
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ,
+    deleted_at TIMESTAMPTZ
     );
 
 CREATE TABLE IF NOT EXISTS cash_movements (
@@ -116,8 +120,9 @@ CREATE TABLE IF NOT EXISTS cash_movements (
     amount NUMERIC NOT NULL,
     note TEXT,
     business_date DATE NOT NULL DEFAULT CURRENT_DATE,
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ,
+    deleted_at TIMESTAMPTZ
     );
 
 CREATE TABLE IF NOT EXISTS daily_closings (
@@ -130,8 +135,9 @@ CREATE TABLE IF NOT EXISTS daily_closings (
     cash_float NUMERIC NOT NULL,
     cash NUMERIC NOT NULL,
     card NUMERIC NOT NULL,
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ,
+    deleted_at TIMESTAMPTZ
     );
 
 CREATE TABLE IF NOT EXISTS order_items (
@@ -145,6 +151,7 @@ CREATE TABLE IF NOT EXISTS order_items (
     price NUMERIC NOT NULL,
     note TEXT,
     status VARCHAR(50) DEFAULT 'WAITING',
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ,
+    deleted_at TIMESTAMPTZ
     );
