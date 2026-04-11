@@ -2,7 +2,8 @@
 CREATE TYPE order_status AS ENUM (
     'RECEIVED',
     'IN_PROGRESS',
-    'DONE'
+    'DONE',
+    'SERVED'
 );
 
 CREATE TYPE cash_operation_type AS ENUM (

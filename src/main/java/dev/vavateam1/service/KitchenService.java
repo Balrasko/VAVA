@@ -22,11 +22,8 @@ import dev.vavateam1.model.Table;
 
 public class KitchenService {
 
-    private static final Set<String> KITCHEN_BOARD_STATUSES = Set.of("WAITING", "IN_PROGRESS", "DONE");
-    private static final String STATUS_WAITING = "WAITING";
-    private static final String STATUS_IN_PROGRESS = "IN_PROGRESS";
-    private static final String STATUS_DONE = "DONE";
-    private static final String STATUS_SERVED = "SERVED";
+    private static final Set<OrderStatus> KITCHEN_BOARD_STATUSES = Set.of(
+            OrderStatus.RECEIVED, OrderStatus.IN_PROGRESS, OrderStatus.DONE);
 
     private final OrderItemDao orderItemDao;
     private final MenuItemDao menuItemDao;
@@ -50,10 +47,9 @@ public class KitchenService {
             if (!isKitchenItem(item, menuItemsById)) {
                 continue;
             }
-            if (!isKitchenBoardStatus(item.getStatus())) {
+            if (!KITCHEN_BOARD_STATUSES.contains(item.getStatus())) {
                 continue;
             }
-
             itemsByTable.computeIfAbsent(item.getTableId(), key -> new ArrayList<>()).add(item);
         }
 
@@ -73,8 +69,8 @@ public class KitchenService {
         if (order.getStatus() == OrderStatus.RECEIVED) {
             for (OrderItemDto itemDto : order.getItems()) {
                 OrderItem item = itemDto.getOrderItem();
-                if (STATUS_WAITING.equals(normalizeStatus(item.getStatus()))) {
-                    item.setStatus(STATUS_IN_PROGRESS);
+                if (item.getStatus() == OrderStatus.RECEIVED) {
+                    item.setStatus(OrderStatus.IN_PROGRESS);
                     orderItemDao.updateOrderItem(item);
                 }
             }
@@ -83,8 +79,8 @@ public class KitchenService {
 
         for (OrderItemDto itemDto : order.getItems()) {
             OrderItem item = itemDto.getOrderItem();
-            if (!STATUS_DONE.equals(normalizeStatus(item.getStatus()))) {
-                item.setStatus(STATUS_DONE);
+            if (item.getStatus() != OrderStatus.DONE) {
+                item.setStatus(OrderStatus.DONE);
                 orderItemDao.updateOrderItem(item);
             }
         }
@@ -99,7 +95,7 @@ public class KitchenService {
 
         for (OrderItemDto itemDto : order.getItems()) {
             OrderItem item = itemDto.getOrderItem();
-            item.setStatus(STATUS_SERVED);
+            item.setStatus(OrderStatus.SERVED);
             orderItemDao.updateOrderItem(item);
         }
     }
@@ -137,19 +133,16 @@ public class KitchenService {
     }
 
     private OrderStatus deriveOrderStatus(List<OrderItem> items) {
-        Set<String> statuses = items.stream()
+        Set<OrderStatus> statuses = items.stream()
                 .map(OrderItem::getStatus)
-                .map(this::normalizeStatus)
                 .collect(Collectors.toSet());
 
-        if (statuses.contains(STATUS_WAITING)) {
+        if (statuses.contains(OrderStatus.RECEIVED)) {
             return OrderStatus.RECEIVED;
         }
-
-        if (statuses.contains(STATUS_IN_PROGRESS)) {
+        if (statuses.contains(OrderStatus.IN_PROGRESS)) {
             return OrderStatus.IN_PROGRESS;
         }
-
         return OrderStatus.DONE;
     }
 

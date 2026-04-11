@@ -15,7 +15,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -142,9 +142,9 @@ public class MenuController {
                 descriptionField.getText(),
                 isKitchenCategory(categoryField.getValue()),
                 parseDecimal(discountField.getText()),
-                false,
-                LocalDateTime.now(),
-                LocalDateTime.now());
+                OffsetDateTime.now(),
+                OffsetDateTime.now(),
+                null);
 
         if (editingMenuItemId > 0) {
             menuService.updateMenuItem(item);
