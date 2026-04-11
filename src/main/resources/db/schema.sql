@@ -1,3 +1,20 @@
+-- ENUMS
+CREATE TYPE order_status AS ENUM (
+    'RECEIVED',
+    'IN_PROGRESS',
+    'DONE'
+);
+
+CREATE TYPE cash_operation_type AS ENUM (
+    'CASH_FLOAT',
+    'WITHDRAWAL'
+);
+
+
+-----------------------------------------------------------------------------------------------------------------
+
+
+-- TABLES
 CREATE TABLE IF NOT EXISTS roles (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL UNIQUE,
@@ -57,7 +74,7 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS tables (
     id SERIAL PRIMARY KEY,
     location_id INT NOT NULL REFERENCES locations(id),
-    table_number INT NOT NULL UNIQUE,
+    table_number INT NOT NULL,
     pos_x NUMERIC,
     pos_y NUMERIC,
     availability BOOLEAN DEFAULT TRUE,
@@ -105,9 +122,9 @@ CREATE TABLE IF NOT EXISTS payments (
     id SERIAL PRIMARY KEY,
     waiter_id INT NOT NULL REFERENCES users(id),
     method_id INT NOT NULL REFERENCES payment_methods(id),
-    amount NUMERIC NOT NULL,
+    amount NUMERIC(10,2) NOT NULL,
     refunded BOOLEAN DEFAULT FALSE,
-    tip NUMERIC DEFAULT 0,
+    tip NUMERIC(10,2) DEFAULT 0,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ,
     deleted_at TIMESTAMPTZ
@@ -116,8 +133,8 @@ CREATE TABLE IF NOT EXISTS payments (
 CREATE TABLE IF NOT EXISTS cash_movements (
     id SERIAL PRIMARY KEY,
     user_id INT NOT NULL REFERENCES users(id),
-    operation_type VARCHAR(50) NOT NULL,
-    amount NUMERIC NOT NULL,
+    operation_type cash_operation_type NOT NULL
+    amount NUMERIC(10,2) NOT NULL,
     note TEXT,
     business_date DATE NOT NULL DEFAULT CURRENT_DATE,
     created_at TIMESTAMPTZ DEFAULT NOW(),
@@ -150,7 +167,7 @@ CREATE TABLE IF NOT EXISTS order_items (
     discount NUMERIC DEFAULT 0,
     price NUMERIC NOT NULL,
     note TEXT,
-    status VARCHAR(50) DEFAULT 'WAITING',
+    status order_status DEFAULT 'RECEIVED',
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ,
     deleted_at TIMESTAMPTZ
