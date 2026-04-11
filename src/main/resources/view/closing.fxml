@@ -55,26 +55,30 @@
                         <children>
                             <VBox prefWidth="166.0"
                                     prefHeight="54.0"
-                                    alignment="CENTER_LEFT"
+                                    alignment="CENTER"
                                     style="-fx-background-color: #f5f5f5; -fx-background-radius: 16; -fx-padding: 8 14 8 14;">
                                 <children>
                                     <Label text="Total paid:"
+                                            alignment="CENTER"
                                             style="-fx-text-fill: #1d1d1d; -fx-font-size: 12px;"/>
                                     <Label fx:id="totalPaidLabel"
                                             text="306.64"
+                                            alignment="CENTER"
                                             style="-fx-text-fill: #1d1d1d; -fx-font-size: 25px; -fx-font-weight: bold;"/>
                                 </children>
                             </VBox>
 
                             <VBox prefWidth="166.0"
                                     prefHeight="54.0"
-                                    alignment="CENTER_LEFT"
+                                    alignment="CENTER"
                                     style="-fx-background-color: #f5f5f5; -fx-background-radius: 16; -fx-padding: 8 14 8 14;">
                                 <children>
                                     <Label text="Total tips:"
+                                            alignment="CENTER"
                                             style="-fx-text-fill: #1d1d1d; -fx-font-size: 12px;"/>
                                     <Label fx:id="totalTipsLabel"
                                             text="32.40"
+                                            alignment="CENTER"
                                             style="-fx-text-fill: #1d1d1d; -fx-font-size: 25px; -fx-font-weight: bold;"/>
                                 </children>
                             </VBox>

@@ -180,6 +180,20 @@
   -fx-wrap-text: true;
 }
 
+.chef-item-done-button {
+  -fx-background-color: #e5e7eb;
+  -fx-text-fill: #1d1d1d;
+  -fx-background-radius: 999;
+  -fx-padding: 6 12;
+  -fx-cursor: hand;
+}
+
+.chef-item-done-button:disabled {
+  -fx-opacity: 1;
+  -fx-background-color: #d1d5db;
+  -fx-text-fill: #6b7280;
+}
+
 .chef-status-button {
   -fx-background-color: #1c2a78;
   -fx-text-fill: white;

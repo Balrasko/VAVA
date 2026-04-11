@@ -118,16 +118,14 @@ public class KitchenController {
             itemsBox.getChildren().add(createOrderItem(item, order.getStatus()));
         }
 
-        Button statusButton = new Button(getStatusButtonText(order.getStatus()));
+        Button statusButton = new Button("Close order");
         statusButton.getStyleClass().add("chef-status-button");
-        if (order.getStatus() == OrderStatus.DONE) {
-            statusButton.setDisable(true);
-        } else {
-            statusButton.setOnAction(event -> {
-                kitchenService.advanceOrderStatus(order.getId());
-                refreshOrders();
-            });
-        }
+        boolean canCloseOrder = order.getStatus() == OrderStatus.DONE;
+        statusButton.setDisable(!canCloseOrder);
+        statusButton.setOnAction(event -> {
+            kitchenService.deleteDoneOrder(order.getId());
+            refreshOrders();
+        });
 
         card.getChildren().add(header);
         card.getChildren().add(itemsBox);
@@ -138,8 +136,12 @@ public class KitchenController {
         return card;
     }
 
-    private VBox createOrderItem(OrderItemDto item, OrderStatus status) {
+    private HBox createOrderItem(OrderItemDto item, OrderStatus status) {
+        HBox row = new HBox(12);
+        row.setAlignment(Pos.TOP_LEFT);
+
         VBox itemBox = new VBox(4);
+        HBox.setHgrow(itemBox, Priority.ALWAYS);
 
         Label itemLabel = new Label(item.getQuantity() + "x " + item.getName());
         itemLabel.getStyleClass().add("chef-item-label");
@@ -161,7 +163,20 @@ public class KitchenController {
             itemBox.getChildren().add(noteLabel);
         }
 
-        return itemBox;
+        Button doneButton = new Button("Done");
+        doneButton.getStyleClass().add("chef-item-done-button");
+        boolean itemDone = item.getOrderItem() != null && "DONE".equalsIgnoreCase(item.getOrderItem().getStatus());
+        doneButton.setDisable(itemDone);
+        doneButton.setOnAction(event -> {
+            Integer orderItemId = item.getOrderItemId();
+            if (orderItemId != null) {
+                kitchenService.markOrderItemDone(orderItemId);
+                refreshOrders();
+            }
+        });
+
+        row.getChildren().addAll(itemBox, doneButton);
+        return row;
     }
 
     private VBox createEmptyState() {
@@ -188,15 +203,6 @@ public class KitchenController {
             case DONE -> "chef-status-done";
         };
     }
-
-    private String getStatusButtonText(OrderStatus status) {
-        return switch (status) {
-            case RECEIVED -> "Start";
-            case IN_PROGRESS -> "Mark done";
-            case DONE -> "Done";
-        };
-    }
-
     @FXML
     private void handleLogout() throws Exception {
         authService.logout();

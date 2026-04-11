@@ -3,6 +3,8 @@ package dev.vavateam1.service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 
@@ -70,7 +72,7 @@ public class OrderServiceImpl implements OrderService {
                 BigDecimal.ZERO,
                 menuItem.getPrice(),
                 null,
-                "WAITING");
+                resolveInitialStatus(menuItem, table));
 
         return orderItemDao.createOrderItem(createDto);
     }
@@ -140,5 +142,29 @@ public class OrderServiceImpl implements OrderService {
                 item.getPrice(),
                 item.getNote(),
                 item.getStatus());
+    }
+
+    private String resolveInitialStatus(MenuItem menuItem, Table table) {
+        if (!menuItem.isToKitchen()) {
+            return "WAITING";
+        }
+
+        Map<Integer, MenuItem> menuItemsById = menuItemDao.getAllMenuItems().stream()
+                .collect(Collectors.toMap(MenuItem::getId, item -> item));
+
+        boolean hasActiveKitchenItems = orderItemDao.getOrderItemsByTableId(table.getId()).stream()
+                .filter(item -> {
+                    MenuItem existingMenuItem = menuItemsById.get(item.getMenuItemId());
+                    return existingMenuItem != null && existingMenuItem.isToKitchen();
+                })
+                .map(OrderItem::getStatus)
+                .map(this::normalizeStatus)
+                .anyMatch(status -> "IN_PROGRESS".equals(status) || "DONE".equals(status));
+
+        return hasActiveKitchenItems ? "IN_PROGRESS" : "WAITING";
+    }
+
+    private String normalizeStatus(String status) {
+        return status == null ? "" : status.trim().toUpperCase();
     }
 }

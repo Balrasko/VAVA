@@ -90,6 +90,20 @@ public class KitchenService {
         }
     }
 
+    public void markOrderItemDone(int orderItemId) {
+        OrderItem item = orderItemDao.getUnpaidOrderItems().stream()
+                .filter(candidate -> candidate.getId() != null && candidate.getId() == orderItemId)
+                .findFirst()
+                .orElse(null);
+
+        if (item == null || STATUS_DONE.equals(normalizeStatus(item.getStatus()))) {
+            return;
+        }
+
+        item.setStatus(STATUS_DONE);
+        orderItemDao.updateOrderItem(item);
+    }
+
     public void deleteDoneOrder(int orderId) {
         KitchenOrder order = findOrderById(orderId);
 
@@ -142,11 +156,11 @@ public class KitchenService {
                 .map(this::normalizeStatus)
                 .collect(Collectors.toSet());
 
-        if (statuses.contains(STATUS_WAITING)) {
+        if (statuses.size() == 1 && statuses.contains(STATUS_WAITING)) {
             return OrderStatus.RECEIVED;
         }
 
-        if (statuses.contains(STATUS_IN_PROGRESS)) {
+        if (statuses.contains(STATUS_WAITING) || statuses.contains(STATUS_IN_PROGRESS)) {
             return OrderStatus.IN_PROGRESS;
         }
 
