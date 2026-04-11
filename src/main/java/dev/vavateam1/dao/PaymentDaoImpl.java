@@ -1,9 +1,11 @@
 package dev.vavateam1.dao;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +13,7 @@ import com.google.inject.Inject;
 
 import dev.vavateam1.data.connection.ConnectionFactory;
 import dev.vavateam1.dto.PaymentDto;
-import dev.vavateam1.util.SqlUtils;
+//import dev.vavateam1.util.SqlUtils;
 
 public class PaymentDaoImpl implements PaymentDao {
 
@@ -25,6 +27,20 @@ public class PaymentDaoImpl implements PaymentDao {
     @Inject
     public PaymentDaoImpl(ConnectionFactory connectionFactory) {
         this.connectionFactory = connectionFactory;
+    }
+
+    private PaymentDto mapRow(ResultSet rs) throws SQLException {
+        PaymentDto p = new PaymentDto();
+        p.setId(rs.getInt("id"));
+        p.setWaiterId(rs.getInt("waiter_id"));
+        p.setMethodId(rs.getInt("method_id"));
+        p.setPaymentMethodName(rs.getString("payment_method_name"));
+        p.setAmount(rs.getBigDecimal("amount"));
+        p.setRefunded((Boolean) rs.getObject("refunded"));
+        p.setTip(rs.getBigDecimal("tip"));
+        p.setCreatedAt(rs.getObject("created_at", OffsetDateTime.class));
+        p.setUpdatedAt(rs.getObject("updated_at", OffsetDateTime.class));
+        return p;
     }
 
     @Override
@@ -63,20 +79,6 @@ public class PaymentDaoImpl implements PaymentDao {
         }
     }
 
-    private PaymentDto mapRow(ResultSet rs) throws SQLException {
-        PaymentDto p = new PaymentDto();
-        p.setId(rs.getInt("id"));
-        p.setWaiterId(rs.getInt("waiter_id"));
-        p.setMethodId(rs.getInt("method_id"));
-        p.setPaymentMethodName(rs.getString("payment_method_name"));
-        p.setAmount(rs.getBigDecimal("amount"));
-        p.setRefunded((Boolean) rs.getObject("refunded"));
-        p.setTip(rs.getBigDecimal("tip"));
-        p.setCreatedAt(SqlUtils.toLocalDateTime(rs.getTimestamp("created_at")));
-        p.setUpdatedAt(SqlUtils.toLocalDateTime(rs.getTimestamp("updated_at")));
-        return p;
-    }
-
     @Override
     public PaymentDto setRefunded(PaymentDto payment) {
         String sql = "UPDATE payments SET refunded = TRUE, updated_at = NOW() " +
@@ -103,8 +105,7 @@ public class PaymentDaoImpl implements PaymentDao {
     }
 
     @Override
-    public int createPayment(int waiterId, int methodId, java.math.BigDecimal amount, boolean refunded,
-            java.math.BigDecimal tip) {
+    public int createPayment(int waiterId, int methodId, BigDecimal amount, boolean refunded, BigDecimal tip) {
         String sql = "INSERT INTO payments (waiter_id, method_id, amount, refunded, tip) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = connectionFactory.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
