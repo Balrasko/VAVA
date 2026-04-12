@@ -3,8 +3,6 @@ package dev.vavateam1.service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 
@@ -149,22 +147,7 @@ public class OrderServiceImpl implements OrderService {
             return "WAITING";
         }
 
-        Map<Integer, MenuItem> menuItemsById = menuItemDao.getAllMenuItems().stream()
-                .collect(Collectors.toMap(MenuItem::getId, item -> item));
-
-        boolean hasActiveKitchenItems = orderItemDao.getOrderItemsByTableId(table.getId()).stream()
-                .filter(item -> {
-                    MenuItem existingMenuItem = menuItemsById.get(item.getMenuItemId());
-                    return existingMenuItem != null && existingMenuItem.isToKitchen();
-                })
-                .map(OrderItem::getStatus)
-                .map(this::normalizeStatus)
-                .anyMatch(status -> "IN_PROGRESS".equals(status) || "DONE".equals(status));
-
+        boolean hasActiveKitchenItems = orderItemDao.hasActiveKitchenItemsByTableId(table.getId());
         return hasActiveKitchenItems ? "IN_PROGRESS" : "WAITING";
-    }
-
-    private String normalizeStatus(String status) {
-        return status == null ? "" : status.trim().toUpperCase();
     }
 }

@@ -12,6 +12,8 @@ public interface OrderItemDao {
 
     public List<OrderItem> getOrderItemsByTableId(int tableId);
 
+    public boolean hasActiveKitchenItemsByTableId(int tableId);
+
     public OrderItem createOrderItem(CreateOrder orderCreateDto);
 
     public void updateOrderItem(OrderItem orderItem);
