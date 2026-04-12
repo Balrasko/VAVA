@@ -142,4 +142,13 @@ public class OrderServiceImpl implements OrderService {
                 item.getNote(),
                 item.getStatus());
     }
+
+    private String resolveInitialStatus(MenuItem menuItem, Table table) {
+        if (!menuItem.isToKitchen()) {
+            return "WAITING";
+        }
+
+        boolean hasActiveKitchenItems = orderItemDao.hasActiveKitchenItemsByTableId(table.getId());
+        return hasActiveKitchenItems ? "IN_PROGRESS" : "WAITING";
+    }
 }

@@ -86,6 +86,20 @@ public class KitchenService {
         }
     }
 
+    public void markOrderItemDone(int orderItemId) {
+        OrderItem item = orderItemDao.getUnpaidOrderItems().stream()
+                .filter(candidate -> candidate.getId() != null && candidate.getId() == orderItemId)
+                .findFirst()
+                .orElse(null);
+
+        if (item == null || STATUS_DONE.equals(normalizeStatus(item.getStatus()))) {
+            return;
+        }
+
+        item.setStatus(STATUS_DONE);
+        orderItemDao.updateOrderItem(item);
+    }
+
     public void deleteDoneOrder(int orderId) {
         KitchenOrder order = findOrderById(orderId);
 
@@ -137,12 +151,12 @@ public class KitchenService {
                 .map(OrderItem::getStatus)
                 .collect(Collectors.toSet());
 
-        if (statuses.contains(OrderStatus.RECEIVED)) {
-            return OrderStatus.RECEIVED;
-        }
-        if (statuses.contains(OrderStatus.IN_PROGRESS)) {
-            return OrderStatus.IN_PROGRESS;
-        }
+    if (statuses.contains(OrderStatus.RECEIVED)) {
+        return OrderStatus.RECEIVED;
+    }
+    if (statuses.contains(OrderStatus.IN_PROGRESS)) {
+        return OrderStatus.IN_PROGRESS;
+    }
         return OrderStatus.DONE;
     }
 

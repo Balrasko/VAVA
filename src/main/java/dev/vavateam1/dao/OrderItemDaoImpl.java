@@ -131,6 +131,38 @@ public class OrderItemDaoImpl implements OrderItemDao {
     }
 
     @Override
+    public boolean hasActiveKitchenItemsByTableId(int tableId) {
+        String sql = """
+                SELECT EXISTS (
+                    SELECT 1
+                    FROM order_items oi
+                    JOIN menu_items mi ON mi.id = oi.menu_item_id
+                    WHERE oi.table_id = ?
+                      AND oi.payment_id IS NULL
+                      AND mi.to_kitchen = TRUE
+                      AND mi.is_deleted = FALSE
+                      AND UPPER(TRIM(COALESCE(oi.status, ''))) IN ('IN_PROGRESS', 'DONE')
+                )
+                """;
+
+        try (Connection conn = connectionFactory.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, tableId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getBoolean(1);
+                }
+            }
+
+            return false;
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to check active kitchen items for table " + tableId, e);
+        }
+    }
+
+    @Override
     public OrderItem createOrderItem(CreateOrder orderCreateDto) {
         String sql = """
                 INSERT INTO order_items (menu_item_id, payment_id, waiter_id, table_id, quantity, discount, price, note, status)
