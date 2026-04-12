@@ -8,6 +8,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -15,7 +16,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,9 +31,9 @@ public class MenuController {
     private VBox categorySectionsContainer;
 
     @FXML
-    private VBox menuFormPanel;
+    private ScrollPane menuFormPanel;
     @FXML
-    private VBox categoryFormPanel;
+    private ScrollPane categoryFormPanel;
 
     @FXML
     private TextField nameField;
@@ -142,9 +143,9 @@ public class MenuController {
                 descriptionField.getText(),
                 isKitchenCategory(categoryField.getValue()),
                 parseDecimal(discountField.getText()),
-                false,
-                LocalDateTime.now(),
-                LocalDateTime.now());
+                OffsetDateTime.now(),
+                OffsetDateTime.now(),
+                null);
 
         if (editingMenuItemId > 0) {
             menuService.updateMenuItem(item);
@@ -217,6 +218,7 @@ public class MenuController {
         hideCategoryForm();
         menuFormPanel.setVisible(true);
         menuFormPanel.setManaged(true);
+        menuFormPanel.setVvalue(0);
     }
 
     private void hideForm() {
@@ -229,6 +231,7 @@ public class MenuController {
     private void showCategoryForm() {
         categoryFormPanel.setVisible(true);
         categoryFormPanel.setManaged(true);
+        categoryFormPanel.setVvalue(0);
     }
 
     private void hideCategoryForm() {
@@ -468,16 +471,20 @@ public class MenuController {
 
     private VBox createMenuItemNode(MenuItem item) {
         VBox wrapper = new VBox(12);
+        wrapper.getStyleClass().add("menu-item-card");
 
         Label nameLabel = new Label(item.getName());
         nameLabel.getStyleClass().add("menu-item-title");
+        nameLabel.setWrapText(true);
 
         Label descriptionLabel = new Label(
                 item.getDescription() != null ? item.getDescription() : "");
         descriptionLabel.getStyleClass().add("menu-item-description");
+        descriptionLabel.setWrapText(true);
 
-        VBox textBox = new VBox(3, nameLabel, descriptionLabel);
-        HBox.setHgrow(textBox, javafx.scene.layout.Priority.ALWAYS);
+        VBox textBox = new VBox(4, nameLabel, descriptionLabel);
+        HBox.setHgrow(textBox, Priority.ALWAYS);
+        textBox.setMaxWidth(Double.MAX_VALUE);
 
         Label priceLabel = new Label(item.getPrice() != null ? item.getPrice().toString() + " €" : "");
         priceLabel.getStyleClass().add("menu-action-label");
@@ -493,13 +500,14 @@ public class MenuController {
             loadItems(selectedCategoryId);
         });
 
-        HBox actionsBox = new HBox(8, editButton, deleteButton);
-        actionsBox.setAlignment(javafx.geometry.Pos.CENTER_RIGHT);
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        HBox row = new HBox(20, textBox, priceLabel, actionsBox);
-        row.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+        HBox actionsRow = new HBox(8, priceLabel, spacer, editButton, deleteButton);
+        actionsRow.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+        actionsRow.setMaxWidth(Double.MAX_VALUE);
 
-        wrapper.getChildren().add(row);
+        wrapper.getChildren().addAll(textBox, actionsRow);
         return wrapper;
     }
 }

@@ -49,6 +49,35 @@
   -fx-padding: 0;
 }
 
+.top-nav-scroll {
+  -fx-background-color: transparent;
+  -fx-background-insets: 0;
+  -fx-padding: 0;
+  -fx-border-color: transparent;
+}
+
+.top-nav-scroll > .viewport {
+  -fx-background-color: transparent;
+}
+
+.top-nav-scroll .corner {
+  -fx-background-color: transparent;
+}
+
+.top-nav-scroll .scroll-bar:horizontal {
+  -fx-pref-height: 10;
+}
+
+.top-nav-scroll .scroll-bar:horizontal .track {
+  -fx-background-color: rgba(255, 255, 255, 0.16);
+  -fx-background-radius: 999;
+}
+
+.top-nav-scroll .scroll-bar:horizontal .thumb {
+  -fx-background-color: rgba(255, 255, 255, 0.72);
+  -fx-background-radius: 999;
+}
+
 .top-nav {
   -fx-background-color: #161b8c;
   -fx-padding: 0;
@@ -273,6 +302,36 @@
   -fx-padding: -12 -12 0 -12;
 }
 
+.menu-tabs-scroll {
+  -fx-background-color: transparent;
+  -fx-background-insets: 0;
+  -fx-padding: 0;
+  -fx-border-color: transparent;
+  -fx-fit-to-height: true;
+}
+
+.menu-tabs-scroll > .viewport {
+  -fx-background-color: transparent;
+}
+
+.menu-tabs-scroll .corner {
+  -fx-background-color: transparent;
+}
+
+.menu-tabs-scroll .scroll-bar:horizontal {
+  -fx-pref-height: 10;
+}
+
+.menu-tabs-scroll .scroll-bar:horizontal .track {
+  -fx-background-color: rgba(28, 42, 120, 0.12);
+  -fx-background-radius: 999;
+}
+
+.menu-tabs-scroll .scroll-bar:horizontal .thumb {
+  -fx-background-color: rgba(28, 42, 120, 0.42);
+  -fx-background-radius: 999;
+}
+
 .menu-inner-panel {
   -fx-background-color: white;
   -fx-background-radius: 32;
@@ -343,10 +402,28 @@
 }
 
 .menu-form-panel {
+  -fx-background-color: transparent;
+  -fx-background-insets: 0;
+  -fx-padding: 0;
+  -fx-border-color: transparent;
+  -fx-fit-to-width: true;
+}
+
+.menu-form-panel > .viewport {
+  -fx-background-color: transparent;
+}
+
+.menu-form-panel .corner {
+  -fx-background-color: transparent;
+}
+
+.menu-form-content {
   -fx-background-color: #d9d9d9;
   -fx-background-radius: 28;
   -fx-padding: 24;
+  -fx-spacing: 18;
 }
+
 
 .form-label {
   -fx-font-size: 14;

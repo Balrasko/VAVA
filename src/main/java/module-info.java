@@ -19,4 +19,6 @@ module dev.vavateam1 {
     opens dev.vavateam1.util to com.google.guice;
 
     exports dev.vavateam1;
+    opens dev.vavateam1.dto to com.google.guice, javafx.base;
+    opens dev.vavateam1.report to com.google.guice, javafx.base;
 }

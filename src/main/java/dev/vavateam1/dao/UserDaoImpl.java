@@ -1,14 +1,17 @@
 package dev.vavateam1.dao;
 
+import dev.vavateam1.data.connection.ConnectionFactory;
+import dev.vavateam1.model.User;
+//import dev.vavateam1.util.SqlUtils;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.OffsetDateTime;
 import java.util.Optional;
+
 import com.google.inject.Inject;
-import dev.vavateam1.data.connection.ConnectionFactory;
-import dev.vavateam1.model.User;
-import dev.vavateam1.util.SqlUtils;
 
 public class UserDaoImpl implements UserDao {
     private final ConnectionFactory connectionFactory;
@@ -20,7 +23,7 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public Optional<User> findByEmailOrUsername(String emailOrUsername) {
-        String sql = "SELECT id, role_id, name, email, password, status, created_at, updated_at "
+        String sql = "SELECT id, role_id, name, email, password, status, created_at, updated_at, deleted_at "
                 + "FROM users WHERE LOWER(email) = LOWER(?) OR LOWER(name) = LOWER(?)";
 
         try (Connection conn = connectionFactory.getConnection();
@@ -40,8 +43,9 @@ public class UserDaoImpl implements UserDao {
             user.setEmail(resultSet.getString("email"));
             user.setPassword(resultSet.getString("password"));
             user.setStatus((Boolean) resultSet.getObject("status"));
-            user.setCreatedAt(SqlUtils.toLocalDateTime(resultSet.getTimestamp("created_at")));
-            user.setUpdatedAt(SqlUtils.toLocalDateTime(resultSet.getTimestamp("updated_at")));
+            user.setCreatedAt(resultSet.getObject("created_at", OffsetDateTime.class));
+            user.setUpdatedAt(resultSet.getObject("updated_at", OffsetDateTime.class));
+            user.setDeletedAt(resultSet.getObject("deleted_at", OffsetDateTime.class));
 
             return Optional.of(user);
         } catch (SQLException e) {

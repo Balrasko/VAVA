@@ -1,9 +1,9 @@
-package dev.vavateam1.model;
+package dev.vavateam1.dto;
 
 import java.math.BigDecimal;
 import java.util.List;
 
-import dev.vavateam1.dto.PaymentDto;
+import dev.vavateam1.model.OrderItem;
 
 public class PaymentSummary {
 

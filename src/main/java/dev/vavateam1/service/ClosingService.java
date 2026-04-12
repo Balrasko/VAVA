@@ -2,7 +2,7 @@ package dev.vavateam1.service;
 
 import java.math.BigDecimal;
 
-import dev.vavateam1.model.ClosingSummary;
+import dev.vavateam1.report.ClosingSummary;
 
 public interface ClosingService {
     ClosingSummary getClosingSummary();

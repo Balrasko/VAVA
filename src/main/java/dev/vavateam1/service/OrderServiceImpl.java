@@ -15,6 +15,7 @@ import dev.vavateam1.dto.OrderItemDto;
 import dev.vavateam1.model.Category;
 import dev.vavateam1.model.MenuItem;
 import dev.vavateam1.model.OrderItem;
+import dev.vavateam1.model.OrderStatus;
 import dev.vavateam1.model.Table;
 
 public class OrderServiceImpl implements OrderService {
@@ -70,7 +71,7 @@ public class OrderServiceImpl implements OrderService {
                 BigDecimal.ZERO,
                 menuItem.getPrice(),
                 null,
-                resolveInitialStatus(menuItem, table));
+                OrderStatus.RECEIVED);
 
         return orderItemDao.createOrderItem(createDto);
     }

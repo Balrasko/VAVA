@@ -2,6 +2,8 @@ package dev.vavateam1.dto;
 
 import java.math.BigDecimal;
 
+import dev.vavateam1.model.OrderStatus;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,5 +20,5 @@ public class CreateOrder {
     private BigDecimal discount;
     private BigDecimal price;
     private String note;
-    private String status;
+    private OrderStatus status;
 }

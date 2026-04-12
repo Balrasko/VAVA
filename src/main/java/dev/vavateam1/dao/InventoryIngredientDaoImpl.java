@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,12 +14,12 @@ import com.google.inject.Inject;
 
 import dev.vavateam1.data.connection.ConnectionFactory;
 import dev.vavateam1.model.InventoryIngredient;
-import dev.vavateam1.util.SqlUtils;
+//import dev.vavateam1.util.SqlUtils;
 
 public class InventoryIngredientDaoImpl implements InventoryIngredientDao {
 
     private static final String FIND_ALL_SQL = """
-            SELECT id, name, quantity, minimal_quantity, unit, cost_per_unit, created_at, updated_at
+            SELECT id, name, quantity, minimal_quantity, unit, cost_per_unit, created_at, updated_at, deleted_at
             FROM inventory_ingredients
             ORDER BY id ASC
             """;
@@ -57,6 +58,19 @@ public class InventoryIngredientDaoImpl implements InventoryIngredientDao {
     @Inject
     public InventoryIngredientDaoImpl(ConnectionFactory connectionFactory) {
         this.connectionFactory = connectionFactory;
+    }
+
+    private InventoryIngredient mapRow(ResultSet rs) throws SQLException {
+        return new InventoryIngredient(
+                rs.getInt("id"),
+                rs.getString("name"),
+                rs.getBigDecimal("quantity"),
+                rs.getBigDecimal("minimal_quantity"),
+                rs.getString("unit"),
+                rs.getBigDecimal("cost_per_unit"),
+                rs.getObject("created_at", OffsetDateTime.class),
+                rs.getObject("updated_at", OffsetDateTime.class),
+                rs.getObject("deleted_at", OffsetDateTime.class));
     }
 
     @Override
@@ -164,17 +178,5 @@ public class InventoryIngredientDaoImpl implements InventoryIngredientDao {
 
     private BigDecimal normalizeDecimal(BigDecimal value) {
         return value != null ? value : BigDecimal.ZERO;
-    }
-
-    private InventoryIngredient mapRow(ResultSet rs) throws SQLException {
-        return new InventoryIngredient(
-                rs.getInt("id"),
-                rs.getString("name"),
-                rs.getBigDecimal("quantity"),
-                rs.getBigDecimal("minimal_quantity"),
-                rs.getString("unit"),
-                rs.getBigDecimal("cost_per_unit"),
-                SqlUtils.toLocalDateTime(rs.getTimestamp("created_at")),
-                SqlUtils.toLocalDateTime(rs.getTimestamp("updated_at")));
     }
 }

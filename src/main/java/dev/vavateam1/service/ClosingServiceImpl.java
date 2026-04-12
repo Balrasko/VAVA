@@ -6,7 +6,7 @@ import com.google.inject.Inject;
 
 import dev.vavateam1.dao.ClosingDao;
 import dev.vavateam1.model.CashOperationType;
-import dev.vavateam1.model.ClosingSummary;
+import dev.vavateam1.report.ClosingSummary;
 
 public class ClosingServiceImpl implements ClosingService {
 

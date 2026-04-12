@@ -7,7 +7,7 @@ import java.util.Optional;
 
 import com.google.inject.Inject;
 
-import dev.vavateam1.model.ClosingSummary;
+import dev.vavateam1.report.ClosingSummary;
 import dev.vavateam1.model.User;
 import dev.vavateam1.service.AuthService;
 import dev.vavateam1.service.ClosingService;

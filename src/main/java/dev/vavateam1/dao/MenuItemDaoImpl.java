@@ -3,12 +3,13 @@ package dev.vavateam1.dao;
 import com.google.inject.Inject;
 import dev.vavateam1.data.connection.ConnectionFactory;
 import dev.vavateam1.model.MenuItem;
-import dev.vavateam1.util.SqlUtils;
+//import dev.vavateam1.util.SqlUtils;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,15 +33,15 @@ public class MenuItemDaoImpl implements MenuItemDao {
         item.setDescription(rs.getString("description"));
         item.setToKitchen(rs.getBoolean("to_kitchen"));
         item.setDiscount(rs.getBigDecimal("discount"));
-        item.setDeleted(rs.getBoolean("is_deleted"));
-        item.setCreatedAt(SqlUtils.toLocalDateTime(rs.getTimestamp("created_at")));
-        item.setUpdatedAt(SqlUtils.toLocalDateTime(rs.getTimestamp("updated_at")));
+        item.setCreatedAt(rs.getObject("created_at", OffsetDateTime.class));
+        item.setUpdatedAt(rs.getObject("updated_at", OffsetDateTime.class));
+        item.setDeletedAt(rs.getObject("deleted_at", OffsetDateTime.class));
         return item;
     }
 
     @Override
     public List<MenuItem> getAllMenuItems() {
-        String sql = "SELECT * FROM menu_items WHERE is_deleted = FALSE";
+        String sql = "SELECT * FROM menu_items WHERE deleted_at IS NULL";
         List<MenuItem> items = new ArrayList<>();
         try (Connection conn = connectionFactory.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -56,7 +57,7 @@ public class MenuItemDaoImpl implements MenuItemDao {
 
     @Override
     public List<MenuItem> getMenuItemsByCategoryId(int categoryId) {
-        String sql = "SELECT * FROM menu_items WHERE category_id = ? AND is_deleted = FALSE";
+        String sql = "SELECT * FROM menu_items WHERE category_id = ? AND deleted_at IS NULL";
         List<MenuItem> items = new ArrayList<>();
         try (Connection conn = connectionFactory.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -74,8 +75,7 @@ public class MenuItemDaoImpl implements MenuItemDao {
     @Override
     public void addMenuItem(MenuItem menuItem) {
         String sql = "INSERT INTO menu_items (category_id, item_code, name, price, availability, description, to_kitchen, discount) "
-                +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = connectionFactory.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, menuItem.getCategoryId());
@@ -95,7 +95,7 @@ public class MenuItemDaoImpl implements MenuItemDao {
     @Override
     public void updateMenuItem(MenuItem menuItem) {
         String sql = "UPDATE menu_items SET category_id = ?, name = ?, price = ?, availability = ?, description = ?, to_kitchen = ?, discount = ?, updated_at = NOW() "
-                + "WHERE id = ? AND is_deleted = FALSE";
+                + "WHERE id = ? AND deleted_at IS NULL";
         try (Connection conn = connectionFactory.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, menuItem.getCategoryId());
@@ -114,7 +114,7 @@ public class MenuItemDaoImpl implements MenuItemDao {
 
     @Override
     public void softDeleteMenuItem(int menuItemId) {
-        String sql = "UPDATE menu_items SET is_deleted = TRUE, updated_at = NOW() WHERE id = ? AND is_deleted = FALSE";
+        String sql = "UPDATE menu_items SET deleted_at = NOW(), updated_at = NOW() WHERE id = ? AND deleted_at IS NULL";
         try (Connection conn = connectionFactory.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, menuItemId);
@@ -127,7 +127,7 @@ public class MenuItemDaoImpl implements MenuItemDao {
     @Override
     public List<MenuItem> getItemsByPluCode(int pluCode) {
         List<MenuItem> items = new ArrayList<>();
-        String sql = "SELECT * FROM menu_items WHERE item_code = ? AND is_deleted = FALSE";
+        String sql = "SELECT * FROM menu_items WHERE item_code = ? AND deleted_at IS NULL";
 
         try (Connection conn = connectionFactory.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
