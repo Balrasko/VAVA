@@ -1,22 +1,23 @@
-package dev.vavateam1.dto;
+package dev.vavateam1.model;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class PaymentDto {
+public class CashMovement {
     private int id;
-    private int waiterId;
-    private int methodId;
-    private String paymentMethodName;
+    private int userId;
+    private CashOperationType operationType;
     private BigDecimal amount;
-    private Boolean refunded;
-    private BigDecimal tip;
+    private String note;
+    private LocalDate businessDate;
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
+    private OffsetDateTime deletedAt;
 }

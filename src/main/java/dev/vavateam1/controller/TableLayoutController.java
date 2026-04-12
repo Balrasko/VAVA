@@ -24,6 +24,8 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class TableLayoutController {
 
@@ -98,6 +100,7 @@ public class TableLayoutController {
     private Table selectedTable;
     private Location selectedZone;
 
+    private Map<Integer, String> locationNamesById;
     private final Map<Integer, TablePosition> originalPositions = new HashMap<>();
     private final Map<Integer, Node> tableNodesById = new HashMap<>();
     private final Set<Integer> pendingDeletedTableIds = new HashSet<>();
@@ -113,6 +116,8 @@ public class TableLayoutController {
     @FXML
     public void initialize() {
         tables = tableService.getTables();
+        locationNamesById = tableService.getLocations().stream()
+                .collect(Collectors.toMap(Location::getId, Location::getName));
 
         if (zonesNavbarController != null) {
             zonesNavbarController.setAddZoneTabVisible(true);
@@ -450,6 +455,8 @@ public class TableLayoutController {
 
     private void reloadTables() {
         tables = tableService.getTables();
+        locationNamesById = tableService.getLocations().stream()
+                .collect(Collectors.toMap(Location::getId, Location::getName));
     }
 
     private TablePosition findAvailablePosition(int zoneId, int movingTableId) {
@@ -584,7 +591,8 @@ public class TableLayoutController {
         box.setPrefSize(160, 80);
         box.getStyleClass().add("table-card");
 
-        Label label = new Label("Table " + table.getTableNumber());
+        String locationName = locationNamesById.getOrDefault(table.getLocationId(), "Zone");
+        Label label = new Label(locationName + " " + table.getTableNumber());
         label.getStyleClass().add("table-card-label");
         box.getChildren().add(label);
 

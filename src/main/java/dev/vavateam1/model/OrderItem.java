@@ -4,7 +4,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 @Data
 @NoArgsConstructor
@@ -19,9 +19,10 @@ public class OrderItem {
     private BigDecimal discount;
     private BigDecimal price;
     private String note;
-    private String status;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private OrderStatus status;
+    private OffsetDateTime createdAt;
+    private OffsetDateTime updatedAt;
+    private OffsetDateTime deletedAt;
 
 
     public OrderItem(OrderItem other) {
@@ -37,5 +38,6 @@ public class OrderItem {
         this.status = other.status;
         this.createdAt = other.createdAt;
         this.updatedAt = other.updatedAt;
+        this.deletedAt = other.deletedAt;
     }
 }

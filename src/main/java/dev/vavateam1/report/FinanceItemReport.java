@@ -1,4 +1,4 @@
-package dev.vavateam1.model;
+package dev.vavateam1.report;
 
 import java.math.BigDecimal;
 

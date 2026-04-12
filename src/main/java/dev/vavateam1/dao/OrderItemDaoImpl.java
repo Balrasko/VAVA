@@ -6,13 +6,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.time.OffsetDateTime;
+import java.sql.Types;
 
 import com.google.inject.Inject;
 
 import dev.vavateam1.data.connection.ConnectionFactory;
 import dev.vavateam1.dto.CreateOrder;
 import dev.vavateam1.model.OrderItem;
-import dev.vavateam1.util.SqlUtils;
+import dev.vavateam1.model.OrderStatus;
+//import dev.vavateam1.util.SqlUtils;
 
 public class OrderItemDaoImpl implements OrderItemDao {
 
@@ -23,12 +26,29 @@ public class OrderItemDaoImpl implements OrderItemDao {
         this.connectionFactory = connectionFactory;
     }
 
+    private OrderItem mapResultSetToOrderItem(ResultSet rs) throws SQLException {
+        OrderItem orderItem = new OrderItem();
+        orderItem.setId(rs.getInt("id"));
+        orderItem.setMenuItemId(rs.getInt("menu_item_id"));
+        orderItem.setPaymentId(rs.getObject("payment_id", Integer.class));
+        orderItem.setWaiterId(rs.getInt("waiter_id"));
+        orderItem.setTableId(rs.getInt("table_id"));
+        orderItem.setQuantity(rs.getInt("quantity"));
+        orderItem.setDiscount(rs.getBigDecimal("discount"));
+        orderItem.setPrice(rs.getBigDecimal("price"));
+        orderItem.setNote(rs.getString("note"));
+        orderItem.setStatus(OrderStatus.valueOf(rs.getString("status")));
+        orderItem.setCreatedAt(rs.getObject("created_at", OffsetDateTime.class));
+        orderItem.setUpdatedAt(rs.getObject("updated_at", OffsetDateTime.class));
+        return orderItem;
+    }
+
     @Override
     public List<OrderItem> findByPayment(int paymentId) {
         String sql = """
                 SELECT oi.id, oi.menu_item_id, mi.name AS menu_item_name, oi.payment_id, oi.waiter_id,
-                       oi.table_id, t.table_number, oi.quantity, oi.discount, oi.price, oi.note,
-                       oi.status, oi.created_at, oi.updated_at
+                        oi.table_id, t.table_number, oi.quantity, oi.discount, oi.price, oi.note,
+                        oi.status, oi.created_at, oi.updated_at
                 FROM order_items oi
                 JOIN menu_items mi ON oi.menu_item_id = mi.id
                 JOIN tables t ON oi.table_id = t.id
@@ -45,43 +65,12 @@ public class OrderItemDaoImpl implements OrderItemDao {
 
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                OrderItem orderItem = new OrderItem();
-                orderItem.setId(rs.getInt("id"));
-                orderItem.setMenuItemId(rs.getInt("menu_item_id"));
-                orderItem.setPaymentId(rs.getObject("payment_id", Integer.class));
-                orderItem.setWaiterId(rs.getInt("waiter_id"));
-                orderItem.setTableId(rs.getInt("table_id"));
-                orderItem.setQuantity(rs.getInt("quantity"));
-                orderItem.setDiscount(rs.getBigDecimal("discount"));
-                orderItem.setPrice(rs.getBigDecimal("price"));
-                orderItem.setNote(rs.getString("note"));
-                orderItem.setStatus(rs.getString("status"));
-                orderItem.setCreatedAt(SqlUtils.toLocalDateTime(rs.getTimestamp("created_at")));
-                orderItem.setUpdatedAt(SqlUtils.toLocalDateTime(rs.getTimestamp("updated_at")));
-                orderItems.add(orderItem);
+                orderItems.add(mapResultSetToOrderItem(rs));
             }
-
             return orderItems;
         } catch (SQLException e) {
             throw new RuntimeException("Failed to fetch order items for payment " + paymentId, e);
         }
-    }
-
-    private OrderItem mapResultSetToOrderItem(ResultSet rs) throws SQLException {
-        OrderItem orderItem = new OrderItem();
-        orderItem.setId(rs.getInt("id"));
-        orderItem.setMenuItemId(rs.getInt("menu_item_id"));
-        orderItem.setPaymentId(rs.getObject("payment_id", Integer.class));
-        orderItem.setWaiterId(rs.getInt("waiter_id"));
-        orderItem.setTableId(rs.getInt("table_id"));
-        orderItem.setQuantity(rs.getInt("quantity"));
-        orderItem.setDiscount(rs.getBigDecimal("discount"));
-        orderItem.setPrice(rs.getBigDecimal("price"));
-        orderItem.setNote(rs.getString("note"));
-        orderItem.setStatus(rs.getString("status"));
-        orderItem.setCreatedAt(SqlUtils.toLocalDateTime(rs.getTimestamp("created_at")));
-        orderItem.setUpdatedAt(SqlUtils.toLocalDateTime(rs.getTimestamp("updated_at")));
-        return orderItem;
     }
 
     @Override
@@ -162,7 +151,7 @@ public class OrderItemDaoImpl implements OrderItemDao {
             stmt.setBigDecimal(6, orderCreateDto.getDiscount());
             stmt.setBigDecimal(7, orderCreateDto.getPrice());
             stmt.setString(8, orderCreateDto.getNote());
-            stmt.setString(9, orderCreateDto.getStatus());
+            stmt.setObject(9, orderCreateDto.getStatus().name(), Types.OTHER);
 
             stmt.executeUpdate();
             try (ResultSet rs = stmt.getGeneratedKeys()) {
@@ -216,7 +205,7 @@ public class OrderItemDaoImpl implements OrderItemDao {
             stmt.setBigDecimal(6, orderItem.getDiscount());
             stmt.setBigDecimal(7, orderItem.getPrice());
             stmt.setString(8, orderItem.getNote());
-            stmt.setString(9, orderItem.getStatus());
+            stmt.setObject(9, orderItem.getStatus().name(), Types.OTHER);
             stmt.setInt(10, orderItem.getId());
 
             stmt.executeUpdate();

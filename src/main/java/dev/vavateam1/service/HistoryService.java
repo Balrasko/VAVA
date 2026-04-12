@@ -4,7 +4,7 @@ import java.util.List;
 
 import dev.vavateam1.dto.OrderItemDto;
 import dev.vavateam1.dto.PaymentDto;
-import dev.vavateam1.model.PaymentSummary;
+import dev.vavateam1.dto.PaymentSummary;
 
 public interface HistoryService {
     List<PaymentDto> getPayments();

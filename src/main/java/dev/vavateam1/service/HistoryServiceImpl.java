@@ -14,7 +14,7 @@ import dev.vavateam1.dto.OrderItemDto;
 import dev.vavateam1.dto.PaymentDto;
 import dev.vavateam1.model.MenuItem;
 import dev.vavateam1.model.OrderItem;
-import dev.vavateam1.model.PaymentSummary;
+import dev.vavateam1.dto.PaymentSummary;
 
 public class HistoryServiceImpl implements HistoryService {
 

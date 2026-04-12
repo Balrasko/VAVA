@@ -3,7 +3,7 @@ package dev.vavateam1.dao;
 import java.math.BigDecimal;
 
 import dev.vavateam1.model.CashOperationType;
-import dev.vavateam1.model.ClosingSummary;
+import dev.vavateam1.report.ClosingSummary;
 
 public interface ClosingDao {
     ClosingSummary getClosingSummary();

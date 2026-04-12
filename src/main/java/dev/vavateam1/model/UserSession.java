@@ -3,7 +3,7 @@ package dev.vavateam1.model;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 @Data
 @NoArgsConstructor
@@ -11,8 +11,9 @@ import java.time.LocalDateTime;
 public class UserSession {
     private int id;
     private int userId;
-    private LocalDateTime loginTime;
-    private LocalDateTime logoutTime;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private OffsetDateTime loginTime;
+    private OffsetDateTime logoutTime;
+    private OffsetDateTime createdAt;
+    private OffsetDateTime updatedAt;
+    private OffsetDateTime deletedAt;
 }

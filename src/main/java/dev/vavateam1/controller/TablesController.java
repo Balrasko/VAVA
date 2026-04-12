@@ -1,9 +1,12 @@
 package dev.vavateam1.controller;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 
+import dev.vavateam1.model.Location;
 import dev.vavateam1.model.Table;
 import dev.vavateam1.service.TableService;
 import javafx.fxml.FXML;
@@ -34,16 +37,15 @@ public class TablesController {
     }
 
     private List<Table> tables;
+    private Map<Integer, String> locationNamesById;
     private int activeZoneId = 1;
-
     private Boolean dragging = false;
 
     @FXML
     public void initialize() {
-
-        // Get list of tables
         tables = tableService.getTables();
-
+        locationNamesById = tableService.getLocations().stream()
+                .collect(Collectors.toMap(Location::getId, Location::getName));
         renderTables();
     }
 
@@ -59,7 +61,6 @@ public class TablesController {
 
         tablesPane.getChildren().clear();
 
-        // Make a node for each table
         if (!tables.isEmpty()) {
             for (Table table : tables) {
                 if (table.getLocationId() == activeZoneId) {
@@ -78,7 +79,8 @@ public class TablesController {
         StackPane box = new StackPane();
         box.setPrefSize(160, 80);
 
-        Label label = new Label("Table " + table.getTableNumber());
+        String locationName = locationNamesById.getOrDefault(table.getLocationId(), "Zone");
+        Label label = new Label(locationName + " " + table.getTableNumber());
 
         box.getChildren().add(label);
 
@@ -92,10 +94,7 @@ public class TablesController {
                     -fx-background-radius: 5;
                 """);
 
-        // Draw green circle if table is available
         Circle status = new Circle(6);
-        // status.setStyle(table.getAvailability() ? "-fx-fill: LIMEGREEN;" : "-fx-fill:
-        // RED");
         status.setStyle("-fx-fill: LIMEGREEN");
         status.setVisible(table.getAvailability());
 
