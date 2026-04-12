@@ -8,6 +8,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -30,9 +31,9 @@ public class MenuController {
     private VBox categorySectionsContainer;
 
     @FXML
-    private VBox menuFormPanel;
+    private ScrollPane menuFormPanel;
     @FXML
-    private VBox categoryFormPanel;
+    private ScrollPane categoryFormPanel;
 
     @FXML
     private TextField nameField;
@@ -217,6 +218,7 @@ public class MenuController {
         hideCategoryForm();
         menuFormPanel.setVisible(true);
         menuFormPanel.setManaged(true);
+        menuFormPanel.setVvalue(0);
     }
 
     private void hideForm() {
@@ -229,6 +231,7 @@ public class MenuController {
     private void showCategoryForm() {
         categoryFormPanel.setVisible(true);
         categoryFormPanel.setManaged(true);
+        categoryFormPanel.setVvalue(0);
     }
 
     private void hideCategoryForm() {

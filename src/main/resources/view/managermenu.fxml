@@ -28,6 +28,7 @@
                       maxHeight="Infinity">
                     <children>
                         <HBox spacing="20"
+                              alignment="TOP_LEFT"
                               maxWidth="Infinity"
                               fillHeight="true"
                               VBox.vgrow="ALWAYS"
@@ -42,9 +43,18 @@
                                       styleClass="menu-outer-panel">
                                     <children>
 
-                                        <HBox fx:id="categoryTabsContainer"
-                                              spacing="0"
-                                              styleClass="menu-tabs-bar" />
+                                        <ScrollPane fitToHeight="true"
+                                                    fitToWidth="true"
+                                                    hbarPolicy="AS_NEEDED"
+                                                    vbarPolicy="NEVER"
+                                                    pannable="true"
+                                                    styleClass="menu-tabs-scroll">
+                                            <content>
+                                                <HBox fx:id="categoryTabsContainer"
+                                                      spacing="0"
+                                                      styleClass="menu-tabs-bar" />
+                                            </content>
+                                        </ScrollPane>
 
                                         <VBox spacing="18"
                                               maxHeight="Infinity"
@@ -88,16 +98,23 @@
                                     </children>
                                 </VBox>
 
-                                <VBox fx:id="menuFormPanel"
-                                      prefWidth="360"
-                                      minWidth="320"
-                                      maxWidth="390"
-                                      maxHeight="Infinity"
-                                      spacing="18"
-                                      visible="false"
-                                      managed="false"
-                                      styleClass="menu-form-panel">
-                                    <children>
+                                <ScrollPane fx:id="menuFormPanel"
+                                    fitToWidth="true"
+                                    fitToHeight="true"
+                                    hbarPolicy="NEVER"
+                                    vbarPolicy="NEVER"
+                                    pannable="false"
+                                    prefWidth="360"
+                                    minWidth="320"
+                                    maxWidth="390"
+                                    maxHeight="Infinity"
+                                    visible="false"
+                                    managed="false"
+                                    styleClass="menu-form-panel">
+                                    <content>
+                                        <VBox spacing="18"
+                                              fillWidth="true"
+                                              styleClass="menu-form-content">
 
                                         <HBox alignment="CENTER_RIGHT">
                                             <children>
@@ -194,19 +211,27 @@
                                             </children>
                                         </HBox>
 
-                                    </children>
-                                </VBox>
+                                        </VBox>
+                                    </content>
+                                </ScrollPane>
 
-                                <VBox fx:id="categoryFormPanel"
-                                      prefWidth="360"
-                                      minWidth="320"
-                                      maxWidth="390"
-                                      maxHeight="Infinity"
-                                      spacing="18"
-                                      visible="false"
-                                      managed="false"
-                                      styleClass="menu-form-panel">
-                                    <children>
+                                <ScrollPane fx:id="categoryFormPanel"
+                                    fitToWidth="true"
+                                    fitToHeight="true"
+                                    hbarPolicy="NEVER"
+                                    vbarPolicy="NEVER"
+                                    pannable="false"
+                                    prefWidth="360"
+                                    minWidth="320"
+                                    maxWidth="390"
+                                    maxHeight="Infinity"
+                                    visible="false"
+                                    managed="false"
+                                    styleClass="menu-form-panel">
+                                    <content>
+                                        <VBox spacing="18"
+                                              fillWidth="true"
+                                              styleClass="menu-form-content">
 
                                         <HBox alignment="CENTER_RIGHT">
                                             <children>
@@ -254,8 +279,9 @@
                                             </children>
                                         </HBox>
 
-                                    </children>
-                                </VBox>
+                                        </VBox>
+                                    </content>
+                                </ScrollPane>
 
                             </children>
                         </HBox>
