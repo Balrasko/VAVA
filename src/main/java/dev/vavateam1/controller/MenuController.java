@@ -468,16 +468,20 @@ public class MenuController {
 
     private VBox createMenuItemNode(MenuItem item) {
         VBox wrapper = new VBox(12);
+        wrapper.getStyleClass().add("menu-item-card");
 
         Label nameLabel = new Label(item.getName());
         nameLabel.getStyleClass().add("menu-item-title");
+        nameLabel.setWrapText(true);
 
         Label descriptionLabel = new Label(
                 item.getDescription() != null ? item.getDescription() : "");
         descriptionLabel.getStyleClass().add("menu-item-description");
+        descriptionLabel.setWrapText(true);
 
-        VBox textBox = new VBox(3, nameLabel, descriptionLabel);
-        HBox.setHgrow(textBox, javafx.scene.layout.Priority.ALWAYS);
+        VBox textBox = new VBox(4, nameLabel, descriptionLabel);
+        HBox.setHgrow(textBox, Priority.ALWAYS);
+        textBox.setMaxWidth(Double.MAX_VALUE);
 
         Label priceLabel = new Label(item.getPrice() != null ? item.getPrice().toString() + " €" : "");
         priceLabel.getStyleClass().add("menu-action-label");
@@ -493,13 +497,14 @@ public class MenuController {
             loadItems(selectedCategoryId);
         });
 
-        HBox actionsBox = new HBox(8, editButton, deleteButton);
-        actionsBox.setAlignment(javafx.geometry.Pos.CENTER_RIGHT);
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        HBox row = new HBox(20, textBox, priceLabel, actionsBox);
-        row.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+        HBox actionsRow = new HBox(8, priceLabel, spacer, editButton, deleteButton);
+        actionsRow.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+        actionsRow.setMaxWidth(Double.MAX_VALUE);
 
-        wrapper.getChildren().add(row);
+        wrapper.getChildren().addAll(textBox, actionsRow);
         return wrapper;
     }
 }
