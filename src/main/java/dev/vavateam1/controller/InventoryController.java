@@ -20,6 +20,7 @@ import dev.vavateam1.dao.InventoryIngredientDao;
 import dev.vavateam1.model.InventoryIngredient;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
+import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -27,6 +28,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
@@ -35,16 +37,17 @@ public class InventoryController {
 
     private static final String HEADER_LABEL_STYLE = "-fx-font-size:14; -fx-text-fill:#1d1d1d; -fx-font-weight:bold; -fx-cursor:hand;";
     private static final String ROW_LABEL_STYLE = "-fx-font-size:14; -fx-text-fill:#1d1d1d;";
-    private static final String ROW_STYLE = "white; -fx-background-radius:16; -fx-padding:10 16 10 16;";
     private static final String STATUS_STYLE_CRITICAL = "-fx-text-fill:#ef4444; -fx-font-size:20;";
     private static final String STATUS_STYLE_LOW = "-fx-text-fill:#eab308; -fx-font-size:20;";
     private static final String STATUS_STYLE_OK = "-fx-text-fill:#22c55e; -fx-font-size:20;";
     private static final List<String> DEFAULT_COLUMN_ORDER = List.of(
             "id", "name", "quantity", "minimal_quantity", "unit", "cost_per_unit", "status");
 
+    @FXML private VBox root;
     @FXML private Button allItemsButton;
     @FXML private Button lowStockButton;
     @FXML private Button criticalButton;
+    @FXML private Button editButton;
     @FXML private Label itemIdHeaderLabel;
     @FXML private Label nameHeaderLabel;
     @FXML private Label quantityHeaderLabel;
@@ -60,6 +63,8 @@ public class InventoryController {
     private SortField activeSortField = SortField.ITEM_ID;
     private boolean ascendingSort = true;
     private Pattern activeSearchPattern;
+
+    private boolean editMode = false;
 
     @Inject
     public InventoryController(InventoryIngredientDao inventoryIngredientDao) {
@@ -179,6 +184,31 @@ public class InventoryController {
         }
     }
 
+    @FXML
+    private void toggleEditMode() {
+        editMode = !editMode;
+
+        editButton.setText(editMode ? "Done" : "Edit");
+
+        if (editMode) {
+            root.setStyle("""
+                -fx-padding: 19;
+                -fx-background-color: #f4f4f4;
+                -fx-border-color: #f00;
+                -fx-border-width: 2;
+            """);
+        }
+        else {
+            root.setStyle("""
+                -fx-padding: 20;
+                -fx-background-color: #f4f4f4;
+                -fx-border-color: transparent;
+            """);
+        }
+
+        renderItems();
+    }
+
     private void reloadInventory() {
         allItems.clear();
         allItems.addAll(inventoryIngredientDao.findAll());
@@ -240,6 +270,11 @@ public class InventoryController {
 
     private void renderItems() {
         itemsContainer.getChildren().clear();
+        
+        if (editMode) {
+            itemsContainer.getChildren().add(createAddRow());
+        }
+
         for (InventoryIngredient item : getFilteredItems()) {
             itemsContainer.getChildren().add(createItemRow(item));
         }
@@ -284,14 +319,15 @@ public class InventoryController {
     private GridPane createItemRow(InventoryIngredient item) {
         GridPane row = new GridPane();
         row.setHgap(0);
-        row.setStyle("-fx-background-color:" + ROW_STYLE);
+        row.getStyleClass().add(editMode ? "inv-row-edit" : "inv-row");
 
         row.getColumnConstraints().addAll(
-                createColumnConstraint(20),
-                createColumnConstraint(25),
-                createColumnConstraint(15),
-                createColumnConstraint(20),
-                createColumnConstraint(20));
+                createColumnConstraint(18),
+                createColumnConstraint(22),
+                createColumnConstraint(14),
+                createColumnConstraint(18),
+                createColumnConstraint(18),
+                createColumnConstraint(10));
 
         row.add(createRowLabel(String.valueOf(item.getId())), 0, 0);
         row.add(createRowLabel(item.getName()), 1, 0);
@@ -299,7 +335,74 @@ public class InventoryController {
         row.add(createRowLabel(formatDecimal(item.getMinimalQuantity())), 3, 0);
         row.add(createStatusIndicator(statusFor(item)), 4, 0);
 
+        if (editMode) {
+            Button deleteButton = new Button("✕");
+            deleteButton.setStyle("""
+                -fx-background-color: #ef4444;
+                -fx-text-fill: #fff;
+                -fx-bakcground-radius: 20;
+                -fx-cursor: hand;
+            """);
+
+            deleteButton.setOnAction(e -> confirmDelete(item));
+
+            row.add(deleteButton, 5, 0);
+        }
+
+        row.setOnMouseClicked(e -> {
+            if (editMode) {
+                editItem(item);
+            }
+        });
+
         return row;
+    }
+
+    private void confirmDelete(InventoryIngredient item) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
+            "Delete item \"" + item.getName() + "\"?",
+            ButtonType.YES, ButtonType.NO);
+
+        alert.setHeaderText("Confirm deletion");
+
+        alert.showAndWait().ifPresent(result -> {
+            if (result == ButtonType.YES) {
+
+                // inventoryIngredientDao.delete(item);
+                
+                reloadInventory();
+            }
+        });
+    }
+
+    private void editItem(InventoryIngredient item) {
+        TextField nameField = new TextField(item.getName());
+        TextField quantityField = new TextField(item.getQuantity().toString());
+        TextField minQuantityField = new TextField(item.getMinimalQuantity().toString());
+
+        VBox content = new VBox(10,
+            new Label("Name"),
+            nameField,
+            new Label("Quantity"),
+            quantityField,
+            new Label("Minimum Quantity"),
+            minQuantityField
+        );
+
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Edit Item");
+        alert.getDialogPane().setContent(content);
+
+        alert.showAndWait().ifPresent(result -> {
+            if (result == ButtonType.OK) {
+                item.setName(nameField.getText());
+                item.setQuantity(new BigDecimal(quantityField.getText()));
+                item.setMinimalQuantity(new BigDecimal(minQuantityField.getText()));
+
+                inventoryIngredientDao.saveAll(allItems);
+                reloadInventory();
+            }
+        });
     }
 
     private ColumnConstraints createColumnConstraint(double percentWidth) {
@@ -325,6 +428,56 @@ public class InventoryController {
         Label statusLabel = new Label("●");
         statusLabel.setStyle(statusStyle);
         return statusLabel;
+    }
+
+    private StackPane createAddRow() {
+        StackPane row = new StackPane();
+        row.setStyle("-fx-background-color: #1e88e5; -fx-background-radius: 16; -fx-padding: 20; -fx-cursor: hand;");
+
+        Label plus = new Label("Add new item");
+        plus.setStyle("-fx-font-size: 24px; -fx-text-fill: #fff");
+
+        row.getChildren().add(plus);
+
+        row.setMaxHeight(30);
+        row.setOnMouseClicked(e -> createNewItem());
+
+        return row;
+    }
+
+    private void createNewItem() {
+        TextField nameField = new TextField();
+        TextField quantityField = new TextField();
+        TextField minQuantityField = new TextField();
+        TextField costPerUnitField = new TextField();
+        TextField unitField = new TextField();
+
+        VBox content = new VBox(10,
+            new Label("Name"), nameField,
+            new Label("Quantity"), quantityField,
+            new Label("Minimum Quantity"), minQuantityField,
+            new Label("Cost per unit"), costPerUnitField,
+            new Label("Unit"), unitField
+        );
+
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("New Item");
+        alert.getDialogPane().setContent(content);
+
+        alert.showAndWait().ifPresent(result -> {
+            if (result == ButtonType.OK) {
+                InventoryIngredient item = new InventoryIngredient();
+                item.setName(nameField.getText());
+                item.setQuantity(new BigDecimal(quantityField.getText()));
+                item.setMinimalQuantity(new BigDecimal(minQuantityField.getText()));
+                item.setCostPerUnit(new BigDecimal(costPerUnitField.getText()));
+                item.setUnit(unitField.getText());
+
+                allItems.add(item);
+                inventoryIngredientDao.saveAll(allItems);
+                reloadInventory();
+            }
+        });
     }
 
     private ItemStatus statusFor(InventoryIngredient item) {
