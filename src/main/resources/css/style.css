@@ -749,3 +749,9 @@
   -fx-border-radius: 16;
   -fx-cursor: hand;
 }
+
+.dialog-button {
+  -fx-background-color: #9ecaff;
+  -fx-background-radius: 16;
+  -fx-font-size: 16px;
+}

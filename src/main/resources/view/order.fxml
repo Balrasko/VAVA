@@ -150,6 +150,12 @@
            <Label fx:id="toastLabel"
                   text="Invalid code"
                   visible="false"
-                  StackPane.alignment="TOP_CENTER"/>
+                  StackPane.alignment="TOP_CENTER">
+
+              <StackPane.margin>
+                     <Insets top="20"/>
+              </StackPane.margin>
+                     
+           </Label>
 
 </StackPane>
