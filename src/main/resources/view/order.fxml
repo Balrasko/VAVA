@@ -114,15 +114,15 @@
                             prefWidth="240">
 
                                    <HBox>
-                                          <Label text="Total:" style="-fx-font-size: 14px"/>
+                                          <Label text="Subtotal:" style="-fx-font-size: 14px"/>
                                           <Region HBox.hgrow="ALWAYS"/>
-                                          <Label fx:id="totalLabel" text="0.00 €" style="-fx-font-size: 28px"/>
+                                          <Label fx:id="subtotalLabel" style="-fx-font-size: 28px"/>
                                    </HBox>
 
                                    <HBox>
-                                          <Label text="Subtotal:" style="-fx-font-size: 14px"/>
+                                          <Label text="Split subtotal:" fx:id="totalLabelText" style="-fx-font-size: 14px"/>
                                           <Region HBox.hgrow="ALWAYS"/>
-                                          <Label fx:id="subtotalLabel" style="-fx-font-size: 22px"/>
+                                          <Label fx:id="totalLabel" style="-fx-font-size: 22px"/>
                                    </HBox>
 
                             </VBox>
@@ -145,4 +145,17 @@
               
 
            </HBox>
+
+           <!-- Toast style popup -->
+           <Label fx:id="toastLabel"
+                  text="Invalid code"
+                  visible="false"
+                  StackPane.alignment="TOP_CENTER">
+
+              <StackPane.margin>
+                     <Insets top="20"/>
+              </StackPane.margin>
+                     
+           </Label>
+
 </StackPane>

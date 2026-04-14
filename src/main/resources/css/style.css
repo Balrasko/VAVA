@@ -791,3 +791,58 @@
 
   -fx-cursor: hand;
 }
+
+.order-note {
+  -fx-font-size: 12px;
+  -fx-font-style: italic;
+}
+
+.toast {
+  -fx-background-color: #fff;
+  -fx-text-fill: #000;
+  -fx-padding: 20;
+  -fx-font-size: 20;
+  -fx-background-radius: 20;
+  -fx-border-width: 2;
+  -fx-border-radius: 20;
+}
+
+.inv-edit-btn {
+  -fx-background-color:#57c84d;
+  -fx-text-fill:#1d1d1d;
+  -fx-background-radius:24;
+  -fx-padding:10 24 10 24;
+  -fx-cursor:hand;
+  -fx-font-size:14;
+}
+
+.inv-action-btn {
+  -fx-background-color:#57c84d;
+  -fx-text-fill:#1d1d1d;
+  -fx-background-radius:24;
+  -fx-padding:10 24 10 24;
+  -fx-cursor:hand;
+  -fx-font-size:14;
+}
+
+.inv-row {
+  -fx-background-color: white;
+  -fx-background-radius:16;
+  -fx-padding:10 16 10 16;
+}
+
+.inv-row-edit {
+  -fx-background-color: white;
+  -fx-background-radius:16;
+  -fx-padding:10 16 10 16;
+  -fx-border-width: 1;
+  -fx-border-color: #1e88e5;
+  -fx-border-radius: 16;
+  -fx-cursor: hand;
+}
+
+.dialog-button {
+  -fx-background-color: #9ecaff;
+  -fx-background-radius: 16;
+  -fx-font-size: 16px;
+}

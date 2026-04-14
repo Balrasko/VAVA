@@ -18,7 +18,8 @@ public interface OrderService {
 
     OrderItem createOrderFromMenu(MenuItem menuItem, Table table);
 
-    List<MenuItem> getItemsByPluCode(String code);
+    List<MenuItem> getItemsByPluCode(String code); // Replace this with the version that just gets one item based on code
+    // MenuItem getItemByPluCode(String code);
 
     void saveTempOrders(List<OrderItemDto> orderItemList);
 

@@ -165,7 +165,7 @@ public class KitchenController {
 
         Button doneButton = new Button("Done");
         doneButton.getStyleClass().add("chef-item-done-button");
-        boolean itemDone = item.getOrderItem() != null && "DONE".equalsIgnoreCase(item.getOrderItem().getStatus());
+        boolean itemDone = item.getOrderItem() != null && OrderStatus.DONE.equals(item.getOrderItem().getStatus());
         doneButton.setDisable(itemDone);
         doneButton.setOnAction(event -> {
             Integer orderItemId = item.getOrderItemId();
