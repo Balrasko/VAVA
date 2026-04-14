@@ -7,6 +7,7 @@ module dev.vavateam1 {
     requires org.postgresql.jdbc;
 
     requires static lombok;
+    requires javafx.graphics;
 
     opens dev.vavateam1 to javafx.graphics, javafx.fxml, com.google.guice;
     opens dev.vavateam1.controller to javafx.fxml, com.google.guice;

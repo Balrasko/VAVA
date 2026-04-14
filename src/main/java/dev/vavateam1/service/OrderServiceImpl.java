@@ -86,6 +86,11 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
+    // @Override
+    // public MenuItem getItemByPluCode(String code) {
+    //     // Return a menu item based on the exact code instead of a list of menu items based on the incomplete code
+    // }
+
     @Override
     public void saveTempOrders(List<OrderItemDto> orderItemList) {
         for (OrderItemDto view : orderItemList) {
