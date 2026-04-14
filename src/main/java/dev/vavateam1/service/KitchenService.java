@@ -92,11 +92,11 @@ public class KitchenService {
                 .findFirst()
                 .orElse(null);
 
-        if (item == null || STATUS_DONE.equals(normalizeStatus(item.getStatus()))) {
+        if (item == null || OrderStatus.DONE.equals(item.getStatus())) {
             return;
         }
 
-        item.setStatus(STATUS_DONE);
+        item.setStatus(OrderStatus.DONE);
         orderItemDao.updateOrderItem(item);
     }
 
