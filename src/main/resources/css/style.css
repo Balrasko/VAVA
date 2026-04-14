@@ -700,3 +700,18 @@
 
   -fx-cursor: hand;
 }
+
+.order-note {
+  -fx-font-size: 12px;
+  -fx-font-style: italic;
+}
+
+.toast {
+  -fx-background-color: #fff;
+  -fx-text-fill: #000;
+  -fx-padding: 20;
+  -fx-font-size: 20;
+  -fx-background-radius: 20;
+  -fx-border-width: 2;
+  -fx-border-radius: 20;
+}

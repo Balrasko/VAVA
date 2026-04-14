@@ -145,4 +145,11 @@
               
 
            </HBox>
+
+           <!-- Toast style popup -->
+           <Label fx:id="toastLabel"
+                  text="Invalid code"
+                  visible="false"
+                  StackPane.alignment="TOP_CENTER"/>
+
 </StackPane>
