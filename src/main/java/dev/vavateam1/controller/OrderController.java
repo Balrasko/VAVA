@@ -476,10 +476,10 @@ public class OrderController {
         rowContainer.getChildren().add(row);
 
         if (item.getNote() != null && !item.getName().isBlank()) {
-            Label noteLabel = new Label(item.getNote());
+            Label noteLabel = new Label("- " + item.getNote());
             noteLabel.getStyleClass().add("order-note");
-
-            noteLabel.setPadding(new Insets(0, 0, 0, 50));
+            noteLabel.setWrapText(true);
+            noteLabel.setPadding(new Insets(0, 45, 0, 45));
 
             rowContainer.getChildren().add(noteLabel);
         }

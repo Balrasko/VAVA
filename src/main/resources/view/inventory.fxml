@@ -4,12 +4,10 @@
 <?import javafx.scene.control.*?>
 <?import javafx.geometry.Insets?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml"
-            fx:controller="dev.vavateam1.controller.InventoryController"
-            maxWidth="Infinity"
-            styleClass="page-root">
+<StackPane  fx:id="rootStack"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="dev.vavateam1.controller.InventoryController">
 
-    <center>
         <VBox spacing="16"
               fx:id="root"
               style="
@@ -134,6 +132,17 @@
                 <Insets top="0" right="0" bottom="0" left="0" />
             </padding>
         </VBox>
-    </center>
 
-</BorderPane>
+    <!-- Toast style popup -->
+    <Label fx:id="toastLabel"
+            text="Invalid code"
+            visible="false"
+            StackPane.alignment="TOP_CENTER">
+
+        <StackPane.margin>
+            <Insets top="20"/>
+        </StackPane.margin>
+
+    </Label>
+
+</StackPane>

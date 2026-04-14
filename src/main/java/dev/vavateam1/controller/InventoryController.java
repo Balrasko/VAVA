@@ -18,9 +18,14 @@ import com.google.inject.Inject;
 
 import dev.vavateam1.dao.InventoryIngredientDao;
 import dev.vavateam1.model.InventoryIngredient;
+import javafx.animation.FadeTransition;
+import javafx.animation.PauseTransition;
+import javafx.animation.SequentialTransition;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
 import javafx.geometry.Pos;
+import javafx.geometry.VPos;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -28,10 +33,14 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
+import javafx.util.Duration;
 
 public class InventoryController {
 
@@ -43,6 +52,7 @@ public class InventoryController {
     private static final List<String> DEFAULT_COLUMN_ORDER = List.of(
             "id", "name", "quantity", "minimal_quantity", "unit", "cost_per_unit", "status");
 
+    @FXML private StackPane rootStack;
     @FXML private VBox root;
     @FXML private Button allItemsButton;
     @FXML private Button lowStockButton;
@@ -55,6 +65,7 @@ public class InventoryController {
     @FXML private Label statusHeaderLabel;
     @FXML private TextField searchField;
     @FXML private VBox itemsContainer;
+    @FXML private Label toastLabel;
 
     private final InventoryIngredientDao inventoryIngredientDao;
     private final List<InventoryIngredient> allItems = new ArrayList<>();
@@ -308,8 +319,8 @@ public class InventoryController {
     }
 
     private void updateButtonStyles() {
-        String activeStyle = "-fx-background-color:#1e40af; -fx-text-fill:white; -fx-background-radius:20; -fx-padding:8 20 8 20; -fx-cursor:hand; -fx-font-size:14;";
-        String inactiveStyle = "-fx-background-color:#9ecaff; -fx-text-fill:#1d1d1d; -fx-background-radius:20; -fx-padding:8 20 8 20; -fx-cursor:hand; -fx-font-size:14;";
+        String activeStyle = "-fx-background-color: #1e40af; -fx-text-fill:white; -fx-background-radius:20; -fx-padding:8 20 8 20; -fx-cursor:hand; -fx-font-size:14;";
+        String inactiveStyle = "-fx-background-color: #9ecaff; -fx-text-fill:#1d1d1d; -fx-background-radius:20; -fx-padding:8 20 8 20; -fx-cursor:hand; -fx-font-size:14;";
 
         allItemsButton.setStyle(currentFilter == CurrentFilter.ALL ? activeStyle : inactiveStyle);
         lowStockButton.setStyle(currentFilter == CurrentFilter.LOW_STOCK ? activeStyle : inactiveStyle);
@@ -359,20 +370,29 @@ public class InventoryController {
     }
 
     private void confirmDelete(InventoryIngredient item) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
-            "Delete item \"" + item.getName() + "\"?",
-            ButtonType.YES, ButtonType.NO);
+        Button yes = new Button("Delete");
+        Button no = new Button("Cancel");
 
-        alert.setHeaderText("Confirm deletion");
+        yes.getStyleClass().add("dialog-button");
+        yes.setStyle("-fx-background-color: #ef4444");
 
-        alert.showAndWait().ifPresent(result -> {
-            if (result == ButtonType.YES) {
+        no.getStyleClass().add("dialog-button");
 
-                // inventoryIngredientDao.delete(item);
-                
-                reloadInventory();
-            }
+        yes.setMinWidth(40);
+        no.setMinWidth(40);
+
+        yes.setOnAction(e -> {
+            //InventoryIngredientDao.delete(item);
+            rootStack.getChildren().removeLast();
+            reloadInventory();
+            showToast("Item deleted.", true);
         });
+
+        no.setOnAction(e -> {
+            rootStack.getChildren().removeLast();
+        });
+
+        showDialog("Confirm Delete", new Label("Are you sure you want to delete this item?"), List.of(yes, no));
     }
 
     private void editItem(InventoryIngredient item) {
@@ -380,29 +400,53 @@ public class InventoryController {
         TextField quantityField = new TextField(item.getQuantity().toString());
         TextField minQuantityField = new TextField(item.getMinimalQuantity().toString());
 
-        VBox content = new VBox(10,
-            new Label("Name"),
-            nameField,
-            new Label("Quantity"),
-            quantityField,
-            new Label("Minimum Quantity"),
-            minQuantityField
+        HBox content = new HBox(10,
+            new VBox(20,
+                new Label("Name"),
+                new Label("Quantity"),
+                new Label("Minimum Quantity")
+            ),
+            new VBox(10,
+                nameField,
+                quantityField,
+                minQuantityField
+            )
         );
 
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Edit Item");
-        alert.getDialogPane().setContent(content);
+        Button save = new Button("Save");
+        Button cancel = new Button("Cancel");
 
-        alert.showAndWait().ifPresent(result -> {
-            if (result == ButtonType.OK) {
+        save.setMinWidth(40);
+        cancel.setMinWidth(40);
+
+        save.getStyleClass().add("dialog-button");
+        cancel.getStyleClass().add("dialog-button");
+
+        save.setOnAction(e -> {
+            try {
                 item.setName(nameField.getText());
                 item.setQuantity(new BigDecimal(quantityField.getText()));
                 item.setMinimalQuantity(new BigDecimal(minQuantityField.getText()));
 
                 inventoryIngredientDao.saveAll(allItems);
+                
                 reloadInventory();
+
+                rootStack.getChildren().removeLast();
+
+                showToast("Item edited.", true);
+            }
+            catch (Exception ex) {
+                showToast("Invalid format in one of the fields.", false);
+                return;
             }
         });
+
+        cancel.setOnAction(e -> {
+            rootStack.getChildren().removeLast();
+        });
+
+        showDialog("Edit Item", content, List.of(save, cancel));
     }
 
     private ColumnConstraints createColumnConstraint(double percentWidth) {
@@ -430,19 +474,70 @@ public class InventoryController {
         return statusLabel;
     }
 
-    private StackPane createAddRow() {
-        StackPane row = new StackPane();
-        row.setStyle("-fx-background-color: #1e88e5; -fx-background-radius: 16; -fx-padding: 20; -fx-cursor: hand;");
+    private Label createAddRow() {
 
-        Label plus = new Label("Add new item");
-        plus.setStyle("-fx-font-size: 24px; -fx-text-fill: #fff");
+        Label row = new Label("Add a new item");
+        row.setAlignment(Pos.CENTER);
+        row.setStyle("""
+            -fx-text-fill: #000;
+            -fx-font-size: 20px;
+            -fx-font-weight: bold;
+            -fx-background-color: #9ecaff;
+            -fx-background-radius: 16;
+            -fx-border-width: 1;
+            -fx-border-radius: 16;
+            -fx-border-color: #1e88e5;
+            -fx-cursor: hand;
+        """);
 
-        row.getChildren().add(plus);
+        row.setMaxWidth(Double.MAX_VALUE);
+        row.setMinHeight(50);
 
-        row.setMaxHeight(30);
+        VBox.setVgrow(row, Priority.ALWAYS);
+
         row.setOnMouseClicked(e -> createNewItem());
 
         return row;
+    }
+
+    private void showDialog(String title, Node content, List<Button> actions) {
+        StackPane overlay = new StackPane();
+        overlay.setStyle("""
+            -fx-background-color: rgba(0,0,0,0.5);
+        """);
+
+        VBox dialog = new VBox(20);
+        dialog.setAlignment(Pos.CENTER);
+        dialog.setMaxWidth(400);
+        dialog.setMaxHeight(300);
+
+        dialog.setStyle("""
+            -fx-background-color: #fff;
+            -fx-padding: 20;
+            -fx-background-radius: 16;
+            -fx-border-width: 2;
+            -fx-border-color: #1e88e5;
+            -fx-border-radius: 10;
+        """);
+
+        Label titleLabel = new Label(title);
+        titleLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
+
+        HBox buttonBox = new HBox(10);
+        buttonBox.setAlignment(Pos.CENTER);
+
+        buttonBox.getChildren().addAll(actions);
+
+        dialog.getChildren().addAll(titleLabel, content, buttonBox);
+        overlay.getChildren().add(dialog);
+
+        rootStack.getChildren().add(overlay);
+
+        overlay.setOnMouseClicked(e -> {
+            if (e.getTarget() == overlay) {
+                rootStack.getChildren().remove(overlay);
+            }
+        });
     }
 
     private void createNewItem() {
@@ -452,20 +547,34 @@ public class InventoryController {
         TextField costPerUnitField = new TextField();
         TextField unitField = new TextField();
 
-        VBox content = new VBox(10,
-            new Label("Name"), nameField,
-            new Label("Quantity"), quantityField,
-            new Label("Minimum Quantity"), minQuantityField,
-            new Label("Cost per unit"), costPerUnitField,
-            new Label("Unit"), unitField
+        HBox content = new HBox(10,
+            new VBox(20,
+                new Label("Name"),
+                new Label("Quantity"),
+                new Label("Minimum Quantity"),
+                new Label("Cost per unit"),
+                new Label("Unit")
+            ),
+            new VBox(10,
+                nameField,
+                quantityField,
+                minQuantityField,
+                costPerUnitField,
+                unitField
+            )
         );
 
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("New Item");
-        alert.getDialogPane().setContent(content);
+        Button save = new Button("Save");
+        Button cancel = new Button("Cancel");
 
-        alert.showAndWait().ifPresent(result -> {
-            if (result == ButtonType.OK) {
+        save.setMinWidth(40);
+        cancel.setMinWidth(40);
+
+        save.getStyleClass().add("dialog-button");
+        cancel.getStyleClass().add("dialog-button");
+
+        save.setOnAction(e -> {
+            try {
                 InventoryIngredient item = new InventoryIngredient();
                 item.setName(nameField.getText());
                 item.setQuantity(new BigDecimal(quantityField.getText()));
@@ -476,8 +585,22 @@ public class InventoryController {
                 allItems.add(item);
                 inventoryIngredientDao.saveAll(allItems);
                 reloadInventory();
+
+                rootStack.getChildren().removeLast();
+
+                showToast("New item created.", true);
+            }
+            catch (Exception ex) {
+                showToast("Invalid format in one of the fields.", false);
+                return;
             }
         });
+
+        cancel.setOnAction(e -> {
+            rootStack.getChildren().removeLast();
+        });
+
+        showDialog("New Item", content, List.of(save, cancel));
     }
 
     private ItemStatus statusFor(InventoryIngredient item) {
@@ -497,6 +620,48 @@ public class InventoryController {
         }
 
         return ItemStatus.OK;
+    }
+
+    private void showToast(String message, Boolean msgType) {
+        // Display a temporary floating toast style popup
+
+        toastLabel.getStyleClass().add("toast");
+        
+        if (!msgType) {
+            toastLabel.setStyle("-fx-border-color: #e53b3b;");
+        }
+        else {
+            toastLabel.setStyle("-fx-border-color: limegreen;");
+        }
+
+        toastLabel.setText(message);
+        toastLabel.setOpacity(0);
+        toastLabel.setVisible(true);
+
+        // Push the label to the front of the StackPane
+        toastLabel.toFront();
+
+        // Make the toast fade in
+        FadeTransition fadeIn = new FadeTransition(Duration.millis(200), toastLabel);
+        fadeIn.setFromValue(0);
+        fadeIn.setToValue(1);
+
+        // Show the toast
+        PauseTransition stay = new PauseTransition(Duration.seconds(1.5));
+
+        // Make the toast fade out
+        FadeTransition fadeOut = new FadeTransition(Duration.millis(200), toastLabel);
+        fadeOut.setFromValue(1);
+        fadeOut.setToValue(0);
+
+        // Hide the label again
+        fadeOut.setOnFinished(e -> {
+            toastLabel.setVisible(false);
+            toastLabel.setOpacity(1);
+        });
+
+        // Perform the transition
+        new SequentialTransition(fadeIn, stay, fadeOut).play();
     }
 
     private Pattern compilePattern(String rawPattern) {
