@@ -2,6 +2,7 @@ package dev.vavateam1.controller;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
@@ -38,6 +39,7 @@ public class TablesController {
 
     private List<Table> tables;
     private Map<Integer, String> locationNamesById;
+    private Set<Integer> tablesWithUnpaidItems;
     private int activeZoneId = 1;
     private Boolean dragging = false;
 
@@ -46,6 +48,7 @@ public class TablesController {
         tables = tableService.getTables();
         locationNamesById = tableService.getLocations().stream()
                 .collect(Collectors.toMap(Location::getId, Location::getName));
+        tablesWithUnpaidItems = tableService.getTablesWithUnpaidItems();
         renderTables();
     }
 
@@ -95,8 +98,9 @@ public class TablesController {
                 """);
 
         Circle status = new Circle(6);
-        status.setStyle("-fx-fill: LIMEGREEN");
-        status.setVisible(table.getAvailability());
+        boolean hasUnpaid = tablesWithUnpaidItems.contains(table.getId());
+        status.setStyle(hasUnpaid ? "-fx-fill: RED" : "-fx-fill: LIMEGREEN");
+        status.setVisible(true);
 
         box.getChildren().add(status);
         StackPane.setAlignment(status, Pos.TOP_RIGHT);
