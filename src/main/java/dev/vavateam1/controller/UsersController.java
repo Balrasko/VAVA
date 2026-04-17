@@ -119,6 +119,7 @@ public class UsersController {
         emailField.clear();
         passwordField.clear();
         repeatPasswordField.clear();
+        waiterRadio.setSelected(true);
     }
 
     private String buildFullName() {
