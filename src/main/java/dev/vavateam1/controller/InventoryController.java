@@ -360,7 +360,7 @@ public class InventoryController {
             deleteButton.setStyle("""
                         -fx-background-color: #ef4444;
                         -fx-text-fill: #fff;
-                        -fx-bakcground-radius: 20;
+                        -fx-background-radius: 20;
                         -fx-cursor: hand;
                     """);
 
