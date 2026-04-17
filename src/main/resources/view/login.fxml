@@ -9,7 +9,7 @@
 <StackPane fx:id="root"
            xmlns:fx="http://javafx.com/fxml"
            fx:controller="dev.vavateam1.controller.LoginController"
-           style="-fx-background-color: linear-gradient(to bottom right, #0f1b4c, #1c2a78);">
+           style="-fx-background-color: linear-gradient(to bottom right, -app-blue-primary, -app-blue-primary);">
 
     <VBox fx:id="loginCard"
       alignment="CENTER"
@@ -17,7 +17,7 @@
       maxWidth="400"
       maxHeight="350"
       prefWidth="400"
-      style="-fx-background-color: white;
+      style="-fx-background-color: -app-foreground;
              -fx-background-radius: 24;
              -fx-padding: 50;">
 

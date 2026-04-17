@@ -81,7 +81,7 @@ public class HistoryController {
     private void addDay(String day) {
         Label label = new Label(day);
         label.setStyle(
-                "-fx-background-color:white;" +
+                "-fx-background-color:-app-foreground;" +
                         "-fx-padding:8 18;" +
                         "-fx-background-radius:20;" +
                         "-fx-font-weight:bold;");
@@ -91,7 +91,7 @@ public class HistoryController {
     private void addOrder(PaymentDto payment) {
         HBox card = new HBox(20);
         card.setStyle(
-                "-fx-background-color:white;" +
+                "-fx-background-color:-app-foreground;" +
                         "-fx-padding:15 25;" +
                         "-fx-background-radius:25;");
 
@@ -101,7 +101,7 @@ public class HistoryController {
         Label refundedLabel = new Label("REFUNDED");
 
         orderTotal.setStyle("-fx-font-weight:bold;");
-        refundedLabel.setStyle("-fx-text-fill:#c62828; -fx-font-weight:bold;");
+        refundedLabel.setStyle("-fx-text-fill:-app-delete; -fx-font-weight:bold;");
         refundedLabel.setVisible(Boolean.TRUE.equals(payment.getRefunded()));
         refundedLabel.setManaged(Boolean.TRUE.equals(payment.getRefunded()));
         HBox.setHgrow(orderDate, Priority.ALWAYS);
@@ -143,7 +143,7 @@ public class HistoryController {
         String refundedText = Boolean.TRUE.equals(payment.getRefunded()) ? "Yes" : "No";
         Label refunded = new Label("Refunded: " + refundedText);
         if (Boolean.TRUE.equals(payment.getRefunded())) {
-            refunded.setStyle("-fx-text-fill:#c62828; -fx-font-weight:bold;");
+            refunded.setStyle("-fx-text-fill:-app-delete; -fx-font-weight:bold;");
         }
 
         Label itemsTitle = new Label("Items");

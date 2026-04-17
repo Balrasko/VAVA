@@ -604,10 +604,10 @@ public class TableLayoutController {
         status.setVisible(!dragging && Boolean.TRUE.equals(table.getAvailability()));
 
         Button deleteMarker = new Button("X");
-        deleteMarker.setStyle("-fx-background-color:#d62828; -fx-text-fill:#e8e8e8; -fx-font-size:14px; "
+        deleteMarker.setStyle("-fx-background-color:-app-delete; -fx-text-fill:-app-foreground; -fx-font-size:14px; "
                 + "-fx-font-weight:900; -fx-font-family:'Arial'; -fx-cursor:hand; -fx-padding:0 0 1 0; "
                 + "-fx-background-radius:999; -fx-border-radius:999; -fx-min-width:20px; -fx-min-height:20px; "
-                + "-fx-max-width:20px; -fx-max-height:20px; -fx-alignment:center; -fx-border-color:transparent; -fx-border-color: #7f1d1d; -fx-border-width: 1");
+            + "-fx-max-width:20px; -fx-max-height:20px; -fx-alignment:center; -fx-border-color:transparent; -fx-border-color: -app-delete-dark; -fx-border-width: 1");
         deleteMarker.setVisible(dragging);
         deleteMarker.setOnAction(e -> {
             if (!dragging) {

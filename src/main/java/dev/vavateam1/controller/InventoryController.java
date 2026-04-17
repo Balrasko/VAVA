@@ -54,11 +54,11 @@ import org.xml.sax.SAXException;
 
 public class InventoryController {
 
-    private static final String HEADER_LABEL_STYLE = "-fx-font-size:14; -fx-text-fill:#1d1d1d; -fx-font-weight:bold; -fx-cursor:hand;";
-    private static final String ROW_LABEL_STYLE = "-fx-font-size:14; -fx-text-fill:#1d1d1d;";
-    private static final String STATUS_STYLE_CRITICAL = "-fx-text-fill:#ef4444; -fx-font-size:20;";
-    private static final String STATUS_STYLE_LOW = "-fx-text-fill:#eab308; -fx-font-size:20;";
-    private static final String STATUS_STYLE_OK = "-fx-text-fill:#22c55e; -fx-font-size:20;";
+    private static final String HEADER_LABEL_STYLE = "-fx-font-size:14; -fx-text-fill:-app-text; -fx-font-weight:bold; -fx-cursor:hand;";
+    private static final String ROW_LABEL_STYLE = "-fx-font-size:14; -fx-text-fill:-app-text;";
+    private static final String STATUS_STYLE_CRITICAL = "-fx-text-fill:-app-delete; -fx-font-size:20;";
+    private static final String STATUS_STYLE_LOW = "-fx-text-fill:-app-edit; -fx-font-size:20;";
+    private static final String STATUS_STYLE_OK = "-fx-text-fill:-app-add; -fx-font-size:20;";
     @FXML private StackPane rootStack;
     @FXML private VBox root;
     @FXML private Button allItemsButton;
@@ -198,15 +198,15 @@ public class InventoryController {
         if (editMode) {
             root.setStyle("""
                 -fx-padding: 19;
-                -fx-background-color: #f4f4f4;
-                -fx-border-color: #f00;
+                -fx-background-color: -app-background;
+                -fx-border-color: -app-delete;
                 -fx-border-width: 2;
             """);
         }
         else {
             root.setStyle("""
                 -fx-padding: 20;
-                -fx-background-color: #f4f4f4;
+                -fx-background-color: -app-background;
                 -fx-border-color: transparent;
             """);
         }
@@ -313,8 +313,8 @@ public class InventoryController {
     }
 
     private void updateButtonStyles() {
-        String activeStyle = "-fx-background-color: #1e40af; -fx-text-fill:white; -fx-background-radius:20; -fx-padding:8 20 8 20; -fx-cursor:hand; -fx-font-size:14;";
-        String inactiveStyle = "-fx-background-color: #9ecaff; -fx-text-fill:#1d1d1d; -fx-background-radius:20; -fx-padding:8 20 8 20; -fx-cursor:hand; -fx-font-size:14;";
+        String activeStyle = "-fx-background-color: -app-blue-primary; -fx-text-fill:-app-foreground; -fx-background-radius:20; -fx-padding:8 20 8 20; -fx-cursor:hand; -fx-font-size:14;";
+        String inactiveStyle = "-fx-background-color: -app-blue-secondary; -fx-text-fill:-app-text; -fx-background-radius:20; -fx-padding:8 20 8 20; -fx-cursor:hand; -fx-font-size:14;";
 
         allItemsButton.setStyle(currentFilter == CurrentFilter.ALL ? activeStyle : inactiveStyle);
         lowStockButton.setStyle(currentFilter == CurrentFilter.LOW_STOCK ? activeStyle : inactiveStyle);
@@ -343,8 +343,8 @@ public class InventoryController {
         if (editMode) {
             Button deleteButton = new Button("✕");
             deleteButton.setStyle("""
-                -fx-background-color: #ef4444;
-                -fx-text-fill: #fff;
+                -fx-background-color: -app-delete;
+                -fx-text-fill: -app-foreground;
                 -fx-bakcground-radius: 20;
                 -fx-cursor: hand;
             """);
@@ -368,7 +368,7 @@ public class InventoryController {
         Button no = new Button("Cancel");
 
         yes.getStyleClass().add("dialog-button");
-        yes.setStyle("-fx-background-color: #ef4444");
+        yes.setStyle("-fx-background-color: -app-delete");
 
         no.getStyleClass().add("dialog-button");
 
@@ -473,14 +473,14 @@ public class InventoryController {
         Label row = new Label("Add a new item");
         row.setAlignment(Pos.CENTER);
         row.setStyle("""
-            -fx-text-fill: #000;
+            -fx-text-fill: -app-text;
             -fx-font-size: 20px;
             -fx-font-weight: bold;
-            -fx-background-color: #9ecaff;
+            -fx-background-color: -app-blue-secondary;
             -fx-background-radius: 16;
             -fx-border-width: 1;
             -fx-border-radius: 16;
-            -fx-border-color: #1e88e5;
+            -fx-border-color: -app-blue-border;
             -fx-cursor: hand;
         """);
 
@@ -506,11 +506,11 @@ public class InventoryController {
         dialog.setMaxHeight(300);
 
         dialog.setStyle("""
-            -fx-background-color: #fff;
+            -fx-background-color: -app-foreground;
             -fx-padding: 20;
             -fx-background-radius: 16;
             -fx-border-width: 2;
-            -fx-border-color: #1e88e5;
+            -fx-border-color: -app-blue-border;
             -fx-border-radius: 10;
         """);
 
@@ -622,10 +622,10 @@ public class InventoryController {
         toastLabel.getStyleClass().add("toast");
         
         if (!msgType) {
-            toastLabel.setStyle("-fx-border-color: #e53b3b;");
+            toastLabel.setStyle("-fx-border-color: -app-delete;");
         }
         else {
-            toastLabel.setStyle("-fx-border-color: limegreen;");
+            toastLabel.setStyle("-fx-border-color: -app-add;");
         }
 
         toastLabel.setText(message);

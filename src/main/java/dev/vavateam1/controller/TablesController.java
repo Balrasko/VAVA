@@ -88,14 +88,14 @@ public class TablesController {
         box.setLayoutY(table.getPosY().doubleValue());
 
         box.setStyle("""
-                    -fx-background-color: lightblue;
-                    -fx-border-color: black;
+                    -fx-background-color: -app-blue-secondary;
+                    -fx-border-color: -app-text;
                     -fx-border-radius: 3;
                     -fx-background-radius: 5;
                 """);
 
         Circle status = new Circle(6);
-        status.setStyle("-fx-fill: LIMEGREEN");
+        status.setStyle("-fx-fill: -app-add");
         status.setVisible(table.getAvailability());
 
         box.getChildren().add(status);

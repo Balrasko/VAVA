@@ -12,7 +12,7 @@
               fx:id="root"
               style="
                 -fx-padding: 20;
-                -fx-background-color: #f4f4f4;
+                -fx-background-color: -app-background;
                 -fx-border-color: transparent;
               ">
 
@@ -23,15 +23,15 @@
                         <Button fx:id="allItemsButton"
                                 text="All items"
                                 onAction="#onFilterAllItems"
-                                style="-fx-background-color:#1e40af; -fx-text-fill:white; -fx-background-radius:20; -fx-padding:8 20 8 20; -fx-cursor:hand; -fx-font-size:14;" />
+                                style="-fx-background-color:-app-blue-primary; -fx-text-fill:-app-foreground; -fx-background-radius:20; -fx-padding:8 20 8 20; -fx-cursor:hand; -fx-font-size:14;" />
                         <Button fx:id="lowStockButton"
                                 text="Low stock"
                                 onAction="#onFilterLowStock"
-                                style="-fx-background-color:#9ecaff; -fx-text-fill:#1d1d1d; -fx-background-radius:20; -fx-padding:8 20 8 20; -fx-cursor:hand; -fx-font-size:14;" />
+                                style="-fx-background-color:-app-blue-secondary; -fx-text-fill:-app-text; -fx-background-radius:20; -fx-padding:8 20 8 20; -fx-cursor:hand; -fx-font-size:14;" />
                         <Button fx:id="criticalButton"
                                 text="Critical"
                                 onAction="#onFilterCritical"
-                                style="-fx-background-color:#9ecaff; -fx-text-fill:#1d1d1d; -fx-background-radius:20; -fx-padding:8 20 8 20; -fx-cursor:hand; -fx-font-size:14;" />
+                                style="-fx-background-color:-app-blue-secondary; -fx-text-fill:-app-text; -fx-background-radius:20; -fx-padding:8 20 8 20; -fx-cursor:hand; -fx-font-size:14;" />
 
                         <Region HBox.hgrow="ALWAYS" />
 
@@ -56,10 +56,10 @@
                                    promptText="Search item..."
                                    onAction="#onApplyFilter"
                                    prefWidth="300"
-                                   style="-fx-background-color:#ffffff; -fx-background-radius:24; -fx-border-radius:24; -fx-padding:10 16 10 16; -fx-font-size:14; -fx-text-fill:#1d1d1d; -fx-prompt-text-fill:#7a7a7a;" />
+                                   style="-fx-background-color:-app-foreground; -fx-background-radius:24; -fx-border-radius:24; -fx-padding:10 16 10 16; -fx-font-size:14; -fx-text-fill:-app-text; -fx-prompt-text-fill:-app-text-muted;" />
                         <Button text="Filter"
                                 onAction="#onApplyFilter"
-                                style="-fx-background-color:#ffffff; -fx-text-fill:#1d1d1d; -fx-background-radius:24; -fx-border-color:#1e88e5; -fx-border-radius:24; -fx-padding:10 20 10 20; -fx-cursor:hand;" />
+                                style="-fx-background-color:-app-foreground; -fx-text-fill:-app-text; -fx-background-radius:24; -fx-border-color:-app-blue-border; -fx-border-radius:24; -fx-padding:10 20 10 20; -fx-cursor:hand;" />
                     
                         <Region HBox.hgrow="ALWAYS" />
 
@@ -74,7 +74,7 @@
 
                 <!-- Header Row -->
                 <GridPane hgap="0"
-                          style="-fx-background-color:white; -fx-background-radius:16; -fx-border-radius:16; -fx-border-color:#1e88e5; -fx-border-width:2; -fx-padding:12 16 12 16;">
+                          style="-fx-background-color:-app-foreground; -fx-background-radius:16; -fx-border-radius:16; -fx-border-color:-app-blue-border; -fx-border-width:2; -fx-padding:12 16 12 16;">
                     <columnConstraints>
                         <ColumnConstraints percentWidth="18" />
                         <ColumnConstraints percentWidth="22" />
@@ -88,31 +88,31 @@
                                onMouseClicked="#onSortByItemId"
                                GridPane.columnIndex="0"
                                GridPane.halignment="CENTER"
-                               style="-fx-font: bold 14px system; -fx-text-fill:#1d1d1d; -fx-cursor:hand;" />
+                               style="-fx-font: bold 14px system; -fx-text-fill:-app-text; -fx-cursor:hand;" />
                         <Label fx:id="nameHeaderLabel"
                                text="Name"
                                onMouseClicked="#onSortByName"
                                GridPane.columnIndex="1"
                                GridPane.halignment="CENTER"
-                               style="-fx-font: bold 14px system; -fx-text-fill:#1d1d1d; -fx-cursor:hand;" />
+                               style="-fx-font: bold 14px system; -fx-text-fill:-app-text; -fx-cursor:hand;" />
                         <Label fx:id="quantityHeaderLabel"
                                text="Quantity"
                                onMouseClicked="#onSortByQuantity"
                                GridPane.columnIndex="2"
                                GridPane.halignment="CENTER"
-                               style="-fx-font: bold 14px system; -fx-text-fill:#1d1d1d; -fx-cursor:hand;" />
+                               style="-fx-font: bold 14px system; -fx-text-fill:-app-text; -fx-cursor:hand;" />
                         <Label fx:id="minimalQuantityHeaderLabel"
                                text="Minimal quantity"
                                onMouseClicked="#onSortByMinimalQuantity"
                                GridPane.columnIndex="3"
                                GridPane.halignment="CENTER"
-                               style="-fx-font: bold 14px system; -fx-text-fill:#1d1d1d; -fx-cursor:hand;" />
+                               style="-fx-font: bold 14px system; -fx-text-fill:-app-text; -fx-cursor:hand;" />
                         <Label fx:id="statusHeaderLabel"
                                text="Status"
                                onMouseClicked="#onSortByStatus"
                                GridPane.columnIndex="4"
                                GridPane.halignment="CENTER"
-                               style="-fx-font: bold 14px system; -fx-text-fill:#1d1d1d; -fx-cursor:hand;" />
+                               style="-fx-font: bold 14px system; -fx-text-fill:-app-text; -fx-cursor:hand;" />
                     </children>
                 </GridPane>
 
