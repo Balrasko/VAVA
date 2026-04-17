@@ -8,4 +8,6 @@ public interface InventoryIngredientDao {
     List<InventoryIngredient> findAll();
 
     void saveAll(List<InventoryIngredient> ingredients);
+
+    void delete(int id);
 }
