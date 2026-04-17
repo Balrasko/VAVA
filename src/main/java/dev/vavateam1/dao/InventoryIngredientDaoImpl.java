@@ -27,8 +27,8 @@ public class InventoryIngredientDaoImpl implements InventoryIngredientDao {
 
     private static final String DELETE_SQL = """
             UPDATE inventory_ingredients
-            SET deleted_at = NOW()
-            WHERE id = ?
+            SET deleted_at = NOW(), updated_at = NOW()
+            WHERE id = ? AND deleted_at IS NULL
             """;
 
     private static final String FIND_BY_ID_SQL = """
