@@ -6,7 +6,6 @@ import com.google.inject.Injector;
 import dev.vavateam1.model.Table;
 import dev.vavateam1.model.User;
 import dev.vavateam1.service.AuthService;
-// animÃ¡cie
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
