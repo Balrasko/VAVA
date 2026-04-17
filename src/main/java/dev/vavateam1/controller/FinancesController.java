@@ -122,8 +122,8 @@ public class FinancesController {
 
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Export finance report");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV files", "*.csv"));
-        fileChooser.setInitialFileName("finance-report-" + currentReport.reportDate().format(FILE_DATE_FORMAT) + ".csv");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("XML files", "*.xml"));
+        fileChooser.setInitialFileName("finance-report-" + currentReport.reportDate().format(FILE_DATE_FORMAT) + ".xml");
 
         Window window = itemsContainer.getScene() != null ? itemsContainer.getScene().getWindow() : null;
         var selectedFile = fileChooser.showSaveDialog(window);
@@ -134,25 +134,41 @@ public class FinancesController {
         List<FinanceItemReport> itemsToExport = getFilteredItems();
 
         try (BufferedWriter writer = Files.newBufferedWriter(selectedFile.toPath())) {
-            writer.write("report_date,daily_sales,sold_items_total");
+            writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
             writer.newLine();
-            writer.write(String.format("%s,%s,%d",
-                    currentReport.reportDate(),
-                    formatDecimal(currentReport.dailySales()),
-                    currentReport.soldItemsTotal()));
+            writer.write("<financeReport>");
             writer.newLine();
+            writer.write("  <summary>");
             writer.newLine();
-            writer.write("item_id,name,sold_pieces,price_per_piece");
+            writer.write("    <reportDate>" + currentReport.reportDate() + "</reportDate>");
+            writer.newLine();
+            writer.write("    <dailySales>" + formatDecimal(currentReport.dailySales()) + "</dailySales>");
+            writer.newLine();
+            writer.write("    <soldItemsTotal>" + currentReport.soldItemsTotal() + "</soldItemsTotal>");
+            writer.newLine();
+            writer.write("  </summary>");
+            writer.newLine();
+            writer.write("  <items>");
             writer.newLine();
 
             for (FinanceItemReport item : itemsToExport) {
-                writer.write(String.format("%d,%s,%d,%s",
-                        item.itemId(),
-                        escapeCsv(item.name()),
-                        item.soldPieces(),
-                        formatDecimal(item.pricePerPiece())));
+                writer.write("    <item>");
+                writer.newLine();
+                writer.write("      <itemId>" + item.itemId() + "</itemId>");
+                writer.newLine();
+                writer.write("      <name>" + escapeXml(item.name()) + "</name>");
+                writer.newLine();
+                writer.write("      <soldPieces>" + item.soldPieces() + "</soldPieces>");
+                writer.newLine();
+                writer.write("      <pricePerPiece>" + formatDecimal(item.pricePerPiece()) + "</pricePerPiece>");
+                writer.newLine();
+                writer.write("    </item>");
                 writer.newLine();
             }
+
+            writer.write("  </items>");
+            writer.newLine();
+            writer.write("</financeReport>");
         } catch (IOException e) {
             throw new RuntimeException("Failed to export finance report", e);
         }
@@ -288,16 +304,17 @@ public class FinancesController {
         return value == null ? "0" : value.stripTrailingZeros().toPlainString();
     }
 
-    private String escapeCsv(String value) {
+    private String escapeXml(String value) {
         if (value == null) {
             return "";
         }
 
-        if (value.contains(",") || value.contains("\"") || value.contains("\n")) {
-            return "\"" + value.replace("\"", "\"\"") + "\"";
-        }
-
-        return value;
+        return value
+                .replace("&", "&amp;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;")
+                .replace("\"", "&quot;")
+                .replace("'", "&apos;");
     }
 
     private void showError(String title, String message) {

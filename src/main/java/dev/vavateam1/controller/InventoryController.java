@@ -1,18 +1,24 @@
 package dev.vavateam1.controller;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+
+import javax.xml.XMLConstants;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import com.google.inject.Inject;
 
@@ -41,6 +47,10 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
 import javafx.util.Duration;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 public class InventoryController {
 
@@ -49,9 +59,6 @@ public class InventoryController {
     private static final String STATUS_STYLE_CRITICAL = "-fx-text-fill:#ef4444; -fx-font-size:20;";
     private static final String STATUS_STYLE_LOW = "-fx-text-fill:#eab308; -fx-font-size:20;";
     private static final String STATUS_STYLE_OK = "-fx-text-fill:#22c55e; -fx-font-size:20;";
-    private static final List<String> DEFAULT_COLUMN_ORDER = List.of(
-            "id", "name", "quantity", "minimal_quantity", "unit", "cost_per_unit", "status");
-
     @FXML private StackPane rootStack;
     @FXML private VBox root;
     @FXML private Button allItemsButton;
@@ -145,7 +152,7 @@ public class InventoryController {
     private void onImportInventory() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Import inventory");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV files", "*.csv"));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("XML files", "*.xml"));
 
         Window window = itemsContainer.getScene() != null ? itemsContainer.getScene().getWindow() : null;
         var selectedFile = fileChooser.showOpenDialog(window);
@@ -154,7 +161,7 @@ public class InventoryController {
         }
 
         try {
-            List<InventoryIngredient> importedIngredients = readInventoryCsv(selectedFile.toPath());
+            List<InventoryIngredient> importedIngredients = readInventoryXml(selectedFile.toPath());
             inventoryIngredientDao.saveAll(importedIngredients);
             reloadInventory();
         } catch (IOException e) {
@@ -166,8 +173,8 @@ public class InventoryController {
     private void onExportInventory() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Export inventory");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV files", "*.csv"));
-        fileChooser.setInitialFileName("inventory-export.csv");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("XML files", "*.xml"));
+        fileChooser.setInitialFileName("inventory-export.xml");
 
         Window window = itemsContainer.getScene() != null ? itemsContainer.getScene().getWindow() : null;
         var selectedFile = fileChooser.showSaveDialog(window);
@@ -175,21 +182,8 @@ public class InventoryController {
             return;
         }
 
-        try (BufferedWriter writer = Files.newBufferedWriter(selectedFile.toPath())) {
-            writer.write("id,name,quantity,minimal_quantity,unit,cost_per_unit,status");
-            writer.newLine();
-
-            for (InventoryIngredient item : getFilteredItems()) {
-                writer.write(String.format("%d,%s,%s,%s,%s,%s,%s",
-                        item.getId(),
-                        escapeCsv(item.getName()),
-                        formatDecimal(item.getQuantity()),
-                        formatDecimal(item.getMinimalQuantity()),
-                        escapeCsv(item.getUnit()),
-                        formatDecimal(item.getCostPerUnit()),
-                        statusFor(item).name()));
-                writer.newLine();
-            }
+        try {
+            writeInventoryXml(selectedFile.toPath(), getFilteredItems());
         } catch (IOException e) {
             throw new RuntimeException("Failed to export inventory", e);
         }
@@ -677,97 +671,89 @@ public class InventoryController {
         }
     }
 
-    private List<InventoryIngredient> readInventoryCsv(Path path) throws IOException {
+    private List<InventoryIngredient> readInventoryXml(Path path) throws IOException {
         List<InventoryIngredient> importedItems = new ArrayList<>();
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        try {
+            factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+            factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+            factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
 
-        try (BufferedReader reader = Files.newBufferedReader(path)) {
-            String firstLine = reader.readLine();
-            if (firstLine == null || firstLine.isBlank()) {
-                return importedItems;
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            Document document = builder.parse(path.toFile());
+
+            NodeList itemNodes = document.getElementsByTagName("item");
+            for (int i = 0; i < itemNodes.getLength(); i++) {
+                Element itemElement = (Element) itemNodes.item(i);
+                importedItems.add(mapImportedIngredient(itemElement));
             }
-
-            List<String> firstColumns = parseCsvLine(firstLine);
-            Map<String, Integer> columnIndex = isHeader(firstColumns)
-                    ? buildColumnIndex(firstColumns)
-                    : buildColumnIndex(DEFAULT_COLUMN_ORDER);
-
-            if (!isHeader(firstColumns)) {
-                importedItems.add(mapImportedIngredient(firstColumns, columnIndex));
-            }
-
-            String line;
-            while ((line = reader.readLine()) != null) {
-                if (line.isBlank()) {
-                    continue;
-                }
-                importedItems.add(mapImportedIngredient(parseCsvLine(line), columnIndex));
-            }
+        } catch (ParserConfigurationException | SAXException e) {
+            throw new IOException("Invalid inventory XML", e);
         }
 
         return importedItems;
     }
 
-    private boolean isHeader(List<String> columns) {
-        return columns.stream().map(this::normalizeColumnName).anyMatch("name"::equals);
-    }
-
-    private Map<String, Integer> buildColumnIndex(List<String> columns) {
-        Map<String, Integer> index = new HashMap<>();
-        for (int i = 0; i < columns.size(); i++) {
-            index.put(normalizeColumnName(columns.get(i)), i);
-        }
-        return index;
-    }
-
-    private InventoryIngredient mapImportedIngredient(List<String> columns, Map<String, Integer> columnIndex) {
+    private InventoryIngredient mapImportedIngredient(Element itemElement) {
         InventoryIngredient ingredient = new InventoryIngredient();
-        ingredient.setId(parseInteger(getColumnValue(columns, columnIndex, "id"), 0));
-        ingredient.setName(getColumnValue(columns, columnIndex, "name"));
-        ingredient.setQuantity(parseDecimal(getColumnValue(columns, columnIndex, "quantity")));
-        ingredient.setMinimalQuantity(parseDecimal(getColumnValue(columns, columnIndex, "minimal_quantity")));
-        ingredient.setUnit(getColumnValue(columns, columnIndex, "unit"));
-        ingredient.setCostPerUnit(parseDecimal(getColumnValue(columns, columnIndex, "cost_per_unit")));
+        ingredient.setId(parseInteger(getChildText(itemElement, "id"), 0));
+        ingredient.setName(getChildText(itemElement, "name"));
+        ingredient.setQuantity(parseDecimal(getChildText(itemElement, "quantity")));
+        ingredient.setMinimalQuantity(parseDecimal(getChildText(itemElement, "minimal_quantity")));
+        ingredient.setUnit(getChildText(itemElement, "unit"));
+        ingredient.setCostPerUnit(parseDecimal(getChildText(itemElement, "cost_per_unit")));
         return ingredient;
     }
 
-    private List<String> parseCsvLine(String line) {
-        List<String> values = new ArrayList<>();
-        StringBuilder current = new StringBuilder();
-        boolean inQuotes = false;
+    private void writeInventoryXml(Path path, List<InventoryIngredient> items) throws IOException {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        try {
+            factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
 
-        for (int i = 0; i < line.length(); i++) {
-            char currentChar = line.charAt(i);
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            Document document = builder.newDocument();
 
-            if (currentChar == '"') {
-                boolean escapedQuote = inQuotes && i + 1 < line.length() && line.charAt(i + 1) == '"';
-                if (escapedQuote) {
-                    current.append('"');
-                    i++;
-                } else {
-                    inQuotes = !inQuotes;
-                }
-            } else if (currentChar == ',' && !inQuotes) {
-                values.add(current.toString().trim());
-                current.setLength(0);
-            } else {
-                current.append(currentChar);
+            Element rootElement = document.createElement("inventory");
+            document.appendChild(rootElement);
+
+            for (InventoryIngredient item : items) {
+                Element itemElement = document.createElement("item");
+                rootElement.appendChild(itemElement);
+
+                appendTextElement(document, itemElement, "id", String.valueOf(item.getId()));
+                appendTextElement(document, itemElement, "name", safeValue(item.getName()));
+                appendTextElement(document, itemElement, "quantity", formatDecimal(item.getQuantity()));
+                appendTextElement(document, itemElement, "minimal_quantity", formatDecimal(item.getMinimalQuantity()));
+                appendTextElement(document, itemElement, "unit", safeValue(item.getUnit()));
+                appendTextElement(document, itemElement, "cost_per_unit", formatDecimal(item.getCostPerUnit()));
+                appendTextElement(document, itemElement, "status", statusFor(item).name());
             }
-        }
 
-        values.add(current.toString().trim());
-        return values;
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+
+            transformer.transform(new DOMSource(document), new StreamResult(path.toFile()));
+        } catch (ParserConfigurationException | TransformerException e) {
+            throw new IOException("Failed to write inventory XML", e);
+        }
     }
 
-    private String getColumnValue(List<String> columns, Map<String, Integer> columnIndex, String columnName) {
-        Integer index = columnIndex.get(columnName);
-        if (index == null || index >= columns.size()) {
+    private void appendTextElement(Document document, Element parent, String tagName, String value) {
+        Element element = document.createElement(tagName);
+        element.setTextContent(value);
+        parent.appendChild(element);
+    }
+
+    private String getChildText(Element parent, String tagName) {
+        NodeList childNodes = parent.getElementsByTagName(tagName);
+        if (childNodes.getLength() == 0) {
             return "";
         }
-        return columns.get(index);
-    }
-
-    private String normalizeColumnName(String value) {
-        return value == null ? "" : value.trim().toLowerCase().replace(' ', '_');
+        return childNodes.item(0).getTextContent().trim();
     }
 
     private int parseInteger(String value, int fallback) {
@@ -794,18 +780,6 @@ public class InventoryController {
 
     private String safeValue(String value) {
         return value == null ? "" : value;
-    }
-
-    private String escapeCsv(String value) {
-        if (value == null) {
-            return "";
-        }
-
-        if (value.contains(",") || value.contains("\"") || value.contains("\n")) {
-            return "\"" + value.replace("\"", "\"\"") + "\"";
-        }
-
-        return value;
     }
 
     private void showError(String title, String message) {
