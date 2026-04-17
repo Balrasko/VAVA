@@ -14,5 +14,5 @@ public interface MenuItemDao {
 
     void softDeleteMenuItem(int menuItemId);
 
-    List<MenuItem> getItemsByPluCode(int pluCode);
+    MenuItem getItemByPluCode(int pluCode);
 }

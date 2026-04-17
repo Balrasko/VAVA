@@ -125,8 +125,7 @@ public class MenuItemDaoImpl implements MenuItemDao {
     }
 
     @Override
-    public List<MenuItem> getItemsByPluCode(int pluCode) {
-        List<MenuItem> items = new ArrayList<>();
+    public MenuItem getItemByPluCode(int pluCode) {
         String sql = "SELECT * FROM menu_items WHERE item_code = ? AND deleted_at IS NULL";
 
         try (Connection conn = connectionFactory.getConnection();
@@ -135,13 +134,13 @@ public class MenuItemDaoImpl implements MenuItemDao {
             stmt.setInt(1, pluCode);
 
             try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    items.add(mapResultSetToMenuItem(rs));
+                if (rs.next()) {
+                    return mapResultSetToMenuItem(rs);
                 }
             }
         } catch (SQLException e) {
             throw new RuntimeException("Failed to fetch menu item by PLU code", e);
         }
-        return items;
+        return null;
     }
 }
