@@ -170,7 +170,7 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public void deleteUser(int userId) {
-        String sql = "UPDATE users SET deleted_at=NOW() WHERE id=?";
+        String sql = "UPDATE users SET deleted_at=NOW(), updated_at=NOW() WHERE id=? AND deleted_at IS NULL";
 
         try (Connection conn = connectionFactory.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
