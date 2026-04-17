@@ -1,16 +1,20 @@
 package dev.vavateam1.controller;
 
-import com.google.inject.Inject;
-import dev.vavateam1.model.Location;
-import dev.vavateam1.model.Table;
-import dev.vavateam1.service.TableService;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+
+import com.google.inject.Inject;
+
+import dev.vavateam1.model.Location;
+import dev.vavateam1.model.Table;
+import dev.vavateam1.service.TableService;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -24,8 +28,6 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 public class TableLayoutController {
 
@@ -101,6 +103,7 @@ public class TableLayoutController {
     private Location selectedZone;
 
     private Map<Integer, String> locationNamesById;
+    private Set<Integer> tablesWithUnpaidItems = Collections.emptySet();
     private final Map<Integer, TablePosition> originalPositions = new HashMap<>();
     private final Map<Integer, Node> tableNodesById = new HashMap<>();
     private final Set<Integer> pendingDeletedTableIds = new HashSet<>();
@@ -118,6 +121,7 @@ public class TableLayoutController {
         tables = tableService.getTables();
         locationNamesById = tableService.getLocations().stream()
                 .collect(Collectors.toMap(Location::getId, Location::getName));
+        tablesWithUnpaidItems = tableService.getTablesWithUnpaidItems();
 
         if (zonesNavbarController != null) {
             zonesNavbarController.setAddZoneTabVisible(true);
@@ -457,6 +461,7 @@ public class TableLayoutController {
         tables = tableService.getTables();
         locationNamesById = tableService.getLocations().stream()
                 .collect(Collectors.toMap(Location::getId, Location::getName));
+        tablesWithUnpaidItems = tableService.getTablesWithUnpaidItems();
     }
 
     private TablePosition findAvailablePosition(int zoneId, int movingTableId) {
@@ -601,7 +606,9 @@ public class TableLayoutController {
 
         Circle status = new Circle(6);
         status.getStyleClass().add("table-status-dot");
-        status.setVisible(!dragging && Boolean.TRUE.equals(table.getAvailability()));
+        boolean hasUnpaid = tablesWithUnpaidItems.contains(table.getId());
+        status.setStyle(hasUnpaid ? "-fx-fill: RED" : "-fx-fill: LIMEGREEN");
+        status.setVisible(!dragging);
 
         Button deleteMarker = new Button("X");
         deleteMarker.setStyle("-fx-background-color:#d62828; -fx-text-fill:#e8e8e8; -fx-font-size:14px; "

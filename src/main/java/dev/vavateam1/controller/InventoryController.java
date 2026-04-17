@@ -30,7 +30,6 @@ import javafx.animation.SequentialTransition;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
 import javafx.geometry.Pos;
-import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -41,7 +40,6 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
@@ -59,20 +57,38 @@ public class InventoryController {
     private static final String STATUS_STYLE_CRITICAL = "-fx-text-fill:#ef4444; -fx-font-size:20;";
     private static final String STATUS_STYLE_LOW = "-fx-text-fill:#eab308; -fx-font-size:20;";
     private static final String STATUS_STYLE_OK = "-fx-text-fill:#22c55e; -fx-font-size:20;";
-    @FXML private StackPane rootStack;
-    @FXML private VBox root;
-    @FXML private Button allItemsButton;
-    @FXML private Button lowStockButton;
-    @FXML private Button criticalButton;
-    @FXML private Button editButton;
-    @FXML private Label itemIdHeaderLabel;
-    @FXML private Label nameHeaderLabel;
-    @FXML private Label quantityHeaderLabel;
-    @FXML private Label minimalQuantityHeaderLabel;
-    @FXML private Label statusHeaderLabel;
-    @FXML private TextField searchField;
-    @FXML private VBox itemsContainer;
-    @FXML private Label toastLabel;
+
+    private static final List<String> DEFAULT_COLUMN_ORDER = List.of(
+            "id", "name", "quantity", "minimal_quantity", "unit", "cost_per_unit", "status");
+
+    @FXML
+    private StackPane rootStack;
+    @FXML
+    private VBox root;
+    @FXML
+    private Button allItemsButton;
+    @FXML
+    private Button lowStockButton;
+    @FXML
+    private Button criticalButton;
+    @FXML
+    private Button editButton;
+    @FXML
+    private Label itemIdHeaderLabel;
+    @FXML
+    private Label nameHeaderLabel;
+    @FXML
+    private Label quantityHeaderLabel;
+    @FXML
+    private Label minimalQuantityHeaderLabel;
+    @FXML
+    private Label statusHeaderLabel;
+    @FXML
+    private TextField searchField;
+    @FXML
+    private VBox itemsContainer;
+    @FXML
+    private Label toastLabel;
 
     private final InventoryIngredientDao inventoryIngredientDao;
     private final List<InventoryIngredient> allItems = new ArrayList<>();
@@ -197,18 +213,17 @@ public class InventoryController {
 
         if (editMode) {
             root.setStyle("""
-                -fx-padding: 19;
-                -fx-background-color: #f4f4f4;
-                -fx-border-color: #f00;
-                -fx-border-width: 2;
-            """);
-        }
-        else {
+                        -fx-padding: 19;
+                        -fx-background-color: #f4f4f4;
+                        -fx-border-color: #f00;
+                        -fx-border-width: 2;
+                    """);
+        } else {
             root.setStyle("""
-                -fx-padding: 20;
-                -fx-background-color: #f4f4f4;
-                -fx-border-color: transparent;
-            """);
+                        -fx-padding: 20;
+                        -fx-background-color: #f4f4f4;
+                        -fx-border-color: transparent;
+                    """);
         }
 
         renderItems();
@@ -275,7 +290,7 @@ public class InventoryController {
 
     private void renderItems() {
         itemsContainer.getChildren().clear();
-        
+
         if (editMode) {
             itemsContainer.getChildren().add(createAddRow());
         }
@@ -343,11 +358,11 @@ public class InventoryController {
         if (editMode) {
             Button deleteButton = new Button("✕");
             deleteButton.setStyle("""
-                -fx-background-color: #ef4444;
-                -fx-text-fill: #fff;
-                -fx-bakcground-radius: 20;
-                -fx-cursor: hand;
-            """);
+                        -fx-background-color: #ef4444;
+                        -fx-text-fill: #fff;
+                        -fx-bakcground-radius: 20;
+                        -fx-cursor: hand;
+                    """);
 
             deleteButton.setOnAction(e -> confirmDelete(item));
 
@@ -376,7 +391,7 @@ public class InventoryController {
         no.setMinWidth(40);
 
         yes.setOnAction(e -> {
-            //InventoryIngredientDao.delete(item);
+            inventoryIngredientDao.delete(item.getId());
             rootStack.getChildren().removeLast();
             reloadInventory();
             showToast("Item deleted.", true);
@@ -395,17 +410,14 @@ public class InventoryController {
         TextField minQuantityField = new TextField(item.getMinimalQuantity().toString());
 
         HBox content = new HBox(10,
-            new VBox(20,
-                new Label("Name"),
-                new Label("Quantity"),
-                new Label("Minimum Quantity")
-            ),
-            new VBox(10,
-                nameField,
-                quantityField,
-                minQuantityField
-            )
-        );
+                new VBox(20,
+                        new Label("Name"),
+                        new Label("Quantity"),
+                        new Label("Minimum Quantity")),
+                new VBox(10,
+                        nameField,
+                        quantityField,
+                        minQuantityField));
 
         Button save = new Button("Save");
         Button cancel = new Button("Cancel");
@@ -423,14 +435,13 @@ public class InventoryController {
                 item.setMinimalQuantity(new BigDecimal(minQuantityField.getText()));
 
                 inventoryIngredientDao.saveAll(allItems);
-                
+
                 reloadInventory();
 
                 rootStack.getChildren().removeLast();
 
                 showToast("Item edited.", true);
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 showToast("Invalid format in one of the fields.", false);
                 return;
             }
@@ -473,16 +484,16 @@ public class InventoryController {
         Label row = new Label("Add a new item");
         row.setAlignment(Pos.CENTER);
         row.setStyle("""
-            -fx-text-fill: #000;
-            -fx-font-size: 20px;
-            -fx-font-weight: bold;
-            -fx-background-color: #9ecaff;
-            -fx-background-radius: 16;
-            -fx-border-width: 1;
-            -fx-border-radius: 16;
-            -fx-border-color: #1e88e5;
-            -fx-cursor: hand;
-        """);
+                    -fx-text-fill: #000;
+                    -fx-font-size: 20px;
+                    -fx-font-weight: bold;
+                    -fx-background-color: #9ecaff;
+                    -fx-background-radius: 16;
+                    -fx-border-width: 1;
+                    -fx-border-radius: 16;
+                    -fx-border-color: #1e88e5;
+                    -fx-cursor: hand;
+                """);
 
         row.setMaxWidth(Double.MAX_VALUE);
         row.setMinHeight(50);
@@ -497,8 +508,8 @@ public class InventoryController {
     private void showDialog(String title, Node content, List<Button> actions) {
         StackPane overlay = new StackPane();
         overlay.setStyle("""
-            -fx-background-color: rgba(0,0,0,0.5);
-        """);
+                    -fx-background-color: rgba(0,0,0,0.5);
+                """);
 
         VBox dialog = new VBox(20);
         dialog.setAlignment(Pos.CENTER);
@@ -506,13 +517,13 @@ public class InventoryController {
         dialog.setMaxHeight(300);
 
         dialog.setStyle("""
-            -fx-background-color: #fff;
-            -fx-padding: 20;
-            -fx-background-radius: 16;
-            -fx-border-width: 2;
-            -fx-border-color: #1e88e5;
-            -fx-border-radius: 10;
-        """);
+                    -fx-background-color: #fff;
+                    -fx-padding: 20;
+                    -fx-background-radius: 16;
+                    -fx-border-width: 2;
+                    -fx-border-color: #1e88e5;
+                    -fx-border-radius: 10;
+                """);
 
         Label titleLabel = new Label(title);
         titleLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
@@ -542,21 +553,18 @@ public class InventoryController {
         TextField unitField = new TextField();
 
         HBox content = new HBox(10,
-            new VBox(20,
-                new Label("Name"),
-                new Label("Quantity"),
-                new Label("Minimum Quantity"),
-                new Label("Cost per unit"),
-                new Label("Unit")
-            ),
-            new VBox(10,
-                nameField,
-                quantityField,
-                minQuantityField,
-                costPerUnitField,
-                unitField
-            )
-        );
+                new VBox(20,
+                        new Label("Name"),
+                        new Label("Quantity"),
+                        new Label("Minimum Quantity"),
+                        new Label("Cost per unit"),
+                        new Label("Unit")),
+                new VBox(10,
+                        nameField,
+                        quantityField,
+                        minQuantityField,
+                        costPerUnitField,
+                        unitField));
 
         Button save = new Button("Save");
         Button cancel = new Button("Cancel");
@@ -583,8 +591,7 @@ public class InventoryController {
                 rootStack.getChildren().removeLast();
 
                 showToast("New item created.", true);
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 showToast("Invalid format in one of the fields.", false);
                 return;
             }
@@ -620,11 +627,10 @@ public class InventoryController {
         // Display a temporary floating toast style popup
 
         toastLabel.getStyleClass().add("toast");
-        
+
         if (!msgType) {
             toastLabel.setStyle("-fx-border-color: #e53b3b;");
-        }
-        else {
+        } else {
             toastLabel.setStyle("-fx-border-color: limegreen;");
         }
 

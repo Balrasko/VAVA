@@ -21,7 +21,14 @@ public class InventoryIngredientDaoImpl implements InventoryIngredientDao {
     private static final String FIND_ALL_SQL = """
             SELECT id, name, quantity, minimal_quantity, unit, cost_per_unit, created_at, updated_at, deleted_at
             FROM inventory_ingredients
+            WHERE deleted_at IS NULL
             ORDER BY id ASC
+            """;
+
+    private static final String DELETE_SQL = """
+            UPDATE inventory_ingredients
+            SET deleted_at = NOW()
+            WHERE id = ?
             """;
 
     private static final String FIND_BY_ID_SQL = """
@@ -174,6 +181,17 @@ public class InventoryIngredientDaoImpl implements InventoryIngredientDao {
         stmt.setBigDecimal(3, normalizeDecimal(ingredient.getMinimalQuantity()));
         stmt.setString(4, ingredient.getUnit());
         stmt.setBigDecimal(5, normalizeDecimal(ingredient.getCostPerUnit()));
+    }
+
+    @Override
+    public void delete(int id) {
+        try (Connection conn = connectionFactory.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(DELETE_SQL)) {
+            stmt.setInt(1, id);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to delete inventory ingredient", e);
+        }
     }
 
     private BigDecimal normalizeDecimal(BigDecimal value) {

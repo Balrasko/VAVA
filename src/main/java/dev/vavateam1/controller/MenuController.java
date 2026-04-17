@@ -1,13 +1,16 @@
 package dev.vavateam1.controller;
 
 import com.google.inject.Inject;
+import dev.vavateam1.dao.InventoryIngredientDao;
 import dev.vavateam1.model.Category;
 import dev.vavateam1.model.MenuItem;
 import dev.vavateam1.service.MenuService;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuButton;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
@@ -24,6 +27,7 @@ import java.util.Map;
 public class MenuController {
 
     private final MenuService menuService;
+    private final InventoryIngredientDao inventoryIngredientDao;
 
     @FXML
     private HBox categoryTabsContainer;
@@ -45,6 +49,8 @@ public class MenuController {
     private TextField priceField;
     @FXML
     private TextField discountField;
+    @FXML
+    private MenuButton ingredientsButton;
     @FXML
     private TextField categoryNameField;
 
@@ -73,12 +79,14 @@ public class MenuController {
     private int editingCategoryId = -1;
 
     @Inject
-    public MenuController(MenuService menuService) {
+    public MenuController(MenuService menuService, InventoryIngredientDao inventoryIngredientDao) {
         this.menuService = menuService;
+        this.inventoryIngredientDao = inventoryIngredientDao;
     }
 
     @FXML
     public void initialize() {
+        loadIngredients();
         loadCategories();
         hideForm();
         hideCategoryForm();
@@ -244,6 +252,32 @@ public class MenuController {
         updateCategoryFormMode();
     }
 
+    private void loadIngredients() {
+        if (ingredientsButton == null) {
+            return;
+        }
+        ingredientsButton.getItems().clear();
+        for (var ingredient : inventoryIngredientDao.findAll()) {
+            CheckMenuItem item = new CheckMenuItem(ingredient.getName());
+            item.selectedProperty().addListener((obs, oldVal, newVal) -> updateIngredientsButtonText());
+            ingredientsButton.getItems().add(item);
+        }
+    }
+
+    private void updateIngredientsButtonText() {
+        List<String> selected = getSelectedIngredientNames();
+        ingredientsButton.setText(selected.isEmpty() ? "Select ingredients..." : String.join(", ", selected));
+    }
+
+    private List<String> getSelectedIngredientNames() {
+        return ingredientsButton.getItems().stream()
+                .filter(item -> item instanceof CheckMenuItem)
+                .map(item -> (CheckMenuItem) item)
+                .filter(CheckMenuItem::isSelected)
+                .map(CheckMenuItem::getText)
+                .toList();
+    }
+
     private void clearForm() {
         nameField.clear();
         descriptionField.clear();
@@ -253,6 +287,12 @@ public class MenuController {
         }
         priceField.clear();
         discountField.clear();
+        if (ingredientsButton != null) {
+            ingredientsButton.getItems().forEach(item -> {
+                if (item instanceof CheckMenuItem cmi) cmi.setSelected(false);
+            });
+            updateIngredientsButtonText();
+        }
     }
 
     private void updateFormMode() {

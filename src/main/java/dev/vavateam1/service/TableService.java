@@ -2,11 +2,14 @@ package dev.vavateam1.service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
 import dev.vavateam1.model.Location;
 import dev.vavateam1.model.Table;
 
 public interface TableService {
     List<Table> getTables();
+
+    Set<Integer> getTablesWithUnpaidItems();
 
     List<Location> getLocations();
 

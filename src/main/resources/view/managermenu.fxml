@@ -4,6 +4,7 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.MenuButton?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.BorderPane?>
@@ -150,9 +151,10 @@
                                         <VBox spacing="8">
                                             <children>
                                                 <Label text="Ingredients" styleClass="form-label" />
-                                                <TextField fx:id="ingredientsField"
-                                                           maxWidth="Infinity"
-                                                           styleClass="form-input" />
+                                                <MenuButton fx:id="ingredientsButton"
+                                                            text="Select ingredients..."
+                                                            maxWidth="Infinity"
+                                                            styleClass="form-input" />
                                             </children>
                                         </VBox>
 
