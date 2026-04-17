@@ -50,5 +50,6 @@ public class AppModule extends AbstractModule {
         bind(MenuService.class).to(MenuServiceImpl.class).in(Scopes.SINGLETON);
         bind(OrderService.class).to(OrderServiceImpl.class).in(Scopes.SINGLETON);
         bind(ClosingService.class).to(ClosingServiceImpl.class).in(Scopes.SINGLETON);
+        bind(UsersService.class).to(UsersServiceImpl.class).in(Scopes.SINGLETON);
     }
 }
