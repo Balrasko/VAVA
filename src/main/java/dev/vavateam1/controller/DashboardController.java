@@ -226,7 +226,7 @@ public class DashboardController {
 
     private void showKitchenView() throws Exception {
         FXMLLoader loader = new FXMLLoader(
-                getClass().getResource("/view/kitchen.xml"));
+                getClass().getResource("/view/kitchen.fxml"));
         loader.setControllerFactory(injector::getInstance);
 
         Parent view = loader.load();
