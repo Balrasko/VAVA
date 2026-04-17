@@ -9,7 +9,7 @@
            fx:id="contentArea"
            fx:controller="dev.vavateam1.controller.TablesController"
            alignment="CENTER"
-           style="-fx-background-color: #f4f4f4;">
+           style="-fx-background-color: -app-background;">
 
     <!-- MAIN PAGE AREA -->
     <Pane fx:id="tablesPane"

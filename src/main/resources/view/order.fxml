@@ -10,7 +10,7 @@
 
            <HBox  spacing="20"
               maxWidth="Infinity"
-              style="-fx-padding: 20; -fx-background-color: #f4f4f4;">
+              style="-fx-padding: 20; -fx-background-color: -app-background;">
 
               <!-- LEFT PANEL -->
               <VBox fx:id="menuPanel"
@@ -18,17 +18,17 @@
               prefWidth="500"
               maxWidth="Infinity"
               HBox.hgrow="ALWAYS"
-              style="-fx-padding: 10; -fx-background-color: #d9d9d9; -fx-background-radius: 12;">
+              style="-fx-padding: 10; -fx-background-color: -app-surface-muted; -fx-background-radius: 12;">
 
                      <!-- BACK BUTTON AND TABLE LABEL -->
                      <HBox alignment="TOP_LEFT" spacing="10">
                             <Button text="←"
                                    onAction="#backToTableView"
-                                   style="-fx-background-color: #f4f4f4; -fx-text-fill: #333; -fx-font-size: 22; -fx-cursor: hand; -fx-background-radius: 20; -fx-font-weight: bold;"/>
+                                   style="-fx-background-color: -app-background; -fx-text-fill: -app-text; -fx-font-size: 22; -fx-cursor: hand; -fx-background-radius: 20; -fx-font-weight: bold;"/>
 
                             <Label fx:id="tableLabel"
                                    styleClass="button"
-                                   style="-fx-background-color: #f4f4f4; -fx-text-fill: #333; -fx-font-size: 22; -fx-background-radius: 20;"/>
+                                   style="-fx-background-color: -app-background; -fx-text-fill: -app-text; -fx-font-size: 22; -fx-background-radius: 20;"/>
                      </HBox>
 
                      <!-- CATEGORY SELECT BUTTONS -->
@@ -41,7 +41,7 @@
 
                             <HBox fx:id="categoryBox"
                             spacing="0"
-                            style="-fx-padding: 0; -fx-background-color: #d9d9d9;"/>
+                            style="-fx-padding: 0; -fx-background-color: -app-surface-muted;"/>
                      </ScrollPane>
 
                      <!-- MENU ITEMS -->
@@ -83,7 +83,7 @@
               prefWidth="500"
               maxWidth="Infinity"
               HBox.hgrow="ALWAYS"
-              style="-fx-padding: 10; -fx-background-color: #d9d9d9; -fx-background-radius: 12;">
+              style="-fx-padding: 10; -fx-background-color: -app-surface-muted; -fx-background-radius: 12;">
 
                      <HBox spacing="10">
                             

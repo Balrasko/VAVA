@@ -27,33 +27,33 @@
             <content>
                 <VBox spacing="16"
                       maxWidth="Infinity"
-                      style="-fx-padding:20; -fx-background-color:#f4f4f4;">
+                      style="-fx-padding:20; -fx-background-color:-app-background;">
                     <children>
                         <HBox spacing="14" alignment="CENTER_RIGHT">
                             <children>
                                 <VBox prefWidth="240"
                                     prefHeight="72"
                                     alignment="CENTER_LEFT"
-                                    style="-fx-background-color:#ffffff; -fx-background-radius:16; -fx-padding:8 14 8 14;">
+                                    style="-fx-background-color:-app-foreground; -fx-background-radius:16; -fx-padding:8 14 8 14;">
                                     <children>
                                         <Label text="Total sales"
-                                            style="-fx-text-fill:#1d1d1d; -fx-font-size:12px;" />
+                                            style="-fx-text-fill:-app-text; -fx-font-size:12px;" />
                                         <Label fx:id="dailySalesLabel"
                                             text="2453.65"
-                                            style="-fx-text-fill:#1d1d1d; -fx-font-size:28px; -fx-font-weight:bold;" />
+                                            style="-fx-text-fill:-app-text; -fx-font-size:28px; -fx-font-weight:bold;" />
                                     </children>
                                 </VBox>
 
                                 <VBox prefWidth="240"
                                     prefHeight="72"
                                     alignment="CENTER_LEFT"
-                                    style="-fx-background-color:#ffffff; -fx-background-radius:16; -fx-padding:8 14 8 14;">
+                                    style="-fx-background-color:-app-foreground; -fx-background-radius:16; -fx-padding:8 14 8 14;">
                                     <children>
                                         <Label text="Sold items"
-                                            style="-fx-text-fill:#1d1d1d; -fx-font-size:12px;" />
+                                            style="-fx-text-fill:-app-text; -fx-font-size:12px;" />
                                         <Label fx:id="soldItemsTotalLabel"
                                             text="45"
-                                            style="-fx-text-fill:#1d1d1d; -fx-font-size:28px; -fx-font-weight:bold;" />
+                                            style="-fx-text-fill:-app-text; -fx-font-size:28px; -fx-font-weight:bold;" />
                                     </children>
                                 </VBox>
 
@@ -61,7 +61,7 @@
 
                                 <Button text="Export finance report"
                                         onAction="#onExportFinanceReport"
-                                        style="-fx-background-color:#57c84d; -fx-text-fill:#1d1d1d; -fx-background-radius:24; -fx-padding:10 24 10 24; -fx-cursor:hand; -fx-font-size:14;" />
+                                        style="-fx-background-color:-app-add; -fx-text-fill:-app-text; -fx-background-radius:24; -fx-padding:10 24 10 24; -fx-cursor:hand; -fx-font-size:14;" />
                             </children>
                         </HBox>
 
@@ -71,10 +71,10 @@
                                         promptText="Search item..."
                                         onAction="#onApplyFilter"
                                         prefWidth="300"
-                                        style="-fx-background-color:#ffffff; -fx-background-radius:24; -fx-border-radius:24; -fx-padding:10 16 10 16; -fx-font-size:14; -fx-text-fill:#1d1d1d; -fx-prompt-text-fill:#7a7a7a;" />
+                                        style="-fx-background-color:-app-foreground; -fx-background-radius:24; -fx-border-radius:24; -fx-padding:10 16 10 16; -fx-font-size:14; -fx-text-fill:-app-text; -fx-prompt-text-fill:-app-text-muted;" />
                                 <Button text="Filter"
                                         onAction="#onToggleFilterPanel"
-                                        style="-fx-background-color:#ffffff; -fx-text-fill:#1d1d1d; -fx-background-radius:24; -fx-border-color:#1e88e5; -fx-border-radius:24; -fx-padding:10 20 10 20; -fx-cursor:hand;" />
+                                        style="-fx-background-color:-app-foreground; -fx-text-fill:-app-text; -fx-background-radius:24; -fx-border-color:-app-blue-border; -fx-border-radius:24; -fx-padding:10 20 10 20; -fx-cursor:hand;" />
                             </children>
                         </HBox>
 
@@ -82,26 +82,26 @@
                               spacing="10"
                               visible="false"
                               managed="false"
-                              style="-fx-background-color:white; -fx-background-radius:16; -fx-padding:14 18 14 18;">
+                              style="-fx-background-color:-app-foreground; -fx-background-radius:16; -fx-padding:14 18 14 18;">
                             <children>
                                 <HBox spacing="16" alignment="CENTER_LEFT">
                                     <children>
                                         <Label text="Category:"
-                                               style="-fx-font-size:13; -fx-text-fill:#1d1d1d;" />
+                                               style="-fx-font-size:13; -fx-text-fill:-app-text;" />
                                         <ComboBox fx:id="categoryCombo"
                                                   promptText="All categories"
                                                   prefWidth="200"
                                                   style="-fx-background-radius:12; -fx-font-size:13;" />
 
                                         <Label text="Sold from:"
-                                               style="-fx-font-size:13; -fx-text-fill:#1d1d1d;" />
+                                               style="-fx-font-size:13; -fx-text-fill:-app-text;" />
                                         <DatePicker fx:id="fromDatePicker"
                                                     promptText="From date"
                                                     prefWidth="160"
                                                     style="-fx-font-size:13;" />
 
                                         <Label text="to:"
-                                               style="-fx-font-size:13; -fx-text-fill:#1d1d1d;" />
+                                               style="-fx-font-size:13; -fx-text-fill:-app-text;" />
                                         <DatePicker fx:id="toDatePicker"
                                                     promptText="To date"
                                                     prefWidth="160"
@@ -111,17 +111,17 @@
 
                                         <Button text="Apply"
                                                 onAction="#onApplyFilter"
-                                                style="-fx-background-color:#1e88e5; -fx-text-fill:white; -fx-background-radius:20; -fx-padding:8 20 8 20; -fx-cursor:hand; -fx-font-size:13;" />
+                                                style="-fx-background-color:-app-blue-border; -fx-text-fill:-app-foreground; -fx-background-radius:20; -fx-padding:8 20 8 20; -fx-cursor:hand; -fx-font-size:13;" />
                                         <Button text="Clear"
                                                 onAction="#onClearFilter"
-                                                style="-fx-background-color:#f4f4f4; -fx-text-fill:#1d1d1d; -fx-background-radius:20; -fx-border-color:#aaa; -fx-border-radius:20; -fx-padding:8 20 8 20; -fx-cursor:hand; -fx-font-size:13;" />
+                                                style="-fx-background-color:-app-background; -fx-text-fill:-app-text; -fx-background-radius:20; -fx-border-color:-app-border; -fx-border-radius:20; -fx-padding:8 20 8 20; -fx-cursor:hand; -fx-font-size:13;" />
                                     </children>
                                 </HBox>
                             </children>
                         </VBox>
 
                         <GridPane hgap="0"
-                                style="-fx-background-color:white; -fx-background-radius:16; -fx-border-radius:16; -fx-border-color:#1e88e5; -fx-border-width:2; -fx-padding:12 16 12 16;">
+                                style="-fx-background-color:-app-foreground; -fx-background-radius:16; -fx-border-radius:16; -fx-border-color:-app-blue-border; -fx-border-width:2; -fx-padding:12 16 12 16;">
                             <columnConstraints>
                                 <ColumnConstraints percentWidth="25" />
                                 <ColumnConstraints percentWidth="25" />
@@ -134,25 +134,25 @@
                                     onMouseClicked="#onSortByItemId"
                                     GridPane.columnIndex="0"
                                     GridPane.halignment="CENTER"
-                                    style="-fx-font-weight:bold; -fx-font-size:14px; -fx-text-fill:#1d1d1d; -fx-cursor:hand;" />
+                                    style="-fx-font-weight:bold; -fx-font-size:14px; -fx-text-fill:-app-text; -fx-cursor:hand;" />
                                 <Label fx:id="itemNameHeaderLabel"
                                     text="Name"
                                     onMouseClicked="#onSortByName"
                                     GridPane.columnIndex="1"
                                     GridPane.halignment="CENTER"
-                                    style="-fx-font-weight:bold; -fx-font-size:14px; -fx-text-fill:#1d1d1d; -fx-cursor:hand;" />
+                                    style="-fx-font-weight:bold; -fx-font-size:14px; -fx-text-fill:-app-text; -fx-cursor:hand;" />
                                 <Label fx:id="soldPiecesHeaderLabel"
                                     text="Sold pieces"
                                     onMouseClicked="#onSortBySoldPieces"
                                     GridPane.columnIndex="2"
                                     GridPane.halignment="CENTER"
-                                    style="-fx-font-weight:bold; -fx-font-size:14px; -fx-text-fill:#1d1d1d; -fx-cursor:hand;" />
+                                    style="-fx-font-weight:bold; -fx-font-size:14px; -fx-text-fill:-app-text; -fx-cursor:hand;" />
                                 <Label fx:id="pricePerPieceHeaderLabel"
                                     text="Price per piece"
                                     onMouseClicked="#onSortByPricePerPiece"
                                     GridPane.columnIndex="3"
                                     GridPane.halignment="CENTER"
-                                    style="-fx-font-weight:bold; -fx-font-size:14px; -fx-text-fill:#1d1d1d; -fx-cursor:hand;" />
+                                    style="-fx-font-weight:bold; -fx-font-size:14px; -fx-text-fill:-app-text; -fx-cursor:hand;" />
                             </children>
                         </GridPane>
 

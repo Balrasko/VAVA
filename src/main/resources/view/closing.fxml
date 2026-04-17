@@ -8,7 +8,7 @@
       fx:id="rootContainer"
       spacing="20"
       maxWidth="Infinity"
-      style="-fx-padding:20; -fx-background-color:#f4f4f4;">
+      style="-fx-padding:20; -fx-background-color:-app-background;">
 
     <!-- MAIN PANEL -->
     <VBox 
@@ -16,7 +16,7 @@
           prefWidth="500"
           maxWidth="Infinity"
           HBox.hgrow="ALWAYS"
-          style="-fx-padding:10; -fx-background-color:#d9d9d9; -fx-background-radius:12;">
+          style="-fx-padding:10; -fx-background-color:-app-surface-muted; -fx-background-radius:12;">
 
         <children>
             <HBox spacing="16.0" alignment="CENTER_LEFT">
@@ -27,28 +27,28 @@
                             onAction="#onClosing"
                             prefWidth="122.0"
                             prefHeight="50.0"
-                            style="-fx-background-color: #f5f5f5; -fx-background-radius: 16; -fx-text-fill: #1d1d1d; -fx-font-size: 12px; -fx-cursor: hand;"/>
+                            style="-fx-background-color: -app-surface-soft; -fx-background-radius: 16; -fx-text-fill: -app-text; -fx-font-size: 12px; -fx-cursor: hand;"/>
 
                     <Button fx:id="printButton"
                             text="Print"
                             onAction="#onPrint"
                             prefWidth="122.0"
                             prefHeight="50.0"
-                            style="-fx-background-color: #f5f5f5; -fx-background-radius: 16; -fx-text-fill: #1d1d1d; -fx-font-size: 12px; -fx-cursor: hand;"/>
+                            style="-fx-background-color: -app-surface-soft; -fx-background-radius: 16; -fx-text-fill: -app-text; -fx-font-size: 12px; -fx-cursor: hand;"/>
 
                     <Button fx:id="cashFloatButton"
                             text="Cash float"
                             onAction="#onCashFloat"
                             prefWidth="122.0"
                             prefHeight="50.0"
-                            style="-fx-background-color: #f5f5f5; -fx-background-radius: 16; -fx-text-fill: #1d1d1d; -fx-font-size: 12px; -fx-cursor: hand;"/>
+                            style="-fx-background-color: -app-surface-soft; -fx-background-radius: 16; -fx-text-fill: -app-text; -fx-font-size: 12px; -fx-cursor: hand;"/>
 
                     <Button fx:id="withdrawalButton"
                             text="Withdrawal"
                             onAction="#onWithdrawal"
                             prefWidth="122.0"
                             prefHeight="50.0"
-                            style="-fx-background-color: #f5f5f5; -fx-background-radius: 16; -fx-text-fill: #1d1d1d; -fx-font-size: 12px; -fx-cursor: hand;"/>
+                            style="-fx-background-color: -app-surface-soft; -fx-background-radius: 16; -fx-text-fill: -app-text; -fx-font-size: 12px; -fx-cursor: hand;"/>
                     
                     <!-- TOTAL BUTTONS -->
                     <HBox spacing="18.0" alignment="CENTER_RIGHT">
@@ -56,30 +56,30 @@
                             <VBox prefWidth="166.0"
                                     prefHeight="54.0"
                                     alignment="CENTER"
-                                    style="-fx-background-color: #f5f5f5; -fx-background-radius: 16; -fx-padding: 8 14 8 14;">
+                                    style="-fx-background-color: -app-surface-soft; -fx-background-radius: 16; -fx-padding: 8 14 8 14;">
                                 <children>
                                     <Label text="Total paid:"
                                             alignment="CENTER"
-                                            style="-fx-text-fill: #1d1d1d; -fx-font-size: 12px;"/>
+                                            style="-fx-text-fill: -app-text; -fx-font-size: 12px;"/>
                                     <Label fx:id="totalPaidLabel"
                                             text="306.64"
                                             alignment="CENTER"
-                                            style="-fx-text-fill: #1d1d1d; -fx-font-size: 25px; -fx-font-weight: bold;"/>
+                                            style="-fx-text-fill: -app-text; -fx-font-size: 25px; -fx-font-weight: bold;"/>
                                 </children>
                             </VBox>
 
                             <VBox prefWidth="166.0"
                                     prefHeight="54.0"
                                     alignment="CENTER"
-                                    style="-fx-background-color: #f5f5f5; -fx-background-radius: 16; -fx-padding: 8 14 8 14;">
+                                    style="-fx-background-color: -app-surface-soft; -fx-background-radius: 16; -fx-padding: 8 14 8 14;">
                                 <children>
                                     <Label text="Total tips:"
                                             alignment="CENTER"
-                                            style="-fx-text-fill: #1d1d1d; -fx-font-size: 12px;"/>
+                                            style="-fx-text-fill: -app-text; -fx-font-size: 12px;"/>
                                     <Label fx:id="totalTipsLabel"
                                             text="32.40"
                                             alignment="CENTER"
-                                            style="-fx-text-fill: #1d1d1d; -fx-font-size: 25px; -fx-font-weight: bold;"/>
+                                            style="-fx-text-fill: -app-text; -fx-font-size: 25px; -fx-font-weight: bold;"/>
                                 </children>
                             </VBox>
                         </children>
@@ -89,49 +89,49 @@
 
             <!-- SUMMARY TABLE -->
             <VBox spacing="10.0"
-                    style="-fx-background-color: #f4f4f4; -fx-background-radius: 18; -fx-padding: 18 22 18 22;">
+                    style="-fx-background-color: -app-background; -fx-background-radius: 18; -fx-padding: 18 22 18 22;">
                 <children>
                     <HBox>
                         <children>
                             <Label text="Total"
-                                    style="-fx-text-fill: #1d1d1d; -fx-font-size: 13px;"/>
+                                    style="-fx-text-fill: -app-text; -fx-font-size: 13px;"/>
                             <Region HBox.hgrow="ALWAYS"/>
                             <Label fx:id="grandTotalLabel"
                                     text="306.64"
-                                    style="-fx-text-fill: #1d1d1d; -fx-font-size: 13px;"/>
+                                    style="-fx-text-fill: -app-text; -fx-font-size: 13px;"/>
                         </children>
                     </HBox>
 
                     <HBox>
                         <children>
                             <Label text="   Cash float"
-                                    style="-fx-text-fill: #1d1d1d; -fx-font-size: 13px;"/>
+                                    style="-fx-text-fill: -app-text; -fx-font-size: 13px;"/>
                             <Region HBox.hgrow="ALWAYS"/>
                             <Label fx:id="cashFloatValueLabel"
                                     text="100"
-                                    style="-fx-text-fill: #1d1d1d; -fx-font-size: 13px;"/>
+                                    style="-fx-text-fill: -app-text; -fx-font-size: 13px;"/>
                         </children>
                     </HBox>
 
                     <HBox>
                         <children>
                             <Label text="   Cash"
-                                    style="-fx-text-fill: #1d1d1d; -fx-font-size: 13px;"/>
+                                    style="-fx-text-fill: -app-text; -fx-font-size: 13px;"/>
                             <Region HBox.hgrow="ALWAYS"/>
                             <Label fx:id="cashValueLabel"
                                     text="6.64"
-                                    style="-fx-text-fill: #1d1d1d; -fx-font-size: 13px;"/>
+                                    style="-fx-text-fill: -app-text; -fx-font-size: 13px;"/>
                         </children>
                     </HBox>
 
                     <HBox>
                         <children>
                             <Label text="   Card"
-                                    style="-fx-text-fill: #1d1d1d; -fx-font-size: 13px;"/>
+                                    style="-fx-text-fill: -app-text; -fx-font-size: 13px;"/>
                             <Region HBox.hgrow="ALWAYS"/>
                             <Label fx:id="cardValueLabel"
                                     text="300.00"
-                                    style="-fx-text-fill: #1d1d1d; -fx-font-size: 13px;"/>
+                                    style="-fx-text-fill: -app-text; -fx-font-size: 13px;"/>
                         </children>
                     </HBox>
                 </children>
