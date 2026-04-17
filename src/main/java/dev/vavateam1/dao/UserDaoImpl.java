@@ -148,8 +148,8 @@ public class UserDaoImpl implements UserDao {
     @Override
     public void updateUser(User user) {
         String sql = user.getPassword() != null
-                ? "UPDATE users SET role_id=?, name=?, email=?, password=?, updated_at=NOW() WHERE id=?"
-                : "UPDATE users SET role_id=?, name=?, email=?, updated_at=NOW() WHERE id=?";
+                ? "UPDATE users SET role_id=?, name=?, email=?, password=?, updated_at=NOW() WHERE id=? AND deleted_at IS NULL"
+                : "UPDATE users SET role_id=?, name=?, email=?, updated_at=NOW() WHERE id=? AND deleted_at IS NULL";
 
         try (Connection conn = connectionFactory.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
