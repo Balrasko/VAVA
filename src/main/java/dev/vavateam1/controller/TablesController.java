@@ -91,16 +91,16 @@ public class TablesController {
         box.setLayoutY(table.getPosY().doubleValue());
 
         box.setStyle("""
-                    -fx-background-color: lightblue;
-                    -fx-border-color: black;
+                    -fx-background-color: -app-blue-secondary;
+                    -fx-border-color: -app-text;
                     -fx-border-radius: 3;
                     -fx-background-radius: 5;
                 """);
 
         Circle status = new Circle(6);
         boolean hasUnpaid = tablesWithUnpaidItems.contains(table.getId());
-        status.setStyle(hasUnpaid ? "-fx-fill: RED" : "-fx-fill: LIMEGREEN");
-        status.setVisible(true);
+        status.setStyle(hasUnpaid ? "-fx-fill: -app-delete" : "-fx-fill: -app-add");
+        status.setVisible(table.getAvailability());
 
         box.getChildren().add(status);
         StackPane.setAlignment(status, Pos.TOP_RIGHT);

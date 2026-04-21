@@ -214,7 +214,7 @@ public class OrderController {
         card.setPrefSize(95, 95);
 
         card.setStyle("""
-                    -fx-background-color: #d9d9d9;
+                    -fx-background-color: -app-surface-muted;
                     -fx-background-radius: 10;
                     -fx-padding: 10;
                     -fx-alignment: center;
@@ -497,12 +497,12 @@ public class OrderController {
             for (OrderItemDto item : orderItemViews) {
                 selectedQuantities.put(item, item.getQuantity());
             }
-            splitButton.setStyle("-fx-background-color: #f4f4f4; -fx-text-fill: #000");
+            splitButton.setStyle("-fx-background-color: -app-background; -fx-text-fill: -app-text");
         } else {
             for (OrderItemDto item : orderItemViews) {
                 selectedQuantities.put(item, 0);
             }
-            splitButton.setStyle("-fx-background-color: #7997E1; -fx-text-fill: #f4f4f4");
+            splitButton.setStyle("-fx-background-color: -app-blue-secondary; -fx-text-fill: -app-background");
         }
 
         totalLabel.setVisible(splitBillMode);
@@ -590,7 +590,7 @@ public class OrderController {
             return;
 
         Region overlayBg = new Region();
-        overlayBg.setStyle("-fx-background-color: #d9d9d9;");
+        overlayBg.setStyle("-fx-background-color: -app-surface-muted;");
         overlayBg.prefWidthProperty().bind(rootStack.widthProperty());
         overlayBg.prefHeightProperty().bind(rootStack.heightProperty());
 
@@ -599,7 +599,7 @@ public class OrderController {
         StackPane.setMargin(paymentBox, new Insets(60, 0, 60, 0));
         paymentBox.setMaxWidth(700);
         paymentBox.setStyle("""
-                    -fx-background-color: #fff;
+                    -fx-background-color: -app-foreground;
                     -fx-padding: 20;
                     -fx-background-radius: 10;
                 """);
@@ -902,10 +902,10 @@ public class OrderController {
         toastLabel.getStyleClass().add("toast");
         
         if (!msgType) {
-            toastLabel.setStyle("-fx-border-color: #e53b3b;");
+            toastLabel.setStyle("-fx-border-color: -app-delete;");
         }
         else {
-            toastLabel.setStyle("-fx-border-color: limegreen;");
+            toastLabel.setStyle("-fx-border-color: -app-add;");
         }
 
         toastLabel.setText(message);
@@ -979,7 +979,7 @@ public class OrderController {
         grid.setMaxHeight(Region.USE_PREF_SIZE);
 
         grid.setStyle("""
-                    -fx-background-color: #e0e0e0;
+                    -fx-background-color: -app-surface-soft;
                     -fx-background-radius: 15;
                 """);
 
@@ -1003,7 +1003,7 @@ public class OrderController {
         pluDisplay.setMaxWidth(Double.MAX_VALUE);
         pluDisplay.setMinHeight(50);
         pluDisplay.setStyle(
-                "-fx-background-color: #fff; -fx-padding: 10; -fx-background-radius: 8; -fx-font-size: 18px;");
+            "-fx-background-color: -app-foreground; -fx-padding: 10; -fx-background-radius: 8; -fx-font-size: 18px;");
 
         grid.add(pluDisplay, 0, 0);
         GridPane.setColumnSpan(pluDisplay, 2);

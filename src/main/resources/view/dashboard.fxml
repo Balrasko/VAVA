@@ -50,10 +50,10 @@
     <!-- PROFILE -->
     <VBox alignment="CENTER" spacing="8">
         <Label text="Logged in as"
-               style="-fx-text-fill: white; -fx-font-size: 11px;"/>
+               style="-fx-text-fill: -app-foreground; -fx-font-size: 11px;"/>
         <Label fx:id="loggedInRoleLabel"
                text="Waiter"
-               style="-fx-text-fill: white; -fx-font-weight: bold;"/>
+               style="-fx-text-fill: -app-foreground; -fx-font-weight: bold;"/>
     </VBox>
 
 </VBox>
@@ -69,7 +69,7 @@
                 minHeight="56.0"
                 maxHeight="56.0"
                 styleClass="dashboard-top-bar">
-            <Label text="☰"
+                 <Label text="☰"
                    onMouseClicked="#toggleSidebar"
                    styleClass="sidebar-toggle"/>
             <HBox fx:id="topNavbarContainer"
@@ -87,7 +87,7 @@
     <center>
         <StackPane fx:id="contentArea"
            alignment="CENTER"
-           style="-fx-background-color: #f4f4f4;">
+           style="-fx-background-color: -app-background;">
         </StackPane>
     </center>
 

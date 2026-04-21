@@ -32,9 +32,9 @@ import javafx.stage.Window;
 
 public class FinancesController {
 
-    private static final String HEADER_LABEL_STYLE = "-fx-font-size:14; -fx-text-fill:#1d1d1d; -fx-cursor:hand;";
-    private static final String ROW_LABEL_STYLE = "-fx-font-size:14; -fx-text-fill:#1d1d1d;";
-    private static final String ROW_STYLE = "-fx-background-color:white; -fx-background-radius:16; -fx-padding:10 16 10 16;";
+    private static final String HEADER_LABEL_STYLE = "-fx-font-size:14; -fx-text-fill:-app-text; -fx-cursor:hand;";
+    private static final String ROW_LABEL_STYLE = "-fx-font-size:14; -fx-text-fill:-app-text;";
+    private static final String ROW_STYLE = "-fx-background-color:-app-foreground; -fx-background-radius:16; -fx-padding:10 16 10 16;";
     private static final DateTimeFormatter FILE_DATE_FORMAT = DateTimeFormatter.ISO_DATE;
 
     @FXML private Label itemIdHeaderLabel;
@@ -367,9 +367,9 @@ public class FinancesController {
 
 // public class FinancesController {
 
-//     private static final String HEADER_LABEL_STYLE = "-fx-font-size:14; -fx-text-fill:#1d1d1d; -fx-cursor:hand;";
-//     private static final String ROW_LABEL_STYLE = "-fx-font-size:14; -fx-text-fill:#1d1d1d;";
-//     private static final String ROW_STYLE = "-fx-background-color:white; -fx-background-radius:16; -fx-padding:10 16 10 16;";
+//     private static final String HEADER_LABEL_STYLE = "-fx-font-size:14; -fx-text-fill:-app-text; -fx-cursor:hand;";
+//     private static final String ROW_LABEL_STYLE = "-fx-font-size:14; -fx-text-fill:-app-text;";
+//     private static final String ROW_STYLE = "-fx-background-color:-app-foreground; -fx-background-radius:16; -fx-padding:10 16 10 16;";
 //     private static final DateTimeFormatter FILE_DATE_FORMAT = DateTimeFormatter.ISO_DATE;
 
 //     @FXML private Label itemIdHeaderLabel;
@@ -689,9 +689,9 @@ public class FinancesController {
 
 // public class FinancesController {
 
-//     private static final String HEADER_LABEL_STYLE = "-fx-font-size:14; -fx-text-fill:#1d1d1d; -fx-cursor:hand;";
-//     private static final String ROW_LABEL_STYLE = "-fx-font-size:14; -fx-text-fill:#1d1d1d;";
-//     private static final String ROW_STYLE = "-fx-background-color:white; -fx-background-radius:16; -fx-padding:10 16 10 16;";
+//     private static final String HEADER_LABEL_STYLE = "-fx-font-size:14; -fx-text-fill:-app-text; -fx-cursor:hand;";
+//     private static final String ROW_LABEL_STYLE = "-fx-font-size:14; -fx-text-fill:-app-text;";
+//     private static final String ROW_STYLE = "-fx-background-color:-app-foreground; -fx-background-radius:16; -fx-padding:10 16 10 16;";
 //     private static final DateTimeFormatter FILE_DATE_FORMAT = DateTimeFormatter.ISO_DATE;
 
 //     @FXML private Label itemIdHeaderLabel;
