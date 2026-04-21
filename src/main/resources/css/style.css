@@ -54,6 +54,40 @@
   -fx-background-color: derive(-app-delete, -8%);
 }
 
+.sidebar-profile {
+  -fx-padding: 10 0 0 0;
+}
+
+.sidebar-avatar {
+  -fx-min-width: 58px;
+  -fx-pref-width: 58px;
+  -fx-max-width: 58px;
+  -fx-min-height: 58px;
+  -fx-pref-height: 58px;
+  -fx-max-height: 58px;
+  -fx-background-color: rgba(255, 255, 255, 0.18);
+  -fx-background-radius: 999;
+  -fx-border-color: rgba(255, 255, 255, 0.24);
+  -fx-border-radius: 999;
+  -fx-border-width: 1;
+}
+
+.sidebar-avatar-label {
+  -fx-text-fill: -app-foreground;
+  -fx-font-size: 22px;
+  -fx-font-weight: 800;
+}
+
+.sidebar-profile-caption {
+  -fx-text-fill: rgba(255, 255, 255, 0.72);
+  -fx-font-size: 11px;
+}
+
+.sidebar-profile-role {
+  -fx-text-fill: -app-foreground;
+  -fx-font-weight: bold;
+}
+
 .dashboard-top-bar {
   -fx-background-color: linear-gradient(to right, -app-blue-primary 0%, -app-blue-primary-soft 100%);
   -fx-padding: 0;

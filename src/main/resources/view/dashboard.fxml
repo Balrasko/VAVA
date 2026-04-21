@@ -41,20 +41,25 @@
     <!-- SPACER -->
     <VBox VBox.vgrow="ALWAYS"/>
 
+    <!-- PROFILE -->
+    <VBox alignment="CENTER" spacing="10" styleClass="sidebar-profile">
+        <StackPane styleClass="sidebar-avatar">
+            <Label fx:id="profileInitialsLabel"
+                   text="U"
+                   styleClass="sidebar-avatar-label"/>
+        </StackPane>
+        <Label text="Logged in as"
+               styleClass="sidebar-profile-caption"/>
+        <Label fx:id="loggedInRoleLabel"
+               text="Waiter"
+               styleClass="sidebar-profile-role"/>
+    </VBox>
+
     <!-- LOGOUT -->
     <Button text="Logout"
             onAction="#logout"
             maxWidth="1.7976931348623157E308"
             styleClass="sidebar-logout-button"/>
-
-    <!-- PROFILE -->
-    <VBox alignment="CENTER" spacing="8">
-        <Label text="Logged in as"
-               style="-fx-text-fill: -app-foreground; -fx-font-size: 11px;"/>
-        <Label fx:id="loggedInRoleLabel"
-               text="Waiter"
-               style="-fx-text-fill: -app-foreground; -fx-font-weight: bold;"/>
-    </VBox>
 
 </VBox>
 </left>
