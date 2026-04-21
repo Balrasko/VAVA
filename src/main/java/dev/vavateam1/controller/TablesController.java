@@ -100,7 +100,7 @@ public class TablesController {
         Circle status = new Circle(6);
         boolean hasUnpaid = tablesWithUnpaidItems.contains(table.getId());
         status.setStyle(hasUnpaid ? "-fx-fill: -app-delete" : "-fx-fill: -app-add");
-        status.setVisible(table.getAvailability());
+        status.setVisible(true);
 
         box.getChildren().add(status);
         StackPane.setAlignment(status, Pos.TOP_RIGHT);
