@@ -45,6 +45,9 @@ public class DashboardController {
     private Label loggedInRoleLabel;
 
     @FXML
+    private Label profileInitialsLabel;
+
+    @FXML
     private HBox managerPanelItem;
 
     @FXML
@@ -72,6 +75,9 @@ public class DashboardController {
 
         if (loggedInRoleLabel != null && currentUser != null) {
             loggedInRoleLabel.setText(getRoleName(currentUser.getRoleId()));
+        }
+        if (profileInitialsLabel != null && currentUser != null) {
+            profileInitialsLabel.setText(getInitials(currentUser.getName()));
         }
 
         if (managerPanelItem != null) {
@@ -189,6 +195,19 @@ public class DashboardController {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private String getInitials(String fullName) {
+        if (fullName == null || fullName.isBlank()) {
+            return "U";
+        }
+
+        String[] parts = fullName.trim().split("\\s+");
+        if (parts.length == 1) {
+            return parts[0].substring(0, 1).toUpperCase();
+        }
+
+        return (parts[0].substring(0, 1) + parts[1].substring(0, 1)).toUpperCase();
     }
 
     @FXML
