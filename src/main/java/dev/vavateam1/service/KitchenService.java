@@ -165,11 +165,4 @@ public class KitchenService {
         return menuItem != null && menuItem.isToKitchen();
     }
 
-    private boolean isKitchenBoardStatus(String status) {
-        return KITCHEN_BOARD_STATUSES.contains(normalizeStatus(status));
-    }
-
-    private String normalizeStatus(String status) {
-        return status == null ? "" : status.trim().toUpperCase();
-    }
 }

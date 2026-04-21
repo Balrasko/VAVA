@@ -30,7 +30,6 @@ import javafx.animation.SequentialTransition;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
 import javafx.geometry.Pos;
-import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -41,7 +40,6 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
@@ -59,6 +57,8 @@ public class InventoryController {
     private static final String STATUS_STYLE_CRITICAL = "-fx-text-fill:-app-delete; -fx-font-size:20;";
     private static final String STATUS_STYLE_LOW = "-fx-text-fill:-app-edit; -fx-font-size:20;";
     private static final String STATUS_STYLE_OK = "-fx-text-fill:-app-add; -fx-font-size:20;";
+    private static final List<String> DEFAULT_COLUMN_ORDER = List.of(
+            "id", "name", "quantity", "minimal_quantity", "unit", "cost_per_unit", "status");
     @FXML private StackPane rootStack;
     @FXML private VBox root;
     @FXML private Button allItemsButton;
@@ -275,7 +275,7 @@ public class InventoryController {
 
     private void renderItems() {
         itemsContainer.getChildren().clear();
-        
+
         if (editMode) {
             itemsContainer.getChildren().add(createAddRow());
         }
@@ -345,7 +345,7 @@ public class InventoryController {
             deleteButton.setStyle("""
                 -fx-background-color: -app-delete;
                 -fx-text-fill: -app-foreground;
-                -fx-bakcground-radius: 20;
+                -fx-background-radius: 20;
                 -fx-cursor: hand;
             """);
 
@@ -376,7 +376,7 @@ public class InventoryController {
         no.setMinWidth(40);
 
         yes.setOnAction(e -> {
-            //InventoryIngredientDao.delete(item);
+            inventoryIngredientDao.delete(item.getId());
             rootStack.getChildren().removeLast();
             reloadInventory();
             showToast("Item deleted.", true);
@@ -395,17 +395,14 @@ public class InventoryController {
         TextField minQuantityField = new TextField(item.getMinimalQuantity().toString());
 
         HBox content = new HBox(10,
-            new VBox(20,
-                new Label("Name"),
-                new Label("Quantity"),
-                new Label("Minimum Quantity")
-            ),
-            new VBox(10,
-                nameField,
-                quantityField,
-                minQuantityField
-            )
-        );
+                new VBox(20,
+                        new Label("Name"),
+                        new Label("Quantity"),
+                        new Label("Minimum Quantity")),
+                new VBox(10,
+                        nameField,
+                        quantityField,
+                        minQuantityField));
 
         Button save = new Button("Save");
         Button cancel = new Button("Cancel");
@@ -423,14 +420,13 @@ public class InventoryController {
                 item.setMinimalQuantity(new BigDecimal(minQuantityField.getText()));
 
                 inventoryIngredientDao.saveAll(allItems);
-                
+
                 reloadInventory();
 
                 rootStack.getChildren().removeLast();
 
                 showToast("Item edited.", true);
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 showToast("Invalid format in one of the fields.", false);
                 return;
             }
@@ -497,8 +493,8 @@ public class InventoryController {
     private void showDialog(String title, Node content, List<Button> actions) {
         StackPane overlay = new StackPane();
         overlay.setStyle("""
-            -fx-background-color: rgba(0,0,0,0.5);
-        """);
+                    -fx-background-color: rgba(0,0,0,0.5);
+                """);
 
         VBox dialog = new VBox(20);
         dialog.setAlignment(Pos.CENTER);
@@ -542,21 +538,18 @@ public class InventoryController {
         TextField unitField = new TextField();
 
         HBox content = new HBox(10,
-            new VBox(20,
-                new Label("Name"),
-                new Label("Quantity"),
-                new Label("Minimum Quantity"),
-                new Label("Cost per unit"),
-                new Label("Unit")
-            ),
-            new VBox(10,
-                nameField,
-                quantityField,
-                minQuantityField,
-                costPerUnitField,
-                unitField
-            )
-        );
+                new VBox(20,
+                        new Label("Name"),
+                        new Label("Quantity"),
+                        new Label("Minimum Quantity"),
+                        new Label("Cost per unit"),
+                        new Label("Unit")),
+                new VBox(10,
+                        nameField,
+                        quantityField,
+                        minQuantityField,
+                        costPerUnitField,
+                        unitField));
 
         Button save = new Button("Save");
         Button cancel = new Button("Cancel");
@@ -583,8 +576,7 @@ public class InventoryController {
                 rootStack.getChildren().removeLast();
 
                 showToast("New item created.", true);
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 showToast("Invalid format in one of the fields.", false);
                 return;
             }
@@ -620,7 +612,7 @@ public class InventoryController {
         // Display a temporary floating toast style popup
 
         toastLabel.getStyleClass().add("toast");
-        
+
         if (!msgType) {
             toastLabel.setStyle("-fx-border-color: -app-delete;");
         }

@@ -1,7 +1,6 @@
 package dev.vavateam1.service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 import com.google.inject.Inject;
@@ -77,19 +76,14 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<MenuItem> getItemsByPluCode(String code) {
+    public MenuItem getItemByPluCode(String code) {
         try {
             int pluCode = Integer.parseInt(code);
-            return menuItemDao.getItemsByPluCode(pluCode);
+            return menuItemDao.getItemByPluCode(pluCode);
         } catch (NumberFormatException e) {
-            return new ArrayList<>();
+            return null;
         }
     }
-
-    // @Override
-    // public MenuItem getItemByPluCode(String code) {
-    //     // Return a menu item based on the exact code instead of a list of menu items based on the incomplete code
-    // }
 
     @Override
     public void saveTempOrders(List<OrderItemDto> orderItemList) {
@@ -148,12 +142,4 @@ public class OrderServiceImpl implements OrderService {
                 item.getStatus());
     }
 
-    private String resolveInitialStatus(MenuItem menuItem, Table table) {
-        if (!menuItem.isToKitchen()) {
-            return "WAITING";
-        }
-
-        boolean hasActiveKitchenItems = orderItemDao.hasActiveKitchenItemsByTableId(table.getId());
-        return hasActiveKitchenItems ? "IN_PROGRESS" : "WAITING";
-    }
 }

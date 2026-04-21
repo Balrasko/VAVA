@@ -140,8 +140,8 @@ public class OrderItemDaoImpl implements OrderItemDao {
                     WHERE oi.table_id = ?
                       AND oi.payment_id IS NULL
                       AND mi.to_kitchen = TRUE
-                      AND mi.is_deleted = FALSE
-                      AND UPPER(TRIM(COALESCE(oi.status, ''))) IN ('IN_PROGRESS', 'DONE')
+                      AND mi.deleted_at IS NULL
+                      AND oi.status::text IN ('RECEIVED', 'IN_PROGRESS', 'DONE')
                 )
                 """;
 

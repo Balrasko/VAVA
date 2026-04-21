@@ -2,26 +2,39 @@ package dev.vavateam1.service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 
 import dev.vavateam1.dao.LocationDao;
+import dev.vavateam1.dao.OrderItemDao;
 import dev.vavateam1.dao.TableDao;
 import dev.vavateam1.model.Location;
+import dev.vavateam1.model.OrderItem;
 import dev.vavateam1.model.Table;
 
 public class TableServiceImpl implements TableService {
     private TableDao tableDao;
     private LocationDao locationDao;
+    private OrderItemDao orderItemDao;
 
     @Inject
-    public TableServiceImpl(TableDao tableDao, LocationDao locationDao) {
+    public TableServiceImpl(TableDao tableDao, LocationDao locationDao, OrderItemDao orderItemDao) {
         this.tableDao = tableDao;
         this.locationDao = locationDao;
+        this.orderItemDao = orderItemDao;
     }
 
     public List<Table> getTables() {
         return tableDao.findAll();
+    }
+
+    @Override
+    public Set<Integer> getTablesWithUnpaidItems() {
+        return orderItemDao.getUnpaidOrderItems().stream()
+                .map(OrderItem::getTableId)
+                .collect(Collectors.toSet());
     }
 
     @Override

@@ -1068,8 +1068,12 @@ public class OrderController {
         String code = pluDisplay.getText();
         
         try {
-            addItemToOrder(orderService.getItemsByPluCode(code).getFirst()); // Replace this when backend is done
-            // addItemToOrder(orderService.getItemByPluCode(code));
+            MenuItem item = orderService.getItemByPluCode(code);
+            if (item == null) {
+                showToast("Wrong PLU code.", false);
+                return;
+            }
+            addItemToOrder(item);
         }
         catch (RuntimeException e) {
             showToast("Wrong PLU code.", false);
