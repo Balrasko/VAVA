@@ -57,6 +57,8 @@ public class InventoryController {
     private static final String STATUS_STYLE_CRITICAL = "-fx-text-fill:-app-delete; -fx-font-size:20;";
     private static final String STATUS_STYLE_LOW = "-fx-text-fill:-app-edit; -fx-font-size:20;";
     private static final String STATUS_STYLE_OK = "-fx-text-fill:-app-add; -fx-font-size:20;";
+    private static final List<String> DEFAULT_COLUMN_ORDER = List.of(
+            "id", "name", "quantity", "minimal_quantity", "unit", "cost_per_unit", "status");
     @FXML private StackPane rootStack;
     @FXML private VBox root;
     @FXML private Button allItemsButton;
