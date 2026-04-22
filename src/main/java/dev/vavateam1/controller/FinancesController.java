@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.file.Files;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -13,7 +14,9 @@ import java.util.regex.PatternSyntaxException;
 
 import com.google.inject.Inject;
 
+import dev.vavateam1.dao.CategoryDao;
 import dev.vavateam1.dao.FinanceDao;
+import dev.vavateam1.model.Category;
 import dev.vavateam1.report.FinanceItemReport;
 import dev.vavateam1.report.FinanceReport;
 import javafx.fxml.FXML;
@@ -46,26 +49,31 @@ public class FinancesController {
     @FXML private Label dailySalesLabel;
     @FXML private Label soldItemsTotalLabel;
     @FXML private TextField searchField;
-    @FXML private ComboBox<String> categoryCombo;
+    @FXML private ComboBox<CategoryFilterOption> categoryCombo;
     @FXML private DatePicker fromDatePicker;
     @FXML private DatePicker toDatePicker;
 
     private final FinanceDao financeDao;
+    private final CategoryDao categoryDao;
     private final List<FinanceItemReport> financeItems = new ArrayList<>();
 
     private SortField activeSortField = SortField.ITEM_ID;
     private boolean ascendingSort = true;
     private FinanceReport currentReport;
     private Pattern activeSearchPattern;
+    private BigDecimal displayedDailySales = BigDecimal.ZERO;
+    private int displayedSoldItemsTotal = 0;
 
     @Inject
-    public FinancesController(FinanceDao financeDao) {
+    public FinancesController(FinanceDao financeDao, CategoryDao categoryDao) {
         this.financeDao = financeDao;
+        this.categoryDao = categoryDao;
     }
 
     @FXML
     private void initialize() {
         searchField.setOnAction(event -> onApplyFilter());
+        populateCategoryCombo();
         reloadReport();
     }
 
@@ -98,19 +106,29 @@ public class FinancesController {
 
     @FXML
     private void onApplyFilter() {
-        // TODO: wire category and date filters once BE support is added
         activeSearchPattern = compilePattern(searchField.getText());
+        if (!hasValidDateRange()) {
+            return;
+        }
+
+        LocalDate fromDate = fromDatePicker != null ? fromDatePicker.getValue() : null;
+        LocalDate toDate = toDatePicker != null ? toDatePicker.getValue() : null;
+        Integer categoryId = getSelectedCategoryId();
+
+        financeItems.clear();
+        financeItems.addAll(financeDao.getFinanceItems(fromDate, toDate, categoryId));
+        sortItems();
         renderItems();
     }
 
     @FXML
     private void onClearFilter() {
         searchField.clear();
-        if (categoryCombo != null) categoryCombo.getSelectionModel().clearSelection();
+        if (categoryCombo != null) categoryCombo.getSelectionModel().selectFirst();
         if (fromDatePicker != null) fromDatePicker.setValue(null);
         if (toDatePicker != null) toDatePicker.setValue(null);
         activeSearchPattern = null;
-        renderItems();
+        reloadReport();
     }
 
     @FXML
@@ -142,9 +160,9 @@ public class FinancesController {
             writer.newLine();
             writer.write("    <reportDate>" + currentReport.reportDate() + "</reportDate>");
             writer.newLine();
-            writer.write("    <dailySales>" + formatDecimal(currentReport.dailySales()) + "</dailySales>");
+            writer.write("    <dailySales>" + formatDecimal(displayedDailySales) + "</dailySales>");
             writer.newLine();
-            writer.write("    <soldItemsTotal>" + currentReport.soldItemsTotal() + "</soldItemsTotal>");
+            writer.write("    <soldItemsTotal>" + displayedSoldItemsTotal + "</soldItemsTotal>");
             writer.newLine();
             writer.write("  </summary>");
             writer.newLine();
@@ -180,9 +198,23 @@ public class FinancesController {
         financeItems.addAll(currentReport.items());
         sortItems();
         refreshSortHeaderLabels();
-        dailySalesLabel.setText(formatDecimal(currentReport.dailySales()));
-        soldItemsTotalLabel.setText(String.valueOf(currentReport.soldItemsTotal()));
         renderItems();
+    }
+
+    private void populateCategoryCombo() {
+        if (categoryCombo == null) {
+            return;
+        }
+
+        List<CategoryFilterOption> options = new ArrayList<>();
+        options.add(CategoryFilterOption.all());
+
+        for (Category category : categoryDao.getAllCategories()) {
+            options.add(new CategoryFilterOption(category.getId(), category.getName()));
+        }
+
+        categoryCombo.getItems().setAll(options);
+        categoryCombo.getSelectionModel().selectFirst();
     }
 
     private void toggleSort(SortField selectedField) {
@@ -234,10 +266,12 @@ public class FinancesController {
     }
 
     private void renderItems() {
+        List<FinanceItemReport> filteredItems = getFilteredItems();
         itemsContainer.getChildren().clear();
-        for (FinanceItemReport item : getFilteredItems()) {
+        for (FinanceItemReport item : filteredItems) {
             itemsContainer.getChildren().add(createItemRow(item));
         }
+        refreshSummary(filteredItems);
     }
 
     private List<FinanceItemReport> getFilteredItems() {
@@ -304,6 +338,43 @@ public class FinancesController {
         return value == null ? "0" : value.stripTrailingZeros().toPlainString();
     }
 
+    private void refreshSummary(List<FinanceItemReport> filteredItems) {
+        displayedSoldItemsTotal = filteredItems.stream()
+                .mapToInt(FinanceItemReport::soldPieces)
+                .sum();
+
+        displayedDailySales = filteredItems.stream()
+                .map(item -> item.pricePerPiece().multiply(BigDecimal.valueOf(item.soldPieces())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        dailySalesLabel.setText(formatDecimal(displayedDailySales));
+        soldItemsTotalLabel.setText(String.valueOf(displayedSoldItemsTotal));
+    }
+
+    private boolean hasValidDateRange() {
+        if (fromDatePicker == null || toDatePicker == null) {
+            return true;
+        }
+
+        LocalDate fromDate = fromDatePicker.getValue();
+        LocalDate toDate = toDatePicker.getValue();
+        if (fromDate != null && toDate != null && fromDate.isAfter(toDate)) {
+            showError("Invalid date range", "\"Sold from\" date must be before or equal to \"to\" date.");
+            return false;
+        }
+
+        return true;
+    }
+
+    private Integer getSelectedCategoryId() {
+        if (categoryCombo == null) {
+            return null;
+        }
+
+        CategoryFilterOption selectedOption = categoryCombo.getValue();
+        return selectedOption != null ? selectedOption.id() : null;
+    }
+
     private String escapeXml(String value) {
         if (value == null) {
             return "";
@@ -329,6 +400,17 @@ public class FinancesController {
         NAME,
         SOLD_PIECES,
         PRICE_PER_PIECE
+    }
+
+    private record CategoryFilterOption(Integer id, String label) {
+        private static CategoryFilterOption all() {
+            return new CategoryFilterOption(null, "All categories");
+        }
+
+        @Override
+        public String toString() {
+            return label;
+        }
     }
 }
 

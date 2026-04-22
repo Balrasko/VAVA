@@ -53,6 +53,17 @@ public class FinanceDaoImpl implements FinanceDao {
             ORDER BY sold_pieces DESC, mi.name ASC
             """;
 
+    private static final String FILTERED_ITEMS_SQL_BASE = """
+            SELECT mi.item_code AS item_id,
+                   mi.name,
+                   COALESCE(SUM(oi.quantity), 0) AS sold_pieces,
+                   mi.price AS price_per_piece
+            FROM order_items oi
+            JOIN menu_items mi ON mi.id = oi.menu_item_id
+            JOIN payments p ON p.id = oi.payment_id
+            WHERE COALESCE(p.refunded, FALSE) = FALSE
+            """;
+
     private final ConnectionFactory connectionFactory;
 
     @Inject
@@ -70,6 +81,15 @@ public class FinanceDaoImpl implements FinanceDao {
             return new FinanceReport(reportDate, dailySales, soldItemsTotal, items);
         } catch (SQLException e) {
             throw new RuntimeException("Failed to load finance report", e);
+        }
+    }
+
+    @Override
+    public List<FinanceItemReport> getFinanceItems(LocalDate fromDate, LocalDate toDate, Integer categoryId) {
+        try (Connection conn = connectionFactory.getConnection()) {
+            return findItems(conn, fromDate, toDate, categoryId);
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to load filtered finance items", e);
         }
     }
 
@@ -109,6 +129,52 @@ public class FinanceDaoImpl implements FinanceDao {
 
         try (PreparedStatement stmt = conn.prepareStatement(ITEMS_SQL)) {
             stmt.setDate(1, Date.valueOf(reportDate));
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    items.add(new FinanceItemReport(
+                            rs.getInt("item_id"),
+                            rs.getString("name"),
+                            rs.getInt("sold_pieces"),
+                            rs.getBigDecimal("price_per_piece")));
+                }
+            }
+        }
+
+        return items;
+    }
+
+    private List<FinanceItemReport> findItems(Connection conn, LocalDate fromDate, LocalDate toDate, Integer categoryId)
+            throws SQLException {
+        List<FinanceItemReport> items = new ArrayList<>();
+        StringBuilder sql = new StringBuilder(FILTERED_ITEMS_SQL_BASE);
+        List<Object> params = new ArrayList<>();
+
+        if (fromDate != null) {
+            sql.append(" AND p.created_at::date >= ?");
+            params.add(Date.valueOf(fromDate));
+        }
+
+        if (toDate != null) {
+            sql.append(" AND p.created_at::date <= ?");
+            params.add(Date.valueOf(toDate));
+        }
+
+        if (categoryId != null) {
+            sql.append(" AND mi.category_id = ?");
+            params.add(categoryId);
+        }
+
+        sql.append("""
+                
+                GROUP BY mi.id, mi.item_code, mi.name, mi.price
+                ORDER BY sold_pieces DESC, mi.name ASC
+                """);
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
+            for (int i = 0; i < params.size(); i++) {
+                stmt.setObject(i + 1, params.get(i));
+            }
+
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     items.add(new FinanceItemReport(
