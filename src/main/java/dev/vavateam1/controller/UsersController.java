@@ -39,6 +39,7 @@ public class UsersController {
     @FXML private RadioButton waiterRadio;
     @FXML private RadioButton chefRadio;
     @FXML private RadioButton managerRadio;
+    @FXML private Button deleteUserButton;
     @FXML private Button submitUserButton;
 
     private final UsersService usersService;
@@ -64,6 +65,8 @@ public class UsersController {
         clearForm();
         formTitle.setText("Create user");
         submitUserButton.setText("Create user");
+        deleteUserButton.setVisible(false);
+        deleteUserButton.setManaged(false);
         showForm();
     }
 
@@ -108,6 +111,31 @@ public class UsersController {
         hideForm();
     }
 
+    @FXML
+    private void onDeleteUser() {
+        if (editingUserId == null) {
+            return;
+        }
+
+        User currentUser = authService.getUser();
+        if (currentUser != null && currentUser.getId() == editingUserId) {
+            return;
+        }
+
+        User userToDelete = users.stream()
+                .map(UserWithSessionDto::getUser)
+                .filter(user -> user.getId() == editingUserId)
+                .findFirst()
+                .orElse(null);
+
+        if (userToDelete == null) {
+            return;
+        }
+
+        usersService.deleteUser(userToDelete);
+        editingUserId = null;
+        hideForm();
+        reloadUsers();
     private void showFormError(String message) {
         formErrorLabel.setText(message);
         formErrorLabel.setVisible(true);
@@ -212,18 +240,10 @@ public class UsersController {
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
         Button editButton = new Button("Edit");
-        editButton.getStyleClass().add("table-action-button");
+        editButton.getStyleClass().add("secondary-action-button");
         editButton.setOnAction(event -> startEditingUser(dto));
 
-        Button deleteButton = new Button("Delete");
-        deleteButton.getStyleClass().add("table-action-button");
-        deleteButton.setOnAction(event -> deleteUser(dto));
-        User currentUser = authService.getUser();
-        if (currentUser != null && currentUser.getId() == user.getId()) {
-            deleteButton.setDisable(true);
-        }
-
-        HBox actionsRow = new HBox(14, spacer, editButton, deleteButton);
+        HBox actionsRow = new HBox(12, spacer, editButton);
         actionsRow.setAlignment(Pos.CENTER_LEFT);
 
         HBox bottomRow = new HBox(18, detailsRow, actionsRow);
@@ -240,12 +260,13 @@ public class UsersController {
         populateForm(dto);
         formTitle.setText("Edit user");
         submitUserButton.setText("Save user");
-        showForm();
-    }
+        deleteUserButton.setVisible(true);
+        deleteUserButton.setManaged(true);
 
-    private void deleteUser(UserWithSessionDto dto) {
-        usersService.deleteUser(dto.getUser());
-        reloadUsers();
+        User currentUser = authService.getUser();
+        boolean editingCurrentUser = currentUser != null && currentUser.getId() == editingUserId;
+        deleteUserButton.setDisable(editingCurrentUser);
+        showForm();
     }
 
     private void populateForm(UserWithSessionDto dto) {
