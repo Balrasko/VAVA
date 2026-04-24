@@ -151,6 +151,12 @@
 
                                             <Region VBox.vgrow="ALWAYS" />
 
+                                            <Label fx:id="formErrorLabel"
+                                                   wrapText="true"
+                                                   styleClass="form-error-label"
+                                                   visible="false"
+                                                   managed="false" />
+
                                             <HBox alignment="CENTER_RIGHT" spacing="12">
                                                 <children>
                                                     <Region HBox.hgrow="ALWAYS" />
