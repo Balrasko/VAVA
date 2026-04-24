@@ -155,7 +155,7 @@ public class OrderController {
 
             btn.setWrapText(true);
             btn.setTextAlignment(TextAlignment.CENTER);
-            btn.setMinHeight(60);
+            btn.setMinHeight(70);
             btn.setPrefWidth(140);
             btn.setStyle("-fx-cursor: hand;");
 
@@ -676,8 +676,8 @@ public class OrderController {
         // Calculate subtotal for the selected items
         BigDecimal paymentSubtotal = calculatePaymentSubtotal(itemsToPay);
 
-        // Calculate total -> subtotal + subtotal * tip
-        total = paymentSubtotal.multiply(tip).divide(new BigDecimal(100)).add(paymentSubtotal);
+        // Calculate total -> subtotal + subtotal * tip - discount
+        total = paymentSubtotal.multiply(tip).divide(new BigDecimal(100)).add(paymentSubtotal).subtract(discount);
 
         Label totalLabel = new Label("Total: €" + total.toString());
         totalLabel.setStyle("""
@@ -853,8 +853,7 @@ public class OrderController {
         cancelBtn.setOnAction(e -> {
             rootStack.getChildren().remove(paymentOverlay);
         });
-        // Also close if you click outside the main popup window
-        overlayBg.setOnMouseClicked(e -> rootStack.getChildren().remove(paymentOverlay));
+
 
         rootStack.getChildren().remove(paymentOverlay);
         rootStack.getChildren().add(paymentOverlay);

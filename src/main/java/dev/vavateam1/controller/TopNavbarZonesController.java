@@ -64,7 +64,12 @@ public class TopNavbarZonesController {
 
             if (addZoneTabVisible) {
                 Button addZoneTabButton = new Button("+");
-                addZoneTabButton.getStyleClass().addAll("nav-tab", "zone-nav-button", "zone-nav-button-add");
+                addZoneTabButton.getStyleClass().addAll("nav-tab");
+                addZoneTabButton.setStyle("""
+                    -fx-font-weight: bold;
+                    -fx-font-size: 22;
+                """);
+                addZoneTabButton.setMaxWidth(60);
                 addZoneTabButton.setOnAction(e -> {
                     if (addZoneRequestHandler != null) {
                         addZoneRequestHandler.run();

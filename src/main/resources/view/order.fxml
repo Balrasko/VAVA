@@ -14,7 +14,7 @@
 
               <!-- LEFT PANEL -->
               <VBox fx:id="menuPanel"
-              spacing="12"
+              spacing="0"
               prefWidth="500"
               maxWidth="Infinity"
               HBox.hgrow="ALWAYS"
@@ -33,11 +33,15 @@
 
                      <!-- CATEGORY SELECT BUTTONS -->
                      <ScrollPane fitToWidth="false"
-                            fitToHeight="true"
-                            hbarPolicy="NEVER"
+                            fitToHeight="false"
                             vbarPolicy="NEVER"
+                            hbarPolicy="AS_NEEDED"
                             pannable="true"
                             styleClass="scroll-no-border">
+
+                            <VBox.margin>
+                                   <Insets top="10"/>
+                            </VBox.margin>
 
                             <HBox fx:id="categoryBox"
                             spacing="0"
@@ -47,6 +51,7 @@
                      <!-- MENU ITEMS -->
                      <StackPane fx:id="menuContainer"
                                 VBox.vgrow="ALWAYS">
+
                             <ScrollPane fitToWidth="true"
                                    fitToHeight="true"
                                    VBox.vgrow="ALWAYS"
