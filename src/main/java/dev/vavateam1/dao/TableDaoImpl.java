@@ -9,6 +9,9 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.inject.Inject;
 
 import dev.vavateam1.data.connection.ConnectionFactory;
@@ -16,6 +19,8 @@ import dev.vavateam1.model.Table;
 //import dev.vavateam1.util.SqlUtils;
 
 public class TableDaoImpl implements TableDao {
+    private static final Logger log = LoggerFactory.getLogger(TableDaoImpl.class);
+
     private final ConnectionFactory connectionFactory;
 
     @Inject
@@ -38,6 +43,7 @@ public class TableDaoImpl implements TableDao {
     }
 
     public List<Table> findAll() {
+        log.info("Fetching all tables");
         String sql = "SELECT id, location_id, table_number, pos_x, pos_y, availability, created_at, updated_at, deleted_at FROM tables WHERE deleted_at IS NULL";
         List<Table> tables = new ArrayList<>();
 
@@ -49,14 +55,17 @@ public class TableDaoImpl implements TableDao {
                 tables.add(mapResultSetToTable(rs));
             }
 
+            log.info("Fetched {} tables", tables.size());
             return tables;
         } catch (SQLException e) {
+            log.error("Failed to fetch tables", e);
             throw new RuntimeException("Failed to fetch tables", e);
         }
     }
 
     @Override
     public void updatePosition(int tableId, BigDecimal posX, BigDecimal posY) {
+        log.info("Updating position for table id: {} to ({}, {})", tableId, posX, posY);
         String sql = "UPDATE tables SET pos_x = ?, pos_y = ?, updated_at = NOW() WHERE id = ? AND deleted_at IS NULL";
 
         try (Connection conn = connectionFactory.getConnection();
@@ -65,13 +74,16 @@ public class TableDaoImpl implements TableDao {
             stmt.setBigDecimal(2, posY);
             stmt.setInt(3, tableId);
             stmt.executeUpdate();
+            log.info("Table position updated id: {}", tableId);
         } catch (SQLException e) {
+            log.error("Failed to update table position for id: {}", tableId, e);
             throw new RuntimeException("Failed to update table position for id=" + tableId, e);
         }
     }
 
     @Override
     public void updateTableDetails(int tableId, int locationId, int tableNumber, boolean availability) {
+        log.info("Updating details for table id: {}", tableId);
         String sql = "UPDATE tables SET location_id = ?, table_number = ?, availability = ?, updated_at = NOW() WHERE id = ? AND deleted_at IS NULL";
         try (Connection conn = connectionFactory.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -80,25 +92,31 @@ public class TableDaoImpl implements TableDao {
             stmt.setBoolean(3, availability);
             stmt.setInt(4, tableId);
             stmt.executeUpdate();
+            log.info("Table details updated id: {}", tableId);
         } catch (SQLException e) {
+            log.error("Failed to update table details for id: {}", tableId, e);
             throw new RuntimeException("Failed to update table details for id=" + tableId, e);
         }
     }
 
     @Override
     public void softDeleteTable(int tableId) {
+        log.info("Soft deleting table id: {}", tableId);
         String sql = "UPDATE tables SET deleted_at = NOW(), updated_at = NOW() WHERE id = ? AND deleted_at IS NULL";
         try (Connection conn = connectionFactory.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, tableId);
             stmt.executeUpdate();
+            log.info("Table soft deleted id: {}", tableId);
         } catch (SQLException e) {
+            log.error("Failed to soft delete table id: {}", tableId, e);
             throw new RuntimeException("Failed to soft delete table for id=" + tableId, e);
         }
     }
 
     @Override
     public Table createTable(int locationId) {
+        log.info("Creating table in location id: {}", locationId);
         String sql = "INSERT INTO tables (location_id, table_number, pos_x, pos_y, availability) "
                 + "VALUES (?, (SELECT COALESCE(MAX(table_number), 0) + 1 FROM tables), 0, 0, true) "
                 + "RETURNING id, location_id, table_number, pos_x, pos_y, availability, created_at, updated_at, deleted_at";
@@ -107,10 +125,13 @@ public class TableDaoImpl implements TableDao {
             stmt.setInt(1, locationId);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                return mapResultSetToTable(rs);
+                Table table = mapResultSetToTable(rs);
+                log.info("Table created with id: {}", table.getId());
+                return table;
             }
             throw new RuntimeException("Failed to insert table");
         } catch (SQLException e) {
+            log.error("Failed to create table in location id: {}", locationId, e);
             throw new RuntimeException("Failed to create table", e);
         }
     }

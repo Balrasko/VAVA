@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.inject.Inject;
 
 import dev.vavateam1.dao.MenuItemDao;
@@ -17,6 +20,7 @@ import dev.vavateam1.model.OrderItem;
 import dev.vavateam1.dto.PaymentSummary;
 
 public class HistoryServiceImpl implements HistoryService {
+    private static final Logger log = LoggerFactory.getLogger(HistoryServiceImpl.class);
 
     private final PaymentDao paymentDao;
     private final OrderItemDao orderItemDao;
@@ -31,13 +35,18 @@ public class HistoryServiceImpl implements HistoryService {
 
     @Override
     public List<PaymentDto> getPayments() {
-        return paymentDao.findAll();
+        log.info("Fetching all payments");
+        List<PaymentDto> payments = paymentDao.findAll();
+        log.info("Fetched {} payments", payments.size());
+        return payments;
     }
 
     @Override
     public PaymentSummary getPaymentSummary(int paymentId) {
+        log.info("Fetching payment summary for payment id: {}", paymentId);
         PaymentDto payment = paymentDao.findById(paymentId);
         if (payment == null) {
+            log.info("Payment not found for id: {}", paymentId);
             return null;
         }
 
@@ -72,12 +81,15 @@ public class HistoryServiceImpl implements HistoryService {
 
     @Override
     public void refund(int paymentId) {
+        log.info("Refunding payment id: {}", paymentId);
         PaymentDto existingPayment = paymentDao.findById(paymentId);
         if (existingPayment == null) {
+            log.error("Refund failed: payment id {} does not exist", paymentId);
             throw new IllegalArgumentException("Payment " + paymentId + " does not exist");
         }
 
         paymentDao.setRefunded(existingPayment);
+        log.info("Payment refunded id: {}", paymentId);
     }
 
 }

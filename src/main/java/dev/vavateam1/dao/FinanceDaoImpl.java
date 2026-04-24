@@ -10,6 +10,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.inject.Inject;
 
 import dev.vavateam1.data.connection.ConnectionFactory;
@@ -17,6 +20,7 @@ import dev.vavateam1.report.FinanceItemReport;
 import dev.vavateam1.report.FinanceReport;
 
 public class FinanceDaoImpl implements FinanceDao {
+    private static final Logger log = LoggerFactory.getLogger(FinanceDaoImpl.class);
 
     private static final String REPORT_DATE_SQL = """
             SELECT COALESCE(MAX(created_at::date), CURRENT_DATE)
@@ -73,22 +77,30 @@ public class FinanceDaoImpl implements FinanceDao {
 
     @Override
     public FinanceReport getFinanceReport() {
+        log.info("Loading finance report");
         try (Connection conn = connectionFactory.getConnection()) {
             LocalDate reportDate = findReportDate(conn);
+            log.info("Loading finance report for date: {}", reportDate);
             BigDecimal dailySales = findDailySales(conn, reportDate);
             int soldItemsTotal = findSoldItemsTotal(conn, reportDate);
             List<FinanceItemReport> items = findItems(conn, reportDate);
+            log.info("Finance report loaded: {} items sold, total sales: {}", soldItemsTotal, dailySales);
             return new FinanceReport(reportDate, dailySales, soldItemsTotal, items);
         } catch (SQLException e) {
+            log.error("Failed to load finance report", e);
             throw new RuntimeException("Failed to load finance report", e);
         }
     }
 
     @Override
     public List<FinanceItemReport> getFinanceItems(LocalDate fromDate, LocalDate toDate, Integer categoryId) {
+        log.info("Loading filtered finance items from: {} to: {}, categoryId: {}", fromDate, toDate, categoryId);
         try (Connection conn = connectionFactory.getConnection()) {
-            return findItems(conn, fromDate, toDate, categoryId);
+            List<FinanceItemReport> items = findItems(conn, fromDate, toDate, categoryId);
+            log.info("Loaded {} filtered finance items", items.size());
+            return items;
         } catch (SQLException e) {
+            log.error("Failed to load filtered finance items", e);
             throw new RuntimeException("Failed to load filtered finance items", e);
         }
     }

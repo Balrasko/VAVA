@@ -9,6 +9,8 @@ module dev.vavateam1 {
     requires static lombok;
     requires javafx.graphics;
     requires spring.security.crypto;
+    requires org.slf4j;
+    requires ch.qos.logback.classic;
 
     opens dev.vavateam1 to javafx.graphics, javafx.fxml, com.google.guice;
     opens dev.vavateam1.controller to javafx.fxml, com.google.guice;

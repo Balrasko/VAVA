@@ -10,6 +10,9 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.inject.Inject;
 
 import dev.vavateam1.data.connection.ConnectionFactory;
@@ -17,6 +20,7 @@ import dev.vavateam1.model.InventoryIngredient;
 //import dev.vavateam1.util.SqlUtils;
 
 public class InventoryIngredientDaoImpl implements InventoryIngredientDao {
+    private static final Logger log = LoggerFactory.getLogger(InventoryIngredientDaoImpl.class);
 
     private static final String FIND_ALL_SQL = """
             SELECT id, name, quantity, minimal_quantity, unit, cost_per_unit, created_at, updated_at, deleted_at
@@ -82,6 +86,7 @@ public class InventoryIngredientDaoImpl implements InventoryIngredientDao {
 
     @Override
     public List<InventoryIngredient> findAll() {
+        log.info("Fetching all inventory ingredients");
         List<InventoryIngredient> ingredients = new ArrayList<>();
 
         try (Connection conn = connectionFactory.getConnection();
@@ -92,14 +97,17 @@ public class InventoryIngredientDaoImpl implements InventoryIngredientDao {
                 ingredients.add(mapRow(rs));
             }
 
+            log.info("Fetched {} inventory ingredients", ingredients.size());
             return ingredients;
         } catch (SQLException e) {
+            log.error("Failed to fetch inventory ingredients", e);
             throw new RuntimeException("Failed to fetch inventory ingredients", e);
         }
     }
 
     @Override
     public void saveAll(List<InventoryIngredient> ingredients) {
+        log.info("Saving {} inventory ingredients", ingredients.size());
         try (Connection conn = connectionFactory.getConnection()) {
             conn.setAutoCommit(false);
             try {
@@ -107,6 +115,7 @@ public class InventoryIngredientDaoImpl implements InventoryIngredientDao {
                     saveIngredient(conn, ingredient);
                 }
                 conn.commit();
+                log.info("Saved {} inventory ingredients", ingredients.size());
             } catch (SQLException e) {
                 conn.rollback();
                 throw e;
@@ -114,6 +123,7 @@ public class InventoryIngredientDaoImpl implements InventoryIngredientDao {
                 conn.setAutoCommit(true);
             }
         } catch (SQLException e) {
+            log.error("Failed to save inventory ingredients", e);
             throw new RuntimeException("Failed to save inventory ingredients", e);
         }
     }
@@ -185,11 +195,14 @@ public class InventoryIngredientDaoImpl implements InventoryIngredientDao {
 
     @Override
     public void delete(int id) {
+        log.info("Deleting inventory ingredient id: {}", id);
         try (Connection conn = connectionFactory.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(DELETE_SQL)) {
             stmt.setInt(1, id);
             stmt.executeUpdate();
+            log.info("Inventory ingredient deleted id: {}", id);
         } catch (SQLException e) {
+            log.error("Failed to delete inventory ingredient id: {}", id, e);
             throw new RuntimeException("Failed to delete inventory ingredient", e);
         }
     }
