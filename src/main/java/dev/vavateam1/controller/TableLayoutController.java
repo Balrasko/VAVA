@@ -91,8 +91,6 @@ public class TableLayoutController {
     @FXML
     private Button deleteLayoutButton;
 
-    private DashboardController dashboard;
-
     private final TableService tableService;
 
     private List<Table> tables;
@@ -335,6 +333,7 @@ public class TableLayoutController {
     private void showForm() {
         layoutFormPanel.setVisible(true);
         layoutFormPanel.setManaged(true);
+        layoutFormPanel.toFront();
     }
 
     private void hideForm() {
@@ -610,11 +609,13 @@ public class TableLayoutController {
         status.setStyle(hasUnpaid ? "-fx-fill: RED" : "-fx-fill: LIMEGREEN");
         status.setVisible(!dragging);
 
-        Button deleteMarker = new Button("X");
-        deleteMarker.setStyle("-fx-background-color:-app-delete; -fx-text-fill:-app-foreground; -fx-font-size:14px; "
-                + "-fx-font-weight:900; -fx-font-family:'Arial'; -fx-cursor:hand; -fx-padding:0 0 1 0; "
-                + "-fx-background-radius:999; -fx-border-radius:999; -fx-min-width:20px; -fx-min-height:20px; "
-            + "-fx-max-width:20px; -fx-max-height:20px; -fx-alignment:center; -fx-border-color:transparent; -fx-border-color: -app-delete-dark; -fx-border-width: 1");
+        Button deleteMarker = new Button("✕");
+        deleteMarker.setStyle("""
+                -fx-background-color: -app-delete;
+                -fx-text-fill: -app-foreground;
+                -fx-background-radius: 20;
+                -fx-cursor: hand;
+                """);
         deleteMarker.setVisible(dragging);
         deleteMarker.setOnAction(e -> {
             if (!dragging) {

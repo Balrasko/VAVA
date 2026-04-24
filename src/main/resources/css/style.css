@@ -490,13 +490,29 @@
   -fx-padding: 13 28 13 28;
   -fx-cursor: hand;
   -fx-font-size: 15;
+  -fx-border-width: 2;
+  -fx-border-color: -app-add;
+  -fx-border-radius: 24;
+}
+
+.layout-form-panel {
+  -fx-background-color: -app-background;
+  -fx-background-insets: 0;
+  -fx-padding: 0;
+  -fx-fit-to-width: true;
+}
+
+.layout-form-panel {
+  -fx-background-color: -app-background;
+  -fx-background-insets: 0;
+  -fx-padding: 0;
+  -fx-fit-to-width: true;
 }
 
 .menu-form-panel {
   -fx-background-color: transparent;
   -fx-background-insets: 0;
   -fx-padding: 0;
-  -fx-border-color: transparent;
   -fx-fit-to-width: true;
 }
 
@@ -574,13 +590,13 @@
 .secondary-action-button {
   -fx-background-color: -app-background;
   -fx-text-fill: -app-text;
-  -fx-background-radius: 20;
+  -fx-background-radius: 24;
   -fx-border-color: -app-border;
-  -fx-border-radius: 20;
-  -fx-border-width: 1;
-  -fx-padding: 8 20 8 20;
+  -fx-border-radius: 24;
+  -fx-border-width: 2;
+  -fx-padding: 13 28 13 28;
   -fx-cursor: hand;
-  -fx-font-size: 13;
+  -fx-font-size: 15;
 }
 
 .secondary-action-button:hover {
@@ -591,8 +607,10 @@
   -fx-background-color: -app-delete;
   -fx-text-fill: -app-foreground;
   -fx-background-radius: 24;
-  -fx-padding: 12 24 12 24;
+  -fx-padding: 13 28 13 28;
+  -fx-padding: 13 28 13 28;
   -fx-cursor: hand;
+  -fx-font-size: 15;
 }
 
 .delete-action-button:hover {
