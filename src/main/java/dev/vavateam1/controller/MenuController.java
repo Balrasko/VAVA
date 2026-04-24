@@ -9,6 +9,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.CustomMenuItem;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.ScrollPane;
@@ -64,8 +66,6 @@ public class MenuController {
     private Button deleteCategoryButton;
     @FXML
     private Button editCategoryButton;
-    @FXML
-    private Button deleteCategoryActionButton;
     @FXML
     private Label menuFormTitle;
     @FXML
@@ -136,10 +136,11 @@ public class MenuController {
 
     @FXML
     private void onSubmitMenu() {
-        int categoryId = resolveCategoryId(categoryField.getValue());
-        if (categoryId <= 0) {
+        if (!validateMenuForm()) {
             return;
         }
+
+        int categoryId = resolveCategoryId(categoryField.getValue());
 
         MenuItem item = new MenuItem(
                 editingMenuItemId > 0 ? editingMenuItemId : 0,
@@ -162,6 +163,74 @@ public class MenuController {
         }
         hideForm();
         loadItems(selectedCategoryId);
+    }
+
+    private boolean validateMenuForm() {
+        boolean valid = true;
+
+        if (nameField.getText() == null || nameField.getText().isBlank()) {
+            setFieldError(nameField, true);
+            valid = false;
+        } else {
+            setFieldError(nameField, false);
+        }
+
+        if (categoryField.getValue() == null || categoryField.getValue().isBlank()) {
+            categoryField.getStyleClass().add("form-input-error");
+            valid = false;
+        } else {
+            categoryField.getStyleClass().remove("form-input-error");
+        }
+
+        String priceText = priceField.getText();
+        if (priceText == null || priceText.isBlank()) {
+            setFieldError(priceField, true);
+            valid = false;
+        } else {
+            try {
+                BigDecimal price = new BigDecimal(priceText.trim());
+                if (price.compareTo(BigDecimal.ZERO) < 0) {
+                    setFieldError(priceField, true);
+                    valid = false;
+                } else {
+                    setFieldError(priceField, false);
+                }
+            } catch (NumberFormatException e) {
+                setFieldError(priceField, true);
+                valid = false;
+            }
+        }
+
+        String discountText = discountField.getText();
+        if (discountText != null && !discountText.isBlank()) {
+            try {
+                BigDecimal discount = new BigDecimal(discountText.trim());
+                if (discount.compareTo(BigDecimal.ZERO) < 0 || discount.compareTo(new BigDecimal("100")) > 0) {
+                    setFieldError(discountField, true);
+                    valid = false;
+                } else {
+                    setFieldError(discountField, false);
+                }
+            } catch (NumberFormatException e) {
+                setFieldError(discountField, true);
+                valid = false;
+            }
+        } else {
+            setFieldError(discountField, false);
+        }
+
+        return valid;
+    }
+
+    private void setFieldError(TextField field, boolean error) {
+        if (error) {
+            if (!field.getStyleClass().contains("form-input-error")) {
+                field.getStyleClass().add("form-input-error");
+            }
+            field.textProperty().addListener((obs, oldVal, newVal) -> setFieldError(field, false));
+        } else {
+            field.getStyleClass().remove("form-input-error");
+        }
     }
 
     @FXML
@@ -211,17 +280,6 @@ public class MenuController {
         }
     }
 
-    @FXML
-    private void onDeleteCurrentCategory() {
-        if (selectedCategoryId <= 0) {
-            return;
-        }
-
-        menuService.softDeleteCategory(selectedCategoryId);
-        hideCategoryForm();
-        loadCategories();
-    }
-
     private void showForm() {
         hideCategoryForm();
         menuFormPanel.setVisible(true);
@@ -258,8 +316,9 @@ public class MenuController {
         }
         ingredientsButton.getItems().clear();
         for (var ingredient : inventoryIngredientDao.findAll()) {
-            CheckMenuItem item = new CheckMenuItem(ingredient.getName());
-            item.selectedProperty().addListener((obs, oldVal, newVal) -> updateIngredientsButtonText());
+            CheckBox checkBox = new CheckBox(ingredient.getName());
+            checkBox.selectedProperty().addListener((obs, oldVal, newVal) -> updateIngredientsButtonText());
+            CustomMenuItem item = new CustomMenuItem(checkBox, false);
             ingredientsButton.getItems().add(item);
         }
     }
@@ -271,10 +330,10 @@ public class MenuController {
 
     private List<String> getSelectedIngredientNames() {
         return ingredientsButton.getItems().stream()
-                .filter(item -> item instanceof CheckMenuItem)
-                .map(item -> (CheckMenuItem) item)
-                .filter(CheckMenuItem::isSelected)
-                .map(CheckMenuItem::getText)
+                .filter(item -> item instanceof CustomMenuItem)
+                .map(item -> (CustomMenuItem) item)
+                .filter(item -> item.getContent() instanceof CheckBox && ((CheckBox) item.getContent()).isSelected())
+                .map(item -> ((CheckBox) item.getContent()).getText())
                 .toList();
     }
 
@@ -289,7 +348,7 @@ public class MenuController {
         discountField.clear();
         if (ingredientsButton != null) {
             ingredientsButton.getItems().forEach(item -> {
-                if (item instanceof CheckMenuItem cmi) cmi.setSelected(false);
+                if (item instanceof CustomMenuItem cmi && cmi.getContent() instanceof CheckBox cb) cb.setSelected(false);
             });
             updateIngredientsButtonText();
         }
@@ -299,7 +358,7 @@ public class MenuController {
         boolean editing = editingMenuItemId > 0;
 
         if (submitMenuButton != null) {
-            submitMenuButton.setText(editing ? "Save menu" : "Add menu");
+            submitMenuButton.setText(editing ? "Save item" : "Add item");
         }
 
         if (deleteMenuButton != null) {
@@ -308,7 +367,7 @@ public class MenuController {
         }
 
         if (menuFormTitle != null) {
-            menuFormTitle.setText(editing ? "Edit menu" : "Add menu");
+            menuFormTitle.setText(editing ? "Edit menu item" : "Add menu item");
         }
     }
 
@@ -409,9 +468,6 @@ public class MenuController {
         if (editCategoryButton != null) {
             editCategoryButton.setDisable(categories.isEmpty() || selectedCategoryId <= 0);
         }
-        if (deleteCategoryActionButton != null) {
-            deleteCategoryActionButton.setDisable(categories.isEmpty() || selectedCategoryId <= 0);
-        }
     }
 
     private void refreshCategoryDropdownOptions() {
@@ -438,9 +494,6 @@ public class MenuController {
 
         if (editCategoryButton != null) {
             editCategoryButton.setDisable(selectedCategoryId <= 0);
-        }
-        if (deleteCategoryActionButton != null) {
-            deleteCategoryActionButton.setDisable(selectedCategoryId <= 0);
         }
     }
 
@@ -512,6 +565,7 @@ public class MenuController {
     private VBox createMenuItemNode(MenuItem item) {
         VBox wrapper = new VBox(12);
         wrapper.getStyleClass().add("menu-item-card");
+        wrapper.setMaxWidth(Double.MAX_VALUE);
 
         Label nameLabel = new Label(item.getName());
         nameLabel.getStyleClass().add("menu-item-title");
@@ -533,17 +587,10 @@ public class MenuController {
         editButton.getStyleClass().add("secondary-action-button");
         editButton.setOnAction(e -> openEditForm(item));
 
-        Button deleteButton = new Button("Delete");
-        deleteButton.getStyleClass().add("secondary-action-button");
-        deleteButton.setOnAction(e -> {
-            menuService.softDeleteMenuItem(item.getId());
-            loadItems(selectedCategoryId);
-        });
-
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        HBox actionsRow = new HBox(8, priceLabel, spacer, editButton, deleteButton);
+        HBox actionsRow = new HBox(8, priceLabel, spacer, editButton);
         actionsRow.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
         actionsRow.setMaxWidth(Double.MAX_VALUE);
 
