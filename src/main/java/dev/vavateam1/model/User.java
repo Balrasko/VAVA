@@ -13,7 +13,7 @@ public class User {
     private int roleId;
     private String name;
     private String email;
-    private String password;
+    private String passwordHash;
     private boolean status;
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;

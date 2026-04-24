@@ -51,15 +51,16 @@ INSERT INTO inventory_ingredients (name, quantity, minimal_quantity, unit, cost_
 
 -- Users (Role IDs: 1=ADMIN, 2=WAITER, 3=CHEF)
 INSERT INTO users (role_id, name, email, password) VALUES
-(1, 'Mister Admin', 'admin@vava.com',   'admin123'),
-(2, 'Waiter1', 'waiter1@vava.com', 'waiter123'),
-(2, 'Waiter2', 'waiter2@vava.com', 'waiter123'),
-(3, 'Le Chef1','chef1@vava.com',   'chef123'),
-(3, 'Le Chef2','chef2@vava.com',   'chef123'),
--- TODO: delete these
-(1, 'a', 'a', 'a'),
-(2, 'w', 'w', 'w'),
-(3, 'c', 'c', 'c')
+-- password: admin123
+(1, 'Mister Admin', 'admin@vava.com',   '$2b$10$V.BGmE0K0i.QKM16jDB7VOJpfz830naYkeZG9qLFRZI7asNkuWvX2'),
+-- password: waiter123
+(2, 'Waiter1', 'waiter1@vava.com', '$2b$10$tRh8x9oqIv9bKSyN3Z4kx.vAL8GdRKQI9NArKo6KSN5Ry/fBbxwkm'),
+-- password: waiter123
+(2, 'Waiter2', 'waiter2@vava.com', '$2b$10$tRh8x9oqIv9bKSyN3Z4kx.vAL8GdRKQI9NArKo6KSN5Ry/fBbxwkm'),
+-- password: chef123
+(3, 'Le Chef1','chef1@vava.com',   '$2b$10$kP8HSfC7UOGGve4TzFnjz.fbnaNq7Yji8zvLv6BgKPmTr73DjD4tu'),
+-- password: chef123
+(3, 'Le Chef2','chef2@vava.com',   '$2b$10$kP8HSfC7UOGGve4TzFnjz.fbnaNq7Yji8zvLv6BgKPmTr73DjD4tu')
 ON CONFLICT (email) DO NOTHING;
 
 

@@ -524,6 +524,11 @@
   -fx-text-fill: -app-text;
 }
 
+.form-error-label {
+  -fx-font-size: 13;
+  -fx-text-fill: #e05252;
+}
+
 .form-input {
   -fx-background-color: -app-foreground;
   -fx-background-insets: 0;

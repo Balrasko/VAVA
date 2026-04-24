@@ -30,7 +30,8 @@
         <PasswordField fx:id="passwordField"
                        promptText="Password"/>
 
-        <Button text="Sign in"
+        <Button fx:id="loginButton"
+                text="Sign in"
                 onAction="#handleLogin"/>
 
         <Label fx:id="errorLabel"/>

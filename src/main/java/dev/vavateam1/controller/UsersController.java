@@ -23,9 +23,13 @@ import javafx.scene.layout.VBox;
 
 public class UsersController {
 
+    private static final java.util.regex.Pattern EMAIL_PATTERN =
+            java.util.regex.Pattern.compile("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$");
+
     @FXML private VBox usersList;
     @FXML private ScrollPane userFormPanel;
     @FXML private Label formTitle;
+    @FXML private Label formErrorLabel;
     @FXML private TextField nameField;
     @FXML private TextField surnameField;
     @FXML private TextField emailField;
@@ -74,12 +78,25 @@ public class UsersController {
 
     @FXML
     private void onSubmitUser() {
+        String email = emailField.getText().trim();
+        if (!email.isBlank() && !EMAIL_PATTERN.matcher(email).matches()) {
+            showFormError("Please enter a valid email address");
+            return;
+        }
+
+        if (editingUserId == null && !passwordField.getText().isBlank() && !passwordField.getText().equals(repeatPasswordField.getText())) {
+            showFormError("Passwords do not match");
+            return;
+        }
+
+        clearFormError();
+
         User user = new User();
         user.setName(buildFullName());
-        user.setEmail(emailField.getText().isBlank() ? "new.user@vava.com" : emailField.getText().trim());
+        user.setEmail(email.isBlank() ? "new.user@vava.com" : email);
         user.setRoleId(resolveSelectedRoleId());
         if (!passwordField.getText().isBlank()) {
-            user.setPassword(passwordField.getText());
+            user.setPasswordHash(passwordField.getText());
         }
 
         if (editingUserId != null) {
@@ -119,6 +136,16 @@ public class UsersController {
         editingUserId = null;
         hideForm();
         reloadUsers();
+    private void showFormError(String message) {
+        formErrorLabel.setText(message);
+        formErrorLabel.setVisible(true);
+        formErrorLabel.setManaged(true);
+    }
+
+    private void clearFormError() {
+        formErrorLabel.setText("");
+        formErrorLabel.setVisible(false);
+        formErrorLabel.setManaged(false);
     }
 
     private void reloadUsers() {
@@ -150,6 +177,7 @@ public class UsersController {
         passwordField.clear();
         repeatPasswordField.clear();
         waiterRadio.setSelected(true);
+        clearFormError();
     }
 
     private String buildFullName() {

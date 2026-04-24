@@ -7,7 +7,7 @@ import dev.vavateam1.dto.UserWithSessionDto;
 import dev.vavateam1.model.User;
 
 public interface UserDao {
-    Optional<User> findByEmailOrUsername(String emailOrUsername);
+    Optional<User> findByEmail(String email);
 
     List<UserWithSessionDto> getAllUsers();
 
