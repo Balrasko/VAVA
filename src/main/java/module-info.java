@@ -8,6 +8,7 @@ module dev.vavateam1 {
 
     requires static lombok;
     requires javafx.graphics;
+    requires spring.security.crypto;
 
     opens dev.vavateam1 to javafx.graphics, javafx.fxml, com.google.guice;
     opens dev.vavateam1.controller to javafx.fxml, com.google.guice;
@@ -20,6 +21,7 @@ module dev.vavateam1 {
     opens dev.vavateam1.util to com.google.guice;
 
     exports dev.vavateam1;
+
     opens dev.vavateam1.dto to com.google.guice, javafx.base;
     opens dev.vavateam1.report to com.google.guice, javafx.base;
 }

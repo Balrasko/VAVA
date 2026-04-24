@@ -1,12 +1,14 @@
 package dev.vavateam1.service;
 
-import java.util.Objects;
 import java.util.Optional;
+
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.google.inject.Inject;
 
 import dev.vavateam1.dao.UserDao;
 import dev.vavateam1.dao.UserSessionDao;
+import dev.vavateam1.data.config.SecurityConfig;
 import dev.vavateam1.model.User;
 import dev.vavateam1.model.UserSession;
 
@@ -24,15 +26,16 @@ public class LocalAuthService implements AuthService {
     }
 
     @Override
-    public boolean login(String emailOrUsername, String password) {
-        Optional<User> foundUser = userDao.findByEmailOrUsername(emailOrUsername);
+    public boolean login(String email, String password) {
+        Optional<User> foundUser = userDao.findByEmail(email);
         if (foundUser.isEmpty()) {
             return false;
         }
 
-        // TODO: hash password!!
         User user = foundUser.get();
-        if (!Objects.equals(user.getPassword(), password)) {
+
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(SecurityConfig.BCRYPT_STRENGTH);
+        if (!encoder.matches(password, user.getPasswordHash())) {
             return false;
         }
 

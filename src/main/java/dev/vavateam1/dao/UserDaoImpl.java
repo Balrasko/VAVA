@@ -14,6 +14,10 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+import dev.vavateam1.data.config.SecurityConfig;
+
 import com.google.inject.Inject;
 
 public class UserDaoImpl implements UserDao {
@@ -25,14 +29,13 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public Optional<User> findByEmailOrUsername(String emailOrUsername) {
+    public Optional<User> findByEmail(String email) {
         String sql = "SELECT id, role_id, name, email, password, status, created_at, updated_at, deleted_at "
-                + "FROM users WHERE (LOWER(email) = LOWER(?) OR LOWER(name) = LOWER(?)) AND deleted_at IS NULL";
+                + "FROM users WHERE LOWER(email) = LOWER(?) AND deleted_at IS NULL";
 
         try (Connection conn = connectionFactory.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, emailOrUsername);
-            stmt.setString(2, emailOrUsername);
+            stmt.setString(1, email);
 
             ResultSet resultSet = stmt.executeQuery();
             if (!resultSet.next()) {
@@ -44,7 +47,7 @@ public class UserDaoImpl implements UserDao {
             user.setRoleId(resultSet.getInt("role_id"));
             user.setName(resultSet.getString("name"));
             user.setEmail(resultSet.getString("email"));
-            user.setPassword(resultSet.getString("password"));
+            user.setPasswordHash(resultSet.getString("password"));
             user.setStatus((Boolean) resultSet.getObject("status"));
             user.setCreatedAt(resultSet.getObject("created_at", OffsetDateTime.class));
             user.setUpdatedAt(resultSet.getObject("updated_at", OffsetDateTime.class));
@@ -52,7 +55,7 @@ public class UserDaoImpl implements UserDao {
 
             return Optional.of(user);
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to find user by email or username: " + emailOrUsername, e);
+            throw new RuntimeException("Failed to find user by email: " + email, e);
         }
     }
 
@@ -101,7 +104,7 @@ public class UserDaoImpl implements UserDao {
                 user.setRoleId(rs.getInt("role_id"));
                 user.setName(rs.getString("name"));
                 user.setEmail(rs.getString("email"));
-                user.setPassword(null);
+                user.setPasswordHash(null);
                 user.setStatus(rs.getObject("status") == null ? false : rs.getBoolean("status"));
                 user.setCreatedAt(rs.getObject("created_at", OffsetDateTime.class));
                 user.setUpdatedAt(rs.getObject("updated_at", OffsetDateTime.class));
@@ -133,12 +136,15 @@ public class UserDaoImpl implements UserDao {
     public void createUser(User user) {
         String sql = "INSERT INTO users (role_id, name, email, password) VALUES (?, ?, ?, ?)";
 
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(SecurityConfig.BCRYPT_STRENGTH);
+        String hash = encoder.encode(user.getPasswordHash());
+
         try (Connection conn = connectionFactory.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, user.getRoleId());
             stmt.setString(2, user.getName());
             stmt.setString(3, user.getEmail());
-            stmt.setString(4, user.getPassword());
+            stmt.setString(4, hash);
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("Failed to create user: " + user.getName(), e);
@@ -147,7 +153,8 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public void updateUser(User user) {
-        String sql = user.getPassword() != null
+        boolean hasPassword = user.getPasswordHash() != null;
+        String sql = hasPassword
                 ? "UPDATE users SET role_id=?, name=?, email=?, password=?, updated_at=NOW() WHERE id=? AND deleted_at IS NULL"
                 : "UPDATE users SET role_id=?, name=?, email=?, updated_at=NOW() WHERE id=? AND deleted_at IS NULL";
 
@@ -156,8 +163,9 @@ public class UserDaoImpl implements UserDao {
             stmt.setInt(1, user.getRoleId());
             stmt.setString(2, user.getName());
             stmt.setString(3, user.getEmail());
-            if (user.getPassword() != null) {
-                stmt.setString(4, user.getPassword());
+            if (hasPassword) {
+                BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(SecurityConfig.BCRYPT_STRENGTH);
+                stmt.setString(4, encoder.encode(user.getPasswordHash()));
                 stmt.setInt(5, user.getId());
             } else {
                 stmt.setInt(4, user.getId());
