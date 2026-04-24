@@ -44,16 +44,22 @@
                                       styleClass="menu-outer-panel">
                                     <children>
 
-                                        <ScrollPane fitToHeight="true"
+                                                <ScrollPane fitToHeight="true"
                                                     fitToWidth="true"
                                                     hbarPolicy="AS_NEEDED"
                                                     vbarPolicy="NEVER"
+                                                    prefHeight="60"
+                                                    minHeight="60"
+                                                    maxHeight="60"
                                                     pannable="true"
                                                     styleClass="menu-tabs-scroll">
                                             <content>
                                                 <HBox fx:id="categoryTabsContainer"
-                                                      spacing="0"
-                                                      styleClass="menu-tabs-bar" />
+                                                        spacing="0"
+                                                        prefHeight="60"
+                                                        minHeight="60"
+                                                        maxHeight="60"
+                                                        styleClass="menu-tabs-bar" />
                                             </content>
                                         </ScrollPane>
 
@@ -77,16 +83,17 @@
                                                         <Button fx:id="editCategoryButton"
                                                                 text="Edit category"
                                                                 onAction="#onEditCategory"
-                                                                wrapText="true"
-                                                                styleClass="secondary-action-button" />
-                                                        <Button fx:id="deleteCategoryActionButton"
-                                                                text="Delete category"
-                                                                onAction="#onDeleteCurrentCategory"
+                                                            minHeight="46"
+                                                            prefHeight="46"
+                                                            maxHeight="46"
                                                                 wrapText="true"
                                                                 styleClass="secondary-action-button" />
                                                         <Button fx:id="addMenuButton"
-                                                                text="Add menu"
+                                                                text="Add item"
                                                                 onAction="#onAddMenu"
+                                                            minHeight="46"
+                                                            prefHeight="46"
+                                                            maxHeight="46"
                                                                 wrapText="true"
                                                                 styleClass="green-action-button" />
                                                     </children>
@@ -126,7 +133,7 @@
                                         </HBox>
 
                                         <Label fx:id="menuFormTitle"
-                                               text="Add menu"
+                                               text="Add item"
                                                wrapText="true"
                                                styleClass="menu-category-title" />
 
@@ -194,21 +201,17 @@
                                         <HBox alignment="CENTER_RIGHT" spacing="12">
                                             <children>
                                                 <Region HBox.hgrow="ALWAYS" />
-                                                <Button text="Cancel"
-                                                        onAction="#onCloseForm"
-                                                        wrapText="true"
-                                                        styleClass="secondary-action-button" />
                                                 <Button fx:id="deleteMenuButton"
                                                         text="Delete"
                                                         visible="false"
                                                         managed="false"
-                                                        wrapText="true"
+                                                        wrapText="false"
                                                         onAction="#onDeleteMenu"
-                                                        styleClass="secondary-action-button" />
+                                                    styleClass="delete-action-button" />
                                                 <Button fx:id="submitMenuButton"
                                                         text="Add menu"
                                                         onAction="#onSubmitMenu"
-                                                        wrapText="true"
+                                                        wrapText="false"
                                                         styleClass="green-action-button" />
                                             </children>
                                         </HBox>
@@ -262,21 +265,17 @@
                                         <HBox alignment="CENTER_RIGHT" spacing="12">
                                             <children>
                                                 <Region HBox.hgrow="ALWAYS" />
-                                                <Button text="Cancel"
-                                                        onAction="#onCloseCategoryForm"
-                                                        wrapText="true"
-                                                        styleClass="secondary-action-button" />
                                                 <Button fx:id="deleteCategoryButton"
                                                         text="Delete"
                                                         visible="false"
                                                         managed="false"
-                                                        wrapText="true"
+                                                        wrapText="false"
                                                         onAction="#onDeleteCategory"
-                                                        styleClass="secondary-action-button" />
+                                                    styleClass="delete-action-button" />
                                                 <Button fx:id="submitCategoryButton"
                                                         text="Add category"
                                                         onAction="#onSubmitCategory"
-                                                        wrapText="true"
+                                                        wrapText="false"
                                                         styleClass="green-action-button" />
                                             </children>
                                         </HBox>

@@ -361,7 +361,10 @@
 }
 
 .menu-tabs-bar {
-  -fx-padding: -12 -12 0 -12;
+  -fx-background-color: transparent;
+  -fx-padding: 0;
+  -fx-background-radius: 0;
+  -fx-alignment: CENTER_LEFT;
 }
 
 .menu-tabs-scroll {
@@ -385,17 +388,23 @@
 }
 
 .menu-tabs-scroll .scroll-bar:horizontal .track {
-  -fx-background-color: rgba(28, 42, 120, 0.12);
+  -fx-background-color: rgba(255, 255, 255, 0.16);
   -fx-background-radius: 999;
 }
 
 .menu-tabs-scroll .scroll-bar:horizontal .thumb {
-  -fx-background-color: rgba(28, 42, 120, 0.42);
+  -fx-background-color: rgba(255, 255, 255, 0.72);
   -fx-background-radius: 999;
 }
 
+.menu-tabs-scroll .scroll-bar:vertical {
+  -fx-pref-width: 0;
+  -fx-max-width: 0;
+  -fx-opacity: 0;
+}
+
 .menu-inner-panel {
-  -fx-background-color: -app-foreground;
+  -fx-background-color: transparent;
   -fx-background-radius: 32;
   -fx-padding: 28 34 22 34;
 }
@@ -403,25 +412,43 @@
 .menu-tab {
   -fx-background-color: -app-blue-primary;
   -fx-text-fill: -app-foreground;
-  -fx-background-radius: 18 18 0 0;
-  -fx-padding: 10 28 10 28;
-  -fx-min-height: 64px;
-  -fx-pref-height: 64px;
-  -fx-max-height: 64px;
-  -fx-min-width: 142px;
-  -fx-pref-width: 142px;
+
+  -fx-background-radius: 0;
+  -fx-border-radius: 0;
+  -fx-background-insets: 0;
+  -fx-border-insets: 0;
+
+  -fx-min-width: 145px;
+  -fx-pref-width: 145px;
+  -fx-max-width: 145px;
+
+  -fx-min-height: 60px;
+  -fx-pref-height: 60px;
+  -fx-max-height: 60px;
+
+  -fx-padding: 0;
+  -fx-cursor: hand;
+  -fx-alignment: CENTER;
+  -fx-border-color: rgba(255, 255, 255, 0.12);
+  -fx-border-width: 0 1 0 0;
+}
+
+.menu-tab:hover {
+  -fx-background-color: rgba(255, 255, 255, 0.1);
 }
 
 .menu-tab-active {
   -fx-background-color: -app-foreground;
   -fx-text-fill: -app-text;
+  -fx-border-color: transparent;
 }
 
 .menu-tab-add {
   -fx-min-width: 56px;
   -fx-pref-width: 56px;
   -fx-max-width: 56px;
-  -fx-font-size: 22px;
+  -fx-font-size: 20px;
+  -fx-font-weight: 700;
   -fx-padding: 0;
 }
 
@@ -436,7 +463,9 @@
 }
 
 .menu-item-card {
-  -fx-padding: 10 0 18 0;
+  -fx-background-color: -app-foreground;
+  -fx-background-radius: 28;
+  -fx-padding: 20 26 20 26;
 }
 
 .menu-item-title {
@@ -497,9 +526,37 @@
 
 .form-input {
   -fx-background-color: -app-foreground;
+  -fx-background-insets: 0;
   -fx-background-radius: 20;
+  -fx-border-color: -app-border;
   -fx-border-radius: 20;
+  -fx-border-width: 1.5;
   -fx-padding: 12 16 12 16;
+  -fx-text-fill: -app-text;
+  -fx-prompt-text-fill: -app-text-muted;
+}
+
+.form-input:focused {
+  -fx-border-color: -app-blue-border;
+  -fx-border-width: 2;
+}
+
+.form-input-error {
+  -fx-border-color: -app-delete;
+  -fx-border-width: 2;
+}
+
+.form-input-error:focused {
+  -fx-border-color: -app-delete;
+  -fx-border-width: 2;
+}
+
+.form-input > .arrow-button {
+  -fx-background-color: transparent;
+}
+
+.form-input .arrow {
+  -fx-background-color: -app-text-muted;
 }
 
 .form-close-button {
@@ -510,11 +567,31 @@
 }
 
 .secondary-action-button {
-  -fx-background-color: -app-surface-soft;
+  -fx-background-color: -app-background;
   -fx-text-fill: -app-text;
+  -fx-background-radius: 20;
+  -fx-border-color: -app-border;
+  -fx-border-radius: 20;
+  -fx-border-width: 1;
+  -fx-padding: 8 20 8 20;
+  -fx-cursor: hand;
+  -fx-font-size: 13;
+}
+
+.secondary-action-button:hover {
+  -fx-background-color: derive(-app-background, -4%);
+}
+
+.delete-action-button {
+  -fx-background-color: -app-delete;
+  -fx-text-fill: -app-foreground;
   -fx-background-radius: 24;
   -fx-padding: 12 24 12 24;
   -fx-cursor: hand;
+}
+
+.delete-action-button:hover {
+  -fx-background-color: derive(-app-delete, -10%);
 }
 
 .user-card {
