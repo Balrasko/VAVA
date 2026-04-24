@@ -490,6 +490,9 @@
   -fx-padding: 13 28 13 28;
   -fx-cursor: hand;
   -fx-font-size: 15;
+  -fx-border-width: 2;
+  -fx-border-color: -app-add;
+  -fx-border-radius: 24;
 }
 
 .layout-form-panel {
@@ -587,13 +590,13 @@
 .secondary-action-button {
   -fx-background-color: -app-background;
   -fx-text-fill: -app-text;
-  -fx-background-radius: 20;
+  -fx-background-radius: 24;
   -fx-border-color: -app-border;
-  -fx-border-radius: 20;
-  -fx-border-width: 1;
-  -fx-padding: 8 20 8 20;
+  -fx-border-radius: 24;
+  -fx-border-width: 2;
+  -fx-padding: 13 28 13 28;
   -fx-cursor: hand;
-  -fx-font-size: 13;
+  -fx-font-size: 15;
 }
 
 .secondary-action-button:hover {

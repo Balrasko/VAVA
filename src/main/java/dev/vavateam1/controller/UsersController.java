@@ -136,6 +136,8 @@ public class UsersController {
         editingUserId = null;
         hideForm();
         reloadUsers();
+    }
+
     private void showFormError(String message) {
         formErrorLabel.setText(message);
         formErrorLabel.setVisible(true);

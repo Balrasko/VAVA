@@ -48,7 +48,7 @@
 
                                 <Region VBox.vgrow="ALWAYS" />
 
-                                <HBox alignment="CENTER_RIGHT" spacing="12">
+                                <HBox alignment="CENTER_RIGHT" spacing="12" >
                                     <children>
                                         <Button fx:id="editCancelButton" text="Cancel"
                                             onAction="#onCancelTableEditMode"
@@ -62,7 +62,7 @@
                                         <Button fx:id="deleteZoneButton" text="Delete zone"
                                             onAction="#onDeleteCurrentZone"
                                             styleClass="secondary-action-button"
-                                            style="-fx-background-color: -app-delete;" />
+                                            style="-fx-background-color: -app-delete; -fx-border-color: transparent;" />
 
                                         <Button fx:id="addTableButton" text="Add table"
                                             onAction="#onOpenAddTableForm"
@@ -129,7 +129,7 @@
                                     visible="false" managed="false"
                                     onAction="#onDeleteLayoutEntity"
                                     styleClass="secondary-action-button"
-                                    style="-fx-background-color: -app-delete;" />
+                                    style="-fx-background-color: -app-delete; -fx-border-color: transparent;" />
                                 <Button fx:id="submitLayoutButton" text="Save"
                                     onAction="#onSubmitLayoutForm"
                                     styleClass="green-action-button" />

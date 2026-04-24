@@ -822,17 +822,17 @@ public class OrderController {
 
         Button cancelBtn = new Button("Cancel");
         cancelBtn.getStyleClass().add("note-button");
-        cancelBtn.setStyle("-fx-font-size: 24;");
+        cancelBtn.setStyle("-fx-font-size: 24; -fx-background-color: -app-delete;");
 
         Button cardPaymentBtn = new Button("Card Payment");
         cardPaymentBtn.getStyleClass().add("note-button");
-        cardPaymentBtn.setStyle("-fx-font-size: 24;");
+        cardPaymentBtn.setStyle("-fx-font-size: 24; -fx-background-color: -app-add;");
         // Perform payment
         cardPaymentBtn.setOnAction(e -> processPayment(2, total, tip));
 
         Button cashPaymentBtn = new Button("Cash Payment");
         cashPaymentBtn.getStyleClass().add("note-button");
-        cashPaymentBtn.setStyle("-fx-font-size: 24;");
+        cashPaymentBtn.setStyle("-fx-font-size: 24; -fx-background-color: -app-add;");
         // Perform payment
         cashPaymentBtn.setOnAction(e -> processPayment(1, total, tip));
 
