@@ -49,7 +49,7 @@
                                     <children>
                                         <Button text="Create user"
                                                 onAction="#onCreateUser"
-                                                styleClass="green-action-button" />
+                                            styleClass="green-action-button" />
                                     </children>
                                 </HBox>
                             </children>
@@ -154,10 +154,13 @@
                                             <HBox alignment="CENTER_RIGHT" spacing="12">
                                                 <children>
                                                     <Region HBox.hgrow="ALWAYS" />
-                                                    <Button text="Cancel"
-                                                            onAction="#onCloseForm"
+                                                    <Button fx:id="deleteUserButton"
+                                                        text="Delete"
+                                                        onAction="#onDeleteUser"
                                                             wrapText="true"
-                                                            styleClass="secondary-action-button" />
+                                                        visible="false"
+                                                        managed="false"
+                                                            styleClass="delete-action-button" />
                                                     <Button fx:id="submitUserButton"
                                                             text="Create user"
                                                             onAction="#onSubmitUser"
