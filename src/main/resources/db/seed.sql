@@ -14,7 +14,7 @@ INSERT INTO payment_methods (name) VALUES ('Cash'), ('Card'), ('Meal card') ON C
 -- Categories (Menu)
 INSERT INTO categories (name) VALUES
   ('Non-alcoholic drinks'), ('Alcoholic drinks'), ('Appetizers'),
-  ('Main dishes'), ('Desserts'), ('Pizzas'), ('Groups')
+  ('Main dishes'), ('Desserts'), ('Pizzas'), ('Soups')
 ON CONFLICT DO NOTHING;
 
 
