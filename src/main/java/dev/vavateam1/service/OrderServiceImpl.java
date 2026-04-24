@@ -3,6 +3,9 @@ package dev.vavateam1.service;
 import java.math.BigDecimal;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.inject.Inject;
 
 import dev.vavateam1.dao.CategoryDao;
@@ -18,6 +21,7 @@ import dev.vavateam1.model.OrderStatus;
 import dev.vavateam1.model.Table;
 
 public class OrderServiceImpl implements OrderService {
+    private static final Logger log = LoggerFactory.getLogger(OrderServiceImpl.class);
 
     private final MenuItemDao menuItemDao;
     private final OrderItemDao orderItemDao;
@@ -61,6 +65,8 @@ public class OrderServiceImpl implements OrderService {
             waiterId = authService.getUser().getId();
         }
 
+        log.info("Creating order item for menu item '{}' (id: {}) on table id: {}", menuItem.getName(), menuItem.getId(), table.getId());
+
         CreateOrder createDto = new CreateOrder(
                 menuItem.getId(),
                 null,
@@ -72,7 +78,9 @@ public class OrderServiceImpl implements OrderService {
                 null,
                 OrderStatus.RECEIVED);
 
-        return orderItemDao.createOrderItem(createDto);
+        OrderItem created = orderItemDao.createOrderItem(createDto);
+        log.info("Order item created with id: {}", created.getId());
+        return created;
     }
 
     @Override
@@ -102,7 +110,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public void deleteOrderItem(int orderItemId) {
+        log.info("Deleting order item id: {}", orderItemId);
         orderItemDao.deleteOrderItem(orderItemId);
+        log.info("Order item deleted id: {}", orderItemId);
     }
 
     @Override
@@ -112,9 +122,12 @@ public class OrderServiceImpl implements OrderService {
             return;
         }
 
+        log.info("Processing payment for {} items, total: {}, tip: {}", ordersToProcess.size(), totalPrice, tip);
+
         int waiterId = ordersToProcess.get(0).getWaiterId();
 
         int paymentId = paymentDao.createPayment(waiterId, paymentMethod, totalPrice, false, tip);
+        log.info("Payment created with id: {}", paymentId);
 
         for (OrderItem item : ordersToProcess) {
             item.setPaymentId(paymentId);

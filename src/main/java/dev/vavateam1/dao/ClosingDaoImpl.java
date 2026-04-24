@@ -9,6 +9,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.inject.Inject;
 
 import dev.vavateam1.data.connection.ConnectionFactory;
@@ -16,6 +19,7 @@ import dev.vavateam1.model.CashOperationType;
 import dev.vavateam1.report.ClosingSummary;
 
 public class ClosingDaoImpl implements ClosingDao {
+    private static final Logger log = LoggerFactory.getLogger(ClosingDaoImpl.class);
 
     private static final String BUSINESS_DATE_SQL = """
             SELECT COALESCE(
@@ -78,16 +82,20 @@ public class ClosingDaoImpl implements ClosingDao {
 
     @Override
     public ClosingSummary getClosingSummary() {
+        log.info("Loading closing summary");
         try (Connection conn = connectionFactory.getConnection()) {
             LocalDate businessDate = findBusinessDate(conn);
+            log.info("Loading closing summary for business date: {}", businessDate);
             return loadClosingSummary(conn, businessDate);
         } catch (SQLException e) {
+            log.error("Failed to load closing summary", e);
             throw new RuntimeException("Failed to load closing summary", e);
         }
     }
 
     @Override
     public ClosingSummary recordCashOperation(int userId, CashOperationType operationType, BigDecimal amount, String note) {
+        log.info("Recording cash operation {} of {} for user id: {}", operationType, amount, userId);
         try (Connection conn = connectionFactory.getConnection()) {
             LocalDate businessDate = findBusinessDate(conn);
 
@@ -98,16 +106,19 @@ public class ClosingDaoImpl implements ClosingDao {
                 stmt.setString(4, note);
                 stmt.setDate(5, Date.valueOf(businessDate));
                 stmt.executeUpdate();
+                log.info("Cash operation {} recorded for business date: {}", operationType, businessDate);
             }
 
             return loadClosingSummary(conn, businessDate);
         } catch (SQLException e) {
+            log.error("Failed to record cash operation {} for user id: {}", operationType, userId, e);
             throw new RuntimeException("Failed to record cash operation", e);
         }
     }
 
     @Override
     public boolean createDailyClosing(int userId, ClosingSummary summary) {
+        log.info("Creating daily closing for user id: {}, business date: {}", userId, summary.businessDate());
         try (Connection conn = connectionFactory.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(INSERT_DAILY_CLOSING_SQL)) {
             stmt.setInt(1, userId);
@@ -118,8 +129,15 @@ public class ClosingDaoImpl implements ClosingDao {
             stmt.setBigDecimal(6, normalize(summary.cashFloat()));
             stmt.setBigDecimal(7, normalize(summary.cash()));
             stmt.setBigDecimal(8, normalize(summary.card()));
-            return stmt.executeUpdate() > 0;
+            boolean created = stmt.executeUpdate() > 0;
+            if (created) {
+                log.info("Daily closing created for business date: {}", summary.businessDate());
+            } else {
+                log.info("Daily closing already exists for business date: {}", summary.businessDate());
+            }
+            return created;
         } catch (SQLException e) {
+            log.error("Failed to create daily closing for business date: {}", summary.businessDate(), e);
             throw new RuntimeException("Failed to create daily closing", e);
         }
     }

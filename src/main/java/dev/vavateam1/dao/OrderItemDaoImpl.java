@@ -9,6 +9,9 @@ import java.util.List;
 import java.time.OffsetDateTime;
 import java.sql.Types;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.inject.Inject;
 
 import dev.vavateam1.data.connection.ConnectionFactory;
@@ -18,6 +21,7 @@ import dev.vavateam1.model.OrderStatus;
 //import dev.vavateam1.util.SqlUtils;
 
 public class OrderItemDaoImpl implements OrderItemDao {
+    private static final Logger log = LoggerFactory.getLogger(OrderItemDaoImpl.class);
 
     private final ConnectionFactory connectionFactory;
 
@@ -45,6 +49,7 @@ public class OrderItemDaoImpl implements OrderItemDao {
 
     @Override
     public List<OrderItem> findByPayment(int paymentId) {
+        log.info("Fetching order items for payment id: {}", paymentId);
         String sql = """
                 SELECT oi.id, oi.menu_item_id, mi.name AS menu_item_name, oi.payment_id, oi.waiter_id,
                         oi.table_id, t.table_number, oi.quantity, oi.discount, oi.price, oi.note,
@@ -67,14 +72,17 @@ public class OrderItemDaoImpl implements OrderItemDao {
             while (rs.next()) {
                 orderItems.add(mapResultSetToOrderItem(rs));
             }
+            log.info("Fetched {} order items for payment id: {}", orderItems.size(), paymentId);
             return orderItems;
         } catch (SQLException e) {
+            log.error("Failed to fetch order items for payment id: {}", paymentId, e);
             throw new RuntimeException("Failed to fetch order items for payment " + paymentId, e);
         }
     }
 
     @Override
     public List<OrderItem> getUnpaidOrderItems() {
+        log.info("Fetching all unpaid order items");
         String sql = """
                 SELECT id, menu_item_id, payment_id, waiter_id, table_id, quantity, discount, price, note,
                        status, created_at, updated_at
@@ -93,14 +101,17 @@ public class OrderItemDaoImpl implements OrderItemDao {
                 orderItems.add(mapResultSetToOrderItem(rs));
             }
 
+            log.info("Fetched {} unpaid order items", orderItems.size());
             return orderItems;
         } catch (SQLException e) {
+            log.error("Failed to fetch unpaid order items", e);
             throw new RuntimeException("Failed to fetch unpaid order items", e);
         }
     }
 
     @Override
     public List<OrderItem> getOrderItemsByTableId(int tableId) {
+        log.info("Fetching order items for table id: {}", tableId);
         String sql = """
                 SELECT oi.id, oi.menu_item_id, mi.name AS menu_item_name, oi.payment_id, oi.waiter_id,
                        oi.table_id, t.table_number, oi.quantity, oi.discount, oi.price, oi.note,
@@ -124,8 +135,10 @@ public class OrderItemDaoImpl implements OrderItemDao {
                 orderItems.add(mapResultSetToOrderItem(rs));
             }
 
+            log.info("Fetched {} order items for table id: {}", orderItems.size(), tableId);
             return orderItems;
         } catch (SQLException e) {
+            log.error("Failed to fetch order items for table id: {}", tableId, e);
             throw new RuntimeException("Failed to fetch order items for table " + tableId, e);
         }
     }
@@ -158,12 +171,14 @@ public class OrderItemDaoImpl implements OrderItemDao {
 
             return false;
         } catch (SQLException e) {
+            log.error("Failed to check active kitchen items for table id: {}", tableId, e);
             throw new RuntimeException("Failed to check active kitchen items for table " + tableId, e);
         }
     }
 
     @Override
     public OrderItem createOrderItem(CreateOrder orderCreateDto) {
+        log.info("Creating order item for menu item id: {}, table id: {}", orderCreateDto.getMenuItemId(), orderCreateDto.getTableId());
         String sql = """
                 INSERT INTO order_items (menu_item_id, payment_id, waiter_id, table_id, quantity, discount, price, note, status)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -189,12 +204,15 @@ public class OrderItemDaoImpl implements OrderItemDao {
             try (ResultSet rs = stmt.getGeneratedKeys()) {
                 if (rs.next()) {
                     int id = rs.getInt(1);
-                    return findOrderItemById(id, conn);
+                    OrderItem created = findOrderItemById(id, conn);
+                    log.info("Order item created with id: {}", created.getId());
+                    return created;
                 }
             }
 
             throw new RuntimeException("Failed to create order item: no generated key returned.");
         } catch (SQLException e) {
+            log.error("Failed to create order item for menu item id: {}", orderCreateDto.getMenuItemId(), e);
             throw new RuntimeException("Failed to create order item", e);
         }
     }
@@ -217,6 +235,7 @@ public class OrderItemDaoImpl implements OrderItemDao {
 
     @Override
     public void updateOrderItem(OrderItem orderItem) {
+        log.info("Updating order item id: {}", orderItem.getId());
         String sql = """
                 UPDATE order_items
                 SET menu_item_id = ?, payment_id = ?, waiter_id = ?, table_id = ?, quantity = ?, discount = ?, price = ?, note = ?, status = ?, updated_at = NOW()
@@ -241,13 +260,16 @@ public class OrderItemDaoImpl implements OrderItemDao {
             stmt.setInt(10, orderItem.getId());
 
             stmt.executeUpdate();
+            log.info("Order item updated id: {}", orderItem.getId());
         } catch (SQLException e) {
+            log.error("Failed to update order item id: {}", orderItem.getId(), e);
             throw new RuntimeException("Failed to update order item " + orderItem.getId(), e);
         }
     }
 
     @Override
     public void deleteOrderItem(int orderItemId) {
+        log.info("Deleting order item id: {}", orderItemId);
         String sql = "DELETE FROM order_items WHERE id = ? AND payment_id IS NULL";
 
         try (Connection conn = connectionFactory.getConnection();
@@ -255,7 +277,9 @@ public class OrderItemDaoImpl implements OrderItemDao {
 
             stmt.setInt(1, orderItemId);
             stmt.executeUpdate();
+            log.info("Order item deleted id: {}", orderItemId);
         } catch (SQLException e) {
+            log.error("Failed to delete order item id: {}", orderItemId, e);
             throw new RuntimeException("Failed to delete order item " + orderItemId, e);
         }
     }

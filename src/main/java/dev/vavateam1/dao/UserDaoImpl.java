@@ -14,6 +14,8 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import dev.vavateam1.data.config.SecurityConfig;
@@ -21,6 +23,8 @@ import dev.vavateam1.data.config.SecurityConfig;
 import com.google.inject.Inject;
 
 public class UserDaoImpl implements UserDao {
+    private static final Logger log = LoggerFactory.getLogger(UserDaoImpl.class);
+
     private final ConnectionFactory connectionFactory;
 
     @Inject
@@ -30,6 +34,7 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public Optional<User> findByEmail(String email) {
+        log.info("Looking up user by email: {}", email);
         String sql = "SELECT id, role_id, name, email, password, status, created_at, updated_at, deleted_at "
                 + "FROM users WHERE LOWER(email) = LOWER(?) AND deleted_at IS NULL";
 
@@ -39,6 +44,7 @@ public class UserDaoImpl implements UserDao {
 
             ResultSet resultSet = stmt.executeQuery();
             if (!resultSet.next()) {
+                log.info("No user found for email: {}", email);
                 return Optional.empty();
             }
 
@@ -53,8 +59,10 @@ public class UserDaoImpl implements UserDao {
             user.setUpdatedAt(resultSet.getObject("updated_at", OffsetDateTime.class));
             user.setDeletedAt(resultSet.getObject("deleted_at", OffsetDateTime.class));
 
+            log.info("User found for email: {}, id: {}", email, user.getId());
             return Optional.of(user);
         } catch (SQLException e) {
+            log.error("Failed to find user by email: {}", email, e);
             throw new RuntimeException("Failed to find user by email: " + email, e);
         }
     }
@@ -90,6 +98,7 @@ public class UserDaoImpl implements UserDao {
                     ORDER BY u.id;
                 """;
 
+        log.info("Fetching all users with sessions");
         List<UserWithSessionDto> users = new java.util.ArrayList<>();
 
         try (Connection conn = connectionFactory.getConnection();
@@ -126,14 +135,17 @@ public class UserDaoImpl implements UserDao {
             }
 
         } catch (SQLException e) {
+            log.error("Failed to fetch users with sessions", e);
             throw new RuntimeException("Failed to fetch users with sessions", e);
         }
 
+        log.info("Fetched {} users", users.size());
         return users;
     }
 
     @Override
     public void createUser(User user) {
+        log.info("Creating user: {}", user.getEmail());
         String sql = "INSERT INTO users (role_id, name, email, password) VALUES (?, ?, ?, ?)";
 
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(SecurityConfig.BCRYPT_STRENGTH);
@@ -146,13 +158,16 @@ public class UserDaoImpl implements UserDao {
             stmt.setString(3, user.getEmail());
             stmt.setString(4, hash);
             stmt.executeUpdate();
+            log.info("User created: {}", user.getEmail());
         } catch (SQLException e) {
+            log.error("Failed to create user: {}", user.getName(), e);
             throw new RuntimeException("Failed to create user: " + user.getName(), e);
         }
     }
 
     @Override
     public void updateUser(User user) {
+        log.info("Updating user id: {}", user.getId());
         boolean hasPassword = user.getPasswordHash() != null;
         String sql = hasPassword
                 ? "UPDATE users SET role_id=?, name=?, email=?, password=?, updated_at=NOW() WHERE id=? AND deleted_at IS NULL"
@@ -171,20 +186,25 @@ public class UserDaoImpl implements UserDao {
                 stmt.setInt(4, user.getId());
             }
             stmt.executeUpdate();
+            log.info("User updated id: {}", user.getId());
         } catch (SQLException e) {
+            log.error("Failed to update user id: {}", user.getId(), e);
             throw new RuntimeException("Failed to update user: " + user.getId(), e);
         }
     }
 
     @Override
     public void deleteUser(int userId) {
+        log.info("Deleting user id: {}", userId);
         String sql = "UPDATE users SET deleted_at=NOW(), updated_at=NOW() WHERE id=? AND deleted_at IS NULL";
 
         try (Connection conn = connectionFactory.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, userId);
             stmt.executeUpdate();
+            log.info("User deleted id: {}", userId);
         } catch (SQLException e) {
+            log.error("Failed to delete user id: {}", userId, e);
             throw new RuntimeException("Failed to delete user: " + userId, e);
         }
     }
