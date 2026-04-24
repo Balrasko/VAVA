@@ -1,5 +1,8 @@
 package dev.vavateam1.controller;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -10,12 +13,15 @@ import dev.vavateam1.dto.OrderItemDto;
 import dev.vavateam1.dto.PaymentDto;
 import dev.vavateam1.service.HistoryService;
 import javafx.fxml.FXML;
+import javafx.print.PrinterJob;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
+import javafx.stage.Window;
 
 public class HistoryController {
 
@@ -33,6 +39,9 @@ public class HistoryController {
 
     @FXML
     private Button refundButton;
+
+    @FXML
+    private Button printCopyButton;
 
     private final HistoryService historyService;
     private PaymentDto selectedPayment;
@@ -173,6 +182,78 @@ public class HistoryController {
             Label itemLabel = new Label(orderItem.getName() + " x" + orderItem.getQuantity() + " - " + priceText);
             detailContainer.getChildren().add(itemLabel);
         }
+    }
+
+    @FXML
+    private void printCopy() {
+        if (selectedPayment == null) {
+            return;
+        }
+
+        PrinterJob printerJob = PrinterJob.createPrinterJob();
+        Window window = detailPanel.getScene() != null ? detailPanel.getScene().getWindow() : null;
+        if (printerJob != null && printerJob.showPrintDialog(window)) {
+            boolean success = printerJob.printPage(detailPanel);
+            if (success) {
+                printerJob.endJob();
+                return;
+            }
+        }
+
+        exportOrderReceipt();
+    }
+
+    private void exportOrderReceipt() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save order receipt");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Text files", "*.txt"));
+        fileChooser.setInitialFileName("order-" + selectedPayment.getId() + ".txt");
+
+        Window window = detailPanel.getScene() != null ? detailPanel.getScene().getWindow() : null;
+        var selectedFile = fileChooser.showSaveDialog(window);
+        if (selectedFile == null) {
+            return;
+        }
+
+        try (BufferedWriter writer = Files.newBufferedWriter(selectedFile.toPath())) {
+            writer.write(buildReceiptText());
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to export order receipt", e);
+        }
+    }
+
+    private String buildReceiptText() {
+        List<OrderItemDto> orderItems = historyService.getOrderItemsByPaymentId(selectedPayment.getId());
+        StringBuilder sb = new StringBuilder();
+        sb.append("Order receipt\n");
+        sb.append("Order: #").append(selectedPayment.getId()).append("\n");
+        sb.append("Date: ").append(selectedPayment.getCreatedAt().format(DISPLAY_FORMAT)).append("\n");
+        sb.append("Waiter: #").append(selectedPayment.getWaiterId()).append("\n");
+
+        String methodText = selectedPayment.getPaymentMethodName() != null ? selectedPayment.getPaymentMethodName() : "-";
+        sb.append("Payment: ").append(methodText).append("\n");
+
+        String tipText = selectedPayment.getTip() != null
+                ? selectedPayment.getTip().stripTrailingZeros().toPlainString() + "%"
+                : "-";
+        sb.append("Tip: ").append(tipText).append("\n\n");
+        sb.append("Items:\n");
+
+        for (OrderItemDto item : orderItems) {
+            String priceText = item.getPrice() != null
+                    ? item.getPrice().stripTrailingZeros().toPlainString() + "€"
+                    : "-";
+            sb.append("  ").append(item.getName()).append(" x").append(item.getQuantity())
+                    .append(" - ").append(priceText).append("\n");
+        }
+
+        sb.append("\nTotal: ").append(selectedPayment.getAmount().toPlainString()).append("€\n");
+
+        if (Boolean.TRUE.equals(selectedPayment.getRefunded())) {
+            sb.append("REFUNDED\n");
+        }
+
+        return sb.toString();
     }
 
     @FXML

@@ -48,6 +48,8 @@
                                 style="-fx-background-color:-app-delete; -fx-text-fill:-app-foreground; -fx-background-radius:20;" />
 
                         <Button text="print copy"
+                                fx:id="printCopyButton"
+                                onAction="#printCopy"
                                 style="-fx-background-color:-app-add; -fx-text-fill:-app-foreground; -fx-background-radius:20;" />
 
                 </HBox>
