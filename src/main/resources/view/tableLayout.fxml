@@ -61,7 +61,8 @@
 
                                         <Button fx:id="deleteZoneButton" text="Delete zone"
                                             onAction="#onDeleteCurrentZone"
-                                            styleClass="secondary-action-button" />
+                                            styleClass="secondary-action-button"
+                                            style="-fx-background-color: -app-delete;" />
 
                                         <Button fx:id="addTableButton" text="Add table"
                                             onAction="#onOpenAddTableForm"
@@ -84,15 +85,8 @@
                     maxHeight="Infinity"
                     spacing="18"
                     visible="false" managed="false"
-                    styleClass="menu-form-panel">
+                    styleClass="layout-form-panel">
                     <children>
-
-                        <HBox alignment="CENTER_RIGHT">
-                            <children>
-                                <Button text="✕" onAction="#onCloseLayoutForm"
-                                    styleClass="form-close-button" />
-                            </children>
-                        </HBox>
 
                         <Label fx:id="layoutFormTitle" text="Manage layout"
                             styleClass="menu-category-title" />
@@ -129,11 +123,13 @@
                         <HBox alignment="CENTER_RIGHT" spacing="12">
                             <children>
                                 <Button text="Cancel" onAction="#onCloseLayoutForm"
-                                    styleClass="secondary-action-button" />
+                                    styleClass="secondary-action-button"
+                                    style="-fx-border-color: -app-blue-border; -fx-border-radius: 24;" />
                                 <Button fx:id="deleteLayoutButton" text="Delete"
                                     visible="false" managed="false"
                                     onAction="#onDeleteLayoutEntity"
-                                    styleClass="secondary-action-button" />
+                                    styleClass="secondary-action-button"
+                                    style="-fx-background-color: -app-delete;" />
                                 <Button fx:id="submitLayoutButton" text="Save"
                                     onAction="#onSubmitLayoutForm"
                                     styleClass="green-action-button" />

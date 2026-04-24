@@ -492,11 +492,17 @@
   -fx-font-size: 15;
 }
 
+.layout-form-panel {
+  -fx-background-color: -app-background;
+  -fx-background-insets: 0;
+  -fx-padding: 0;
+  -fx-fit-to-width: true;
+}
+
 .menu-form-panel {
   -fx-background-color: transparent;
   -fx-background-insets: 0;
   -fx-padding: 0;
-  -fx-border-color: transparent;
   -fx-fit-to-width: true;
 }
 
@@ -591,8 +597,9 @@
   -fx-background-color: -app-delete;
   -fx-text-fill: -app-foreground;
   -fx-background-radius: 24;
-  -fx-padding: 12 24 12 24;
+  -fx-padding: 13 28 13 28;
   -fx-cursor: hand;
+  -fx-font-size: 15;
 }
 
 .delete-action-button:hover {
