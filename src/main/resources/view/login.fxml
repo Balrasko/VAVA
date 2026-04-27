@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
 <?import javafx.scene.control.*?>
 
 
@@ -11,35 +14,54 @@
            fx:controller="dev.vavateam1.controller.LoginController"
            style="-fx-background-color: linear-gradient(to bottom right, -app-blue-primary, -app-blue-primary);">
 
-    <VBox fx:id="loginCard"
-      alignment="CENTER"
-      spacing="18"
-      maxWidth="400"
-      maxHeight="350"
-      prefWidth="400"
-      style="-fx-background-color: -app-foreground;
-             -fx-background-radius: 24;
-             -fx-padding: 50;">
+       <VBox alignment="CENTER" spacing="18">
+              <children>
+                     <StackPane prefWidth="108" prefHeight="108"
+                                      maxWidth="108" maxHeight="108"
+                                      style="-fx-background-color: -app-foreground; -fx-background-radius: 999; -fx-border-color: -app-border-soft; -fx-border-width: 1.5; -fx-border-radius: 999;">
+                            <children>
+                                   <ImageView fitWidth="96" fitHeight="96" preserveRatio="true" smooth="true">
+                                          <image>
+                                                 <Image url="@../img/ipos-logo.png" />
+                                          </image>
+                                          <clip>
+                                                 <Circle centerX="48" centerY="48" radius="48" />
+                                          </clip>
+                                   </ImageView>
+                            </children>
+                     </StackPane>
 
-        <Label text="%app.title"
-               style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+                     <VBox fx:id="loginCard"
+                       alignment="CENTER"
+                       spacing="18"
+                       maxWidth="400"
+                       maxHeight="350"
+                       prefWidth="400"
+                       style="-fx-background-color: -app-foreground;
+                                    -fx-background-radius: 24;
+                                    -fx-padding: 50;">
 
-        <TextField fx:id="emailField"
-                   promptText="%login.email"/>
+                            <Label text="%app.title"
+                                      style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
 
-        <PasswordField fx:id="passwordField"
-                       promptText="%login.password"/>
+                            <TextField fx:id="emailField"
+                                             promptText="%login.email"/>
 
-        <Button fx:id="loginButton"
-                text="%login.signIn"
-                onAction="#handleLogin"/>
+                            <PasswordField fx:id="passwordField"
+                                                    promptText="%login.password"/>
 
-        <Label fx:id="errorLabel"/>
+                            <Button fx:id="loginButton"
+                                          text="%login.signIn"
+                                          onAction="#handleLogin"/>
 
-        <Button fx:id="languageButton"
-                text="SK"
-                onAction="#switchLanguage"/>
+                            <Label fx:id="errorLabel"/>
 
-    </VBox>
+                            <Button fx:id="languageButton"
+                                          text="SK"
+                                          onAction="#switchLanguage"/>
+
+                     </VBox>
+              </children>
+       </VBox>
 
 </StackPane>
