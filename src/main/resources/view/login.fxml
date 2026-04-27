@@ -42,23 +42,23 @@
                                     -fx-padding: 50;">
 
                             <Label text="%app.title"
-                                      style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+                                   style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
 
-                            <TextField fx:id="emailField"
-                                             promptText="%login.email"/>
+                            <TextField fx:id="emailField" promptText="%login.email"/>
 
-                            <PasswordField fx:id="passwordField"
-                                                    promptText="%login.password"/>
+                            <PasswordField fx:id="passwordField" promptText="%login.password"/>
 
                             <Button fx:id="loginButton"
-                                          text="%login.signIn"
-                                          onAction="#handleLogin"/>
+                                   text="%login.signIn"
+                                   onAction="#handleLogin"
+                                   styleClass="secondary-action-button-small"/>
 
                             <Label fx:id="errorLabel"/>
 
                             <Button fx:id="languageButton"
-                                          text="SK"
-                                          onAction="#switchLanguage"/>
+                                   text="SK"
+                                   onAction="#switchLanguage"
+                                   styleClass="secondary-action-button-small"/>
 
                      </VBox>
               </children>

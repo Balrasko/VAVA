@@ -613,9 +613,9 @@
   -fx-padding: 10 24 10 24;
   -fx-cursor: hand;
   -fx-font-size: 14;
-  -fx-min-height: 40;
-  -fx-pref-height: 40;
-  -fx-max-height: 40;
+  -fx-min-height: 44;
+  -fx-pref-height: 44;
+  -fx-max-height: 44;
 }
 
 .secondary-action-button-small:hover {

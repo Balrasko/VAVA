@@ -83,9 +83,6 @@
                                                         <Button fx:id="editCategoryButton"
                                                                 text="%menu.editCategory"
                                                                 onAction="#onEditCategory"
-                                                            minHeight="46"
-                                                            prefHeight="46"
-                                                            maxHeight="46"
                                                                 wrapText="true"
                                                                 styleClass="secondary-action-button" />
                                                         <Button fx:id="addMenuButton"
