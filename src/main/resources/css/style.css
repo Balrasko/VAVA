@@ -622,6 +622,22 @@
   -fx-background-color: derive(-app-background, -4%);
 }
 
+.closing-action-button {
+  -fx-background-color: -app-background;
+  -fx-text-fill: -app-text;
+  -fx-background-radius: 24;
+  -fx-border-color: -app-border;
+  -fx-border-radius: 24;
+  -fx-border-width: 2;
+  -fx-padding: 10 16 10 16;
+  -fx-cursor: hand;
+  -fx-font-size: 14;
+}
+
+.closing-action-button:hover {
+  -fx-background-color: derive(-app-background, -4%);
+}
+
 .delete-action-button {
   -fx-background-color: -app-delete;
   -fx-text-fill: -app-foreground;
