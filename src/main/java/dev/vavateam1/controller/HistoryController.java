@@ -12,6 +12,7 @@ import com.google.inject.Inject;
 import dev.vavateam1.dto.OrderItemDto;
 import dev.vavateam1.dto.PaymentDto;
 import dev.vavateam1.service.HistoryService;
+import dev.vavateam1.util.I18n;
 import javafx.fxml.FXML;
 import javafx.print.PrinterJob;
 import javafx.scene.control.Alert;
@@ -73,9 +74,9 @@ public class HistoryController {
             if (!paymentDate.equals(lastGroupDate)) {
                 String dayLabel;
                 if (paymentDate.equals(today))
-                    dayLabel = "Today";
+                    dayLabel = I18n.t("history.today");
                 else if (paymentDate.equals(yesterday))
-                    dayLabel = "Yesterday";
+                    dayLabel = I18n.t("history.yesterday");
                 else
                     dayLabel = paymentDate.format(DAY_FORMAT);
 
@@ -107,7 +108,7 @@ public class HistoryController {
         Label orderId = new Label("#" + payment.getId());
         Label orderDate = new Label(payment.getCreatedAt().format(DISPLAY_FORMAT));
         Label orderTotal = new Label(payment.getAmount().toPlainString() + "€");
-        Label refundedLabel = new Label("REFUNDED");
+        Label refundedLabel = new Label(I18n.t("history.refunded"));
 
         orderTotal.setStyle("-fx-font-weight:bold;");
         refundedLabel.setStyle("-fx-text-fill:-app-delete; -fx-font-weight:bold;");
@@ -130,32 +131,32 @@ public class HistoryController {
         detailContainer.getChildren().clear();
         List<OrderItemDto> orderItems = historyService.getOrderItemsByPaymentId(payment.getId());
 
-        Label title = new Label("Order summary");
+        Label title = new Label(I18n.t("history.orderSummary"));
         title.setStyle("-fx-font-size:20; -fx-font-weight:bold;");
 
-        Label orderId = new Label("Order: #" + payment.getId());
-        Label orderDate = new Label("Date: " + payment.getCreatedAt().format(DISPLAY_FORMAT));
-        Label waiter = new Label("Waiter: #" + payment.getWaiterId());
-        Label methodId = new Label("Payment method ID: " + payment.getMethodId());
-        Label orderTotal = new Label("Total: " + payment.getAmount().toPlainString() + "€");
+        Label orderId = new Label(I18n.t("history.order", String.valueOf(payment.getId())));
+        Label orderDate = new Label(I18n.t("history.date", payment.getCreatedAt().format(DISPLAY_FORMAT)));
+        Label waiter = new Label(I18n.t("history.waiter", String.valueOf(payment.getWaiterId())));
+        Label methodId = new Label(I18n.t("history.paymentMethodId", String.valueOf(payment.getMethodId())));
+        Label orderTotal = new Label(I18n.t("history.total", payment.getAmount().toPlainString()));
 
         String tipText = payment.getTip() != null
                 ? payment.getTip().stripTrailingZeros().toPlainString() + "%"
                 : "-";
-        Label tip = new Label("Tip: " + tipText);
+        Label tip = new Label(I18n.t("history.tip", tipText));
 
         String methodText = payment.getPaymentMethodName() != null
-                ? payment.getPaymentMethodName()
+                ? localizePaymentMethod(payment.getPaymentMethodName())
                 : "-";
-        Label paymentMethod = new Label("Payment: " + methodText);
+        Label paymentMethod = new Label(I18n.t("history.payment", methodText));
 
-        String refundedText = Boolean.TRUE.equals(payment.getRefunded()) ? "Yes" : "No";
-        Label refunded = new Label("Refunded: " + refundedText);
+        String refundedText = Boolean.TRUE.equals(payment.getRefunded()) ? I18n.t("common.yes") : I18n.t("common.no");
+        Label refunded = new Label(I18n.t("history.refundedValue", refundedText));
         if (Boolean.TRUE.equals(payment.getRefunded())) {
             refunded.setStyle("-fx-text-fill:-app-delete; -fx-font-weight:bold;");
         }
 
-        Label itemsTitle = new Label("Items");
+        Label itemsTitle = new Label(I18n.t("history.items"));
         itemsTitle.setStyle("-fx-font-size:16; -fx-font-weight:bold;");
 
         detailContainer.getChildren().addAll(
@@ -171,7 +172,7 @@ public class HistoryController {
                 itemsTitle);
 
         if (orderItems.isEmpty()) {
-            detailContainer.getChildren().add(new Label("No items found."));
+            detailContainer.getChildren().add(new Label(I18n.t("history.noItems")));
             return;
         }
 
@@ -205,8 +206,8 @@ public class HistoryController {
 
     private void exportOrderReceipt() {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Save order receipt");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Text files", "*.txt"));
+        fileChooser.setTitle(I18n.t("history.saveReceipt"));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(I18n.t("file.type.text"), "*.txt"));
         fileChooser.setInitialFileName("order-" + selectedPayment.getId() + ".txt");
 
         Window window = detailPanel.getScene() != null ? detailPanel.getScene().getWindow() : null;
@@ -225,19 +226,19 @@ public class HistoryController {
     private String buildReceiptText() {
         List<OrderItemDto> orderItems = historyService.getOrderItemsByPaymentId(selectedPayment.getId());
         StringBuilder sb = new StringBuilder();
-        sb.append("Order receipt\n");
-        sb.append("Order: #").append(selectedPayment.getId()).append("\n");
-        sb.append("Date: ").append(selectedPayment.getCreatedAt().format(DISPLAY_FORMAT)).append("\n");
-        sb.append("Waiter: #").append(selectedPayment.getWaiterId()).append("\n");
+        sb.append(I18n.t("history.receiptTitle")).append("\n");
+        sb.append(I18n.t("history.order", String.valueOf(selectedPayment.getId()))).append("\n");
+        sb.append(I18n.t("history.date", selectedPayment.getCreatedAt().format(DISPLAY_FORMAT))).append("\n");
+        sb.append(I18n.t("history.waiter", String.valueOf(selectedPayment.getWaiterId()))).append("\n");
 
-        String methodText = selectedPayment.getPaymentMethodName() != null ? selectedPayment.getPaymentMethodName() : "-";
-        sb.append("Payment: ").append(methodText).append("\n");
+        String methodText = selectedPayment.getPaymentMethodName() != null ? localizePaymentMethod(selectedPayment.getPaymentMethodName()) : "-";
+        sb.append(I18n.t("history.payment", methodText)).append("\n");
 
         String tipText = selectedPayment.getTip() != null
                 ? selectedPayment.getTip().stripTrailingZeros().toPlainString() + "%"
                 : "-";
-        sb.append("Tip: ").append(tipText).append("\n\n");
-        sb.append("Items:\n");
+        sb.append(I18n.t("history.tip", tipText)).append("\n\n");
+        sb.append(I18n.t("history.items")).append(":\n");
 
         for (OrderItemDto item : orderItems) {
             String priceText = item.getPrice() != null
@@ -247,10 +248,10 @@ public class HistoryController {
                     .append(" - ").append(priceText).append("\n");
         }
 
-        sb.append("\nTotal: ").append(selectedPayment.getAmount().toPlainString()).append("€\n");
+        sb.append("\n").append(I18n.t("history.total", selectedPayment.getAmount().toPlainString())).append("\n");
 
         if (Boolean.TRUE.equals(selectedPayment.getRefunded())) {
-            sb.append("REFUNDED\n");
+            sb.append(I18n.t("history.refunded")).append("\n");
         }
 
         return sb.toString();
@@ -265,7 +266,7 @@ public class HistoryController {
         try {
             historyService.refund(selectedPayment.getId());
         } catch (IllegalStateException e) {
-            showWarning("Order already refunded.");
+            showWarning(I18n.t("history.alreadyRefunded"));
         }
 
         loadPayments();
@@ -287,6 +288,15 @@ public class HistoryController {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    private String localizePaymentMethod(String methodName) {
+        return switch (methodName.toLowerCase()) {
+            case "cash" -> I18n.t("common.cash");
+            case "card" -> I18n.t("common.card");
+            case "meal card" -> I18n.t("payment.mealCard");
+            default -> methodName;
+        };
     }
 
     @FXML

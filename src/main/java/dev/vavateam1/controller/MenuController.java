@@ -5,6 +5,7 @@ import dev.vavateam1.dao.InventoryIngredientDao;
 import dev.vavateam1.model.Category;
 import dev.vavateam1.model.MenuItem;
 import dev.vavateam1.service.MenuService;
+import dev.vavateam1.util.I18n;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckMenuItem;
@@ -325,7 +326,7 @@ public class MenuController {
 
     private void updateIngredientsButtonText() {
         List<String> selected = getSelectedIngredientNames();
-        ingredientsButton.setText(selected.isEmpty() ? "Select ingredients..." : String.join(", ", selected));
+        ingredientsButton.setText(selected.isEmpty() ? I18n.t("menu.selectIngredients") : String.join(", ", selected));
     }
 
     private List<String> getSelectedIngredientNames() {
@@ -358,7 +359,7 @@ public class MenuController {
         boolean editing = editingMenuItemId > 0;
 
         if (submitMenuButton != null) {
-            submitMenuButton.setText(editing ? "Save item" : "Add item");
+            submitMenuButton.setText(editing ? I18n.t("menu.saveItem") : I18n.t("menu.addItem"));
         }
 
         if (deleteMenuButton != null) {
@@ -367,7 +368,7 @@ public class MenuController {
         }
 
         if (menuFormTitle != null) {
-            menuFormTitle.setText(editing ? "Edit menu item" : "Add menu item");
+            menuFormTitle.setText(editing ? I18n.t("menu.editMenuItem") : I18n.t("menu.addMenuItem"));
         }
     }
 
@@ -375,7 +376,7 @@ public class MenuController {
         boolean editing = editingCategoryId > 0;
 
         if (submitCategoryButton != null) {
-            submitCategoryButton.setText(editing ? "Save category" : "Add category");
+            submitCategoryButton.setText(editing ? I18n.t("menu.saveCategory") : I18n.t("menu.addCategory"));
         }
 
         if (deleteCategoryButton != null) {
@@ -384,7 +385,7 @@ public class MenuController {
         }
 
         if (categoryFormTitle != null) {
-            categoryFormTitle.setText(editing ? "Edit category" : "Add category");
+            categoryFormTitle.setText(editing ? I18n.t("menu.editCategory") : I18n.t("menu.addCategory"));
         }
     }
 
@@ -583,7 +584,7 @@ public class MenuController {
         Label priceLabel = new Label(item.getPrice() != null ? item.getPrice().toString() + " €" : "");
         priceLabel.getStyleClass().add("menu-action-label");
 
-        Button editButton = new Button("Edit");
+        Button editButton = new Button(I18n.t("common.edit"));
         editButton.getStyleClass().add("secondary-action-button");
         editButton.setOnAction(e -> openEditForm(item));
 

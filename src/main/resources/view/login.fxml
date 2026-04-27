@@ -21,20 +21,24 @@
              -fx-background-radius: 24;
              -fx-padding: 50;">
 
-        <Label text="Restaurant Management System"
+        <Label text="%app.title"
                style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
 
         <TextField fx:id="emailField"
-                   promptText="Email"/>
+                   promptText="%login.email"/>
 
         <PasswordField fx:id="passwordField"
-                       promptText="Password"/>
+                       promptText="%login.password"/>
 
         <Button fx:id="loginButton"
-                text="Sign in"
+                text="%login.signIn"
                 onAction="#handleLogin"/>
 
         <Label fx:id="errorLabel"/>
+
+        <Button fx:id="languageButton"
+                text="SK"
+                onAction="#switchLanguage"/>
 
     </VBox>
 

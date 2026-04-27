@@ -23,28 +23,28 @@
                 <children>
                     <!-- ACTION BUTTONS -->
                     <Button fx:id="closingButton"
-                            text="Closing"
+                            text="%closing.closing"
                             onAction="#onClosing"
                             prefWidth="122.0"
                             prefHeight="50.0"
                             style="-fx-background-color: -app-surface-soft; -fx-background-radius: 16; -fx-text-fill: -app-text; -fx-font-size: 12px; -fx-cursor: hand;"/>
 
                     <Button fx:id="printButton"
-                            text="Print"
+                            text="%common.print"
                             onAction="#onPrint"
                             prefWidth="122.0"
                             prefHeight="50.0"
                             style="-fx-background-color: -app-surface-soft; -fx-background-radius: 16; -fx-text-fill: -app-text; -fx-font-size: 12px; -fx-cursor: hand;"/>
 
                     <Button fx:id="cashFloatButton"
-                            text="Cash float"
+                            text="%closing.cashFloat"
                             onAction="#onCashFloat"
                             prefWidth="122.0"
                             prefHeight="50.0"
                             style="-fx-background-color: -app-surface-soft; -fx-background-radius: 16; -fx-text-fill: -app-text; -fx-font-size: 12px; -fx-cursor: hand;"/>
 
                     <Button fx:id="withdrawalButton"
-                            text="Withdrawal"
+                            text="%closing.withdrawal"
                             onAction="#onWithdrawal"
                             prefWidth="122.0"
                             prefHeight="50.0"
@@ -58,7 +58,7 @@
                                     alignment="CENTER"
                                     style="-fx-background-color: -app-surface-soft; -fx-background-radius: 16; -fx-padding: 8 14 8 14;">
                                 <children>
-                                    <Label text="Total paid:"
+                                    <Label text="%closing.totalPaid"
                                             alignment="CENTER"
                                             style="-fx-text-fill: -app-text; -fx-font-size: 12px;"/>
                                     <Label fx:id="totalPaidLabel"
@@ -73,7 +73,7 @@
                                     alignment="CENTER"
                                     style="-fx-background-color: -app-surface-soft; -fx-background-radius: 16; -fx-padding: 8 14 8 14;">
                                 <children>
-                                    <Label text="Total tips:"
+                                    <Label text="%closing.totalTips"
                                             alignment="CENTER"
                                             style="-fx-text-fill: -app-text; -fx-font-size: 12px;"/>
                                     <Label fx:id="totalTipsLabel"
@@ -93,7 +93,7 @@
                 <children>
                     <HBox>
                         <children>
-                            <Label text="Total"
+                            <Label text="%common.total"
                                     style="-fx-text-fill: -app-text; -fx-font-size: 13px;"/>
                             <Region HBox.hgrow="ALWAYS"/>
                             <Label fx:id="grandTotalLabel"
@@ -104,7 +104,7 @@
 
                     <HBox>
                         <children>
-                            <Label text="   Cash float"
+                            <Label text="%closing.cashFloatIndented"
                                     style="-fx-text-fill: -app-text; -fx-font-size: 13px;"/>
                             <Region HBox.hgrow="ALWAYS"/>
                             <Label fx:id="cashFloatValueLabel"
@@ -115,7 +115,7 @@
 
                     <HBox>
                         <children>
-                            <Label text="   Cash"
+                            <Label text="%closing.cashIndented"
                                     style="-fx-text-fill: -app-text; -fx-font-size: 13px;"/>
                             <Region HBox.hgrow="ALWAYS"/>
                             <Label fx:id="cashValueLabel"
@@ -126,7 +126,7 @@
 
                     <HBox>
                         <children>
-                            <Label text="   Card"
+                            <Label text="%closing.cardIndented"
                                     style="-fx-text-fill: -app-text; -fx-font-size: 13px;"/>
                             <Region HBox.hgrow="ALWAYS"/>
                             <Label fx:id="cardValueLabel"

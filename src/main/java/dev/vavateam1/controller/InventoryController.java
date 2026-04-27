@@ -24,6 +24,7 @@ import com.google.inject.Inject;
 
 import dev.vavateam1.dao.InventoryIngredientDao;
 import dev.vavateam1.model.InventoryIngredient;
+import dev.vavateam1.util.I18n;
 import javafx.animation.FadeTransition;
 import javafx.animation.PauseTransition;
 import javafx.animation.SequentialTransition;
@@ -151,8 +152,8 @@ public class InventoryController {
     @FXML
     private void onImportInventory() {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Import inventory");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("XML files", "*.xml"));
+        fileChooser.setTitle(I18n.t("inventory.importTitle"));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(I18n.t("file.type.xml"), "*.xml"));
 
         Window window = itemsContainer.getScene() != null ? itemsContainer.getScene().getWindow() : null;
         var selectedFile = fileChooser.showOpenDialog(window);
@@ -172,8 +173,8 @@ public class InventoryController {
     @FXML
     private void onExportInventory() {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Export inventory");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("XML files", "*.xml"));
+        fileChooser.setTitle(I18n.t("inventory.exportTitle"));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(I18n.t("file.type.xml"), "*.xml"));
         fileChooser.setInitialFileName("inventory-export.xml");
 
         Window window = itemsContainer.getScene() != null ? itemsContainer.getScene().getWindow() : null;
@@ -193,7 +194,7 @@ public class InventoryController {
     private void toggleEditMode() {
         editMode = !editMode;
 
-        editButton.setText(editMode ? "Done" : "Edit");
+        editButton.setText(editMode ? I18n.t("inventory.editDone") : I18n.t("common.edit"));
 
         if (editMode) {
             root.setStyle("""
@@ -252,11 +253,11 @@ public class InventoryController {
     }
 
     private void refreshSortHeaderLabels() {
-        itemIdHeaderLabel.setText(buildHeaderText("Item ID", SortField.ITEM_ID));
-        nameHeaderLabel.setText(buildHeaderText("Name", SortField.NAME));
-        quantityHeaderLabel.setText(buildHeaderText("Quantity", SortField.QUANTITY));
-        minimalQuantityHeaderLabel.setText(buildHeaderText("Minimal quantity", SortField.MINIMAL_QUANTITY));
-        statusHeaderLabel.setText(buildHeaderText("Status", SortField.STATUS));
+        itemIdHeaderLabel.setText(buildHeaderText(I18n.t("inventory.itemId"), SortField.ITEM_ID));
+        nameHeaderLabel.setText(buildHeaderText(I18n.t("common.name"), SortField.NAME));
+        quantityHeaderLabel.setText(buildHeaderText(I18n.t("common.quantity"), SortField.QUANTITY));
+        minimalQuantityHeaderLabel.setText(buildHeaderText(I18n.t("inventory.minimalQuantity"), SortField.MINIMAL_QUANTITY));
+        statusHeaderLabel.setText(buildHeaderText(I18n.t("common.status"), SortField.STATUS));
 
         itemIdHeaderLabel.setStyle(HEADER_LABEL_STYLE);
         nameHeaderLabel.setStyle(HEADER_LABEL_STYLE);
@@ -364,8 +365,8 @@ public class InventoryController {
     }
 
     private void confirmDelete(InventoryIngredient item) {
-        Button yes = new Button("Delete");
-        Button no = new Button("Cancel");
+        Button yes = new Button(I18n.t("common.delete"));
+        Button no = new Button(I18n.t("common.cancel"));
 
         yes.getStyleClass().add("dialog-button");
         yes.setStyle("-fx-background-color: -app-delete");
@@ -379,14 +380,14 @@ public class InventoryController {
             inventoryIngredientDao.delete(item.getId());
             rootStack.getChildren().removeLast();
             reloadInventory();
-            showToast("Item deleted.", true);
+            showToast(I18n.t("inventory.itemDeleted"), true);
         });
 
         no.setOnAction(e -> {
             rootStack.getChildren().removeLast();
         });
 
-        showDialog("Confirm Delete", new Label("Are you sure you want to delete this item?"), List.of(yes, no));
+        showDialog(I18n.t("inventory.confirmDelete"), new Label(I18n.t("inventory.confirmDeleteMessage")), List.of(yes, no));
     }
 
     private void editItem(InventoryIngredient item) {
@@ -396,16 +397,16 @@ public class InventoryController {
 
         HBox content = new HBox(10,
                 new VBox(20,
-                        new Label("Name"),
-                        new Label("Quantity"),
-                        new Label("Minimum Quantity")),
+                        new Label(I18n.t("common.name")),
+                        new Label(I18n.t("common.quantity")),
+                        new Label(I18n.t("inventory.minimumQuantity"))),
                 new VBox(10,
                         nameField,
                         quantityField,
                         minQuantityField));
 
-        Button save = new Button("Save");
-        Button cancel = new Button("Cancel");
+        Button save = new Button(I18n.t("common.save"));
+        Button cancel = new Button(I18n.t("common.cancel"));
 
         save.setMinWidth(40);
         cancel.setMinWidth(40);
@@ -425,9 +426,9 @@ public class InventoryController {
 
                 rootStack.getChildren().removeLast();
 
-                showToast("Item edited.", true);
+                showToast(I18n.t("inventory.itemEdited"), true);
             } catch (Exception ex) {
-                showToast("Invalid format in one of the fields.", false);
+                showToast(I18n.t("inventory.invalidFieldFormat"), false);
                 return;
             }
         });
@@ -436,7 +437,7 @@ public class InventoryController {
             rootStack.getChildren().removeLast();
         });
 
-        showDialog("Edit Item", content, List.of(save, cancel));
+        showDialog(I18n.t("inventory.editItem"), content, List.of(save, cancel));
     }
 
     private ColumnConstraints createColumnConstraint(double percentWidth) {
@@ -466,7 +467,7 @@ public class InventoryController {
 
     private Label createAddRow() {
 
-        Label row = new Label("Add a new item");
+        Label row = new Label(I18n.t("inventory.addNewItem"));
         row.setAlignment(Pos.CENTER);
         row.setStyle("""
             -fx-text-fill: -app-text;
@@ -539,11 +540,11 @@ public class InventoryController {
 
         HBox content = new HBox(10,
                 new VBox(20,
-                        new Label("Name"),
-                        new Label("Quantity"),
-                        new Label("Minimum Quantity"),
-                        new Label("Cost per unit"),
-                        new Label("Unit")),
+                        new Label(I18n.t("common.name")),
+                        new Label(I18n.t("common.quantity")),
+                        new Label(I18n.t("inventory.minimumQuantity")),
+                        new Label(I18n.t("inventory.costPerUnit")),
+                        new Label(I18n.t("common.unit"))),
                 new VBox(10,
                         nameField,
                         quantityField,
@@ -551,8 +552,8 @@ public class InventoryController {
                         costPerUnitField,
                         unitField));
 
-        Button save = new Button("Save");
-        Button cancel = new Button("Cancel");
+        Button save = new Button(I18n.t("common.save"));
+        Button cancel = new Button(I18n.t("common.cancel"));
 
         save.setMinWidth(40);
         cancel.setMinWidth(40);
@@ -575,9 +576,9 @@ public class InventoryController {
 
                 rootStack.getChildren().removeLast();
 
-                showToast("New item created.", true);
+                showToast(I18n.t("inventory.newItemCreated"), true);
             } catch (Exception ex) {
-                showToast("Invalid format in one of the fields.", false);
+                showToast(I18n.t("inventory.invalidFieldFormat"), false);
                 return;
             }
         });
@@ -586,7 +587,7 @@ public class InventoryController {
             rootStack.getChildren().removeLast();
         });
 
-        showDialog("New Item", content, List.of(save, cancel));
+        showDialog(I18n.t("inventory.newItem"), content, List.of(save, cancel));
     }
 
     private ItemStatus statusFor(InventoryIngredient item) {
@@ -658,7 +659,7 @@ public class InventoryController {
         try {
             return Pattern.compile(rawPattern, Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
         } catch (PatternSyntaxException e) {
-            showError("Invalid regex", e.getDescription());
+            showError(I18n.t("inventory.invalidRegex"), e.getDescription());
             return activeSearchPattern;
         }
     }

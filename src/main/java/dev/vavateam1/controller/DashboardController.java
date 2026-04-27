@@ -6,12 +6,14 @@ import com.google.inject.Injector;
 import dev.vavateam1.model.Table;
 import dev.vavateam1.model.User;
 import dev.vavateam1.service.AuthService;
+import dev.vavateam1.util.I18n;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
@@ -48,6 +50,9 @@ public class DashboardController {
     private Label profileInitialsLabel;
 
     @FXML
+    private Button languageButton;
+
+    @FXML
     private HBox managerPanelItem;
 
     @FXML
@@ -72,6 +77,10 @@ public class DashboardController {
         sidebar.setMinWidth(0);
         sidebar.setMaxWidth(0);
         sidebarVisible = false;
+
+        if (languageButton != null) {
+            languageButton.setText(I18n.nextLanguageCode());
+        }
 
         if (loggedInRoleLabel != null && currentUser != null) {
             loggedInRoleLabel.setText(getRoleName(currentUser.getRoleId()));
@@ -100,6 +109,12 @@ public class DashboardController {
         } catch (Exception e) {
             System.err.println(e.getMessage());
         }
+    }
+
+    @FXML
+    private void switchLanguage() throws Exception {
+        I18n.toggleLocale();
+        viewSwitcher.reloadCurrentView();
     }
 
     @FXML
@@ -140,8 +155,7 @@ public class DashboardController {
     }
 
     private void loadManagerTopNavbar() throws Exception {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/top-navbar.fxml"));
-        loader.setControllerFactory(injector::getInstance);
+        FXMLLoader loader = I18n.loader(getClass().getResource("/view/top-navbar.fxml"), injector);
 
         Parent navbar = loader.load();
         topNavbarController = loader.getController();
@@ -157,8 +171,7 @@ public class DashboardController {
 
     /** Loads zones bar into top row for normal waiter table view. */
     private void loadZonesTopNavbar() throws Exception {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/top-navbar-zones.fxml"));
-        loader.setControllerFactory(injector::getInstance);
+        FXMLLoader loader = I18n.loader(getClass().getResource("/view/top-navbar-zones.fxml"), injector);
 
         Parent navbar = loader.load();
         topNavbarZonesController = loader.getController();
@@ -212,9 +225,8 @@ public class DashboardController {
 
     @FXML
     public void showTableView() throws Exception {
-        FXMLLoader loader = new FXMLLoader(
-                getClass().getResource("/view/tables.fxml"));
-        loader.setControllerFactory(injector::getInstance);
+        FXMLLoader loader = I18n.loader(
+                getClass().getResource("/view/tables.fxml"), injector);
 
         Parent view = loader.load();
 
@@ -229,9 +241,8 @@ public class DashboardController {
 
     @FXML
     public void showOrderView(Table table) throws Exception {
-        FXMLLoader loader = new FXMLLoader(
-                getClass().getResource("/view/order.fxml"));
-        loader.setControllerFactory(injector::getInstance);
+        FXMLLoader loader = I18n.loader(
+                getClass().getResource("/view/order.fxml"), injector);
 
         Parent view = loader.load();
 
@@ -243,9 +254,8 @@ public class DashboardController {
     }
 
     private void showKitchenView() throws Exception {
-        FXMLLoader loader = new FXMLLoader(
-                getClass().getResource("/view/kitchen.fxml"));
-        loader.setControllerFactory(injector::getInstance);
+        FXMLLoader loader = I18n.loader(
+                getClass().getResource("/view/kitchen.fxml"), injector);
 
         Parent view = loader.load();
         contentArea.getChildren().setAll(view);
@@ -255,9 +265,8 @@ public class DashboardController {
     private void showClosing() {
         try {
 
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/view/closing.fxml"));
-            loader.setControllerFactory(injector::getInstance);
+            FXMLLoader loader = I18n.loader(
+                    getClass().getResource("/view/closing.fxml"), injector);
 
             contentArea.getChildren().clear();
             contentArea.getChildren().add(loader.load());
@@ -272,9 +281,8 @@ public class DashboardController {
     @FXML
     private void showMenu() {
         try {
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/view/managermenu.fxml"));
-            loader.setControllerFactory(injector::getInstance);
+            FXMLLoader loader = I18n.loader(
+                    getClass().getResource("/view/managermenu.fxml"), injector);
 
             contentArea.getChildren().clear();
             contentArea.getChildren().add(loader.load());
@@ -291,9 +299,8 @@ public class DashboardController {
         }
 
         try {
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/view/users.fxml"));
-            loader.setControllerFactory(injector::getInstance);
+            FXMLLoader loader = I18n.loader(
+                    getClass().getResource("/view/users.fxml"), injector);
 
             contentArea.getChildren().clear();
             contentArea.getChildren().add(loader.load());
@@ -309,9 +316,8 @@ public class DashboardController {
 
         try {
 
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/view/history.fxml"));
-            loader.setControllerFactory(injector::getInstance);
+            FXMLLoader loader = I18n.loader(
+                    getClass().getResource("/view/history.fxml"), injector);
 
             contentArea.getChildren().clear();
             contentArea.getChildren().add(loader.load());
@@ -343,9 +349,8 @@ public class DashboardController {
     private void showFinances() {
         try {
 
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/view/finances.fxml"));
-            loader.setControllerFactory(injector::getInstance);
+            FXMLLoader loader = I18n.loader(
+                    getClass().getResource("/view/finances.fxml"), injector);
 
             contentArea.getChildren().clear();
             contentArea.getChildren().add(loader.load());
@@ -364,9 +369,8 @@ public class DashboardController {
 
         try {
 
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/view/inventory.fxml"));
-            loader.setControllerFactory(injector::getInstance);
+            FXMLLoader loader = I18n.loader(
+                    getClass().getResource("/view/inventory.fxml"), injector);
 
             contentArea.getChildren().clear();
             contentArea.getChildren().add(loader.load());
@@ -381,9 +385,8 @@ public class DashboardController {
     private void showTableLayout() {
         try {
 
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/view/tableLayout.fxml"));
-            loader.setControllerFactory(injector::getInstance);
+            FXMLLoader loader = I18n.loader(
+                    getClass().getResource("/view/tableLayout.fxml"), injector);
 
             contentArea.getChildren().clear();
             contentArea.getChildren().add(loader.load());
@@ -402,10 +405,10 @@ public class DashboardController {
 
     private String getRoleName(int roleId) {
         return switch (roleId) {
-            case 1 -> "Admin";
-            case 2 -> "Waiter";
-            case 3 -> "Chef";
-            default -> "User";
+            case 1 -> I18n.t("role.admin");
+            case 2 -> I18n.t("role.waiter");
+            case 3 -> I18n.t("role.chef");
+            default -> I18n.t("role.user");
         };
     }
 }

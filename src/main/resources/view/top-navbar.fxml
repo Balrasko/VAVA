@@ -26,11 +26,11 @@
 
             <children>
 
-                <Button fx:id="usersButton" text="Users" styleClass="nav-tab" onAction="#onUsers" />
-                <Button fx:id="menuButton" text="Menu" styleClass="nav-tab" onAction="#onMenu" />
-                <Button fx:id="financesButton" text="Finances" styleClass="nav-tab" onAction="#onFinances" />
-                <Button fx:id="inventoryButton" text="Inventory" styleClass="nav-tab" onAction="#onInventory" />
-                <Button fx:id="tableLayoutButton" text="Table Layout" styleClass="nav-tab" onAction="#onTableLayout" />
+                <Button fx:id="usersButton" text="%nav.users" styleClass="nav-tab" onAction="#onUsers" />
+                <Button fx:id="menuButton" text="%nav.menu" styleClass="nav-tab" onAction="#onMenu" />
+                <Button fx:id="financesButton" text="%nav.finances" styleClass="nav-tab" onAction="#onFinances" />
+                <Button fx:id="inventoryButton" text="%nav.inventory" styleClass="nav-tab" onAction="#onInventory" />
+                <Button fx:id="tableLayoutButton" text="%nav.tableLayout" styleClass="nav-tab" onAction="#onTableLayout" />
 
                 <Region HBox.hgrow="ALWAYS" />
             </children>

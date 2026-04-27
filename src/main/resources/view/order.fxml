@@ -95,14 +95,14 @@
                             <!-- Buttons -->
                             <VBox spacing="10">
 
-                                   <Button text="Payment"
+                                   <Button text="%order.payment"
                                           fx:id="paymentButton"
                                           onAction="#showPaymentOverlay"
                                           styleClass="action-button"
                                           VBox.vgrow="NEVER"
                                           maxWidth="Infinity"/>
 
-                                   <Button text="Split the bill"
+                                   <Button text="%order.splitBill"
                                           fx:id = "splitButton"
                                           onAction = "#toggleSplitTheBill"
                                           styleClass="action-button"
@@ -119,13 +119,13 @@
                             prefWidth="240">
 
                                    <HBox>
-                                          <Label text="Subtotal:" style="-fx-font-size: 14px"/>
+                                          <Label text="%order.subtotal" style="-fx-font-size: 14px"/>
                                           <Region HBox.hgrow="ALWAYS"/>
                                           <Label fx:id="subtotalLabel" style="-fx-font-size: 28px"/>
                                    </HBox>
 
                                    <HBox>
-                                          <Label text="Split subtotal:" fx:id="totalLabelText" style="-fx-font-size: 14px"/>
+                                          <Label text="%order.splitSubtotal" fx:id="totalLabelText" style="-fx-font-size: 14px"/>
                                           <Region HBox.hgrow="ALWAYS"/>
                                           <Label fx:id="totalLabel" style="-fx-font-size: 22px"/>
                                    </HBox>
@@ -153,7 +153,7 @@
 
            <!-- Toast style popup -->
            <Label fx:id="toastLabel"
-                  text="Invalid code"
+                  text="%inventory.invalidCode"
                   visible="false"
                   StackPane.alignment="TOP_CENTER">
 

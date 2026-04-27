@@ -7,6 +7,7 @@ import dev.vavateam1.dto.UserWithSessionDto;
 import dev.vavateam1.model.User;
 import dev.vavateam1.service.AuthService;
 import dev.vavateam1.service.UsersService;
+import dev.vavateam1.util.I18n;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -63,8 +64,8 @@ public class UsersController {
     private void onCreateUser() {
         editingUserId = null;
         clearForm();
-        formTitle.setText("Create user");
-        submitUserButton.setText("Create user");
+        formTitle.setText(I18n.t("users.createUser"));
+        submitUserButton.setText(I18n.t("users.createUser"));
         deleteUserButton.setVisible(false);
         deleteUserButton.setManaged(false);
         showForm();
@@ -80,12 +81,12 @@ public class UsersController {
     private void onSubmitUser() {
         String email = emailField.getText().trim();
         if (!email.isBlank() && !EMAIL_PATTERN.matcher(email).matches()) {
-            showFormError("Please enter a valid email address");
+            showFormError(I18n.t("login.invalidEmail"));
             return;
         }
 
         if (editingUserId == null && !passwordField.getText().isBlank() && !passwordField.getText().equals(repeatPasswordField.getText())) {
-            showFormError("Passwords do not match");
+            showFormError(I18n.t("users.passwordsDoNotMatch"));
             return;
         }
 
@@ -185,7 +186,7 @@ public class UsersController {
     private String buildFullName() {
         String firstName = nameField.getText().trim();
         String surname = surnameField.getText().trim();
-        if (firstName.isBlank() && surname.isBlank()) return "New User";
+        if (firstName.isBlank() && surname.isBlank()) return I18n.t("users.newUser");
         if (surname.isBlank()) return firstName;
         if (firstName.isBlank()) return surname;
         return firstName + " " + surname;
@@ -199,9 +200,9 @@ public class UsersController {
 
     private String roleIdToName(int roleId) {
         return switch (roleId) {
-            case 1 -> "Manager";
-            case 3 -> "Chef";
-            default -> "Waiter";
+            case 1 -> I18n.t("role.manager");
+            case 3 -> I18n.t("role.chef");
+            default -> I18n.t("role.waiter");
         };
     }
 
@@ -228,7 +229,7 @@ public class UsersController {
         Label roleLabel = new Label(roleIdToName(user.getRoleId()));
         roleLabel.getStyleClass().add("user-meta");
 
-        Label statusText = new Label(active ? "Online" : "Offline");
+        Label statusText = new Label(active ? I18n.t("status.online") : I18n.t("status.offline"));
         statusText.getStyleClass().add("user-meta");
 
         Region statusDot = new Region();
@@ -241,7 +242,7 @@ public class UsersController {
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        Button editButton = new Button("Edit");
+        Button editButton = new Button(I18n.t("common.edit"));
         editButton.getStyleClass().add("secondary-action-button");
         editButton.setOnAction(event -> startEditingUser(dto));
 
@@ -260,8 +261,8 @@ public class UsersController {
     private void startEditingUser(UserWithSessionDto dto) {
         editingUserId = dto.getUser().getId();
         populateForm(dto);
-        formTitle.setText("Edit user");
-        submitUserButton.setText("Save user");
+        formTitle.setText(I18n.t("users.editUser"));
+        submitUserButton.setText(I18n.t("users.saveUser"));
         deleteUserButton.setVisible(true);
         deleteUserButton.setManaged(true);
 

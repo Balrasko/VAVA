@@ -47,7 +47,7 @@
                                 </ScrollPane>
                                 <HBox alignment="CENTER_RIGHT">
                                     <children>
-                                        <Button text="Create user"
+                                        <Button text="%users.createUser"
                                                 onAction="#onCreateUser"
                                             styleClass="green-action-button" />
                                     </children>
@@ -84,13 +84,13 @@
                                             </HBox>
 
                                             <Label fx:id="formTitle"
-                                                   text="Create user"
+                                                   text="%users.createUser"
                                                    wrapText="true"
                                                    styleClass="menu-category-title" />
 
                                             <VBox spacing="8">
                                                 <children>
-                                                    <Label text="Name" styleClass="form-label" />
+                                                    <Label text="%common.name" styleClass="form-label" />
                                                     <TextField fx:id="nameField"
                                                                maxWidth="Infinity"
                                                                styleClass="form-input" />
@@ -99,7 +99,7 @@
 
                                             <VBox spacing="8">
                                                 <children>
-                                                    <Label text="Surname" styleClass="form-label" />
+                                                    <Label text="%common.surname" styleClass="form-label" />
                                                     <TextField fx:id="surnameField"
                                                                maxWidth="Infinity"
                                                                styleClass="form-input" />
@@ -108,7 +108,7 @@
 
                                             <VBox spacing="8">
                                                 <children>
-                                                    <Label text="Email" styleClass="form-label" />
+                                                    <Label text="%common.email" styleClass="form-label" />
                                                     <TextField fx:id="emailField"
                                                                maxWidth="Infinity"
                                                                styleClass="form-input" />
@@ -117,7 +117,7 @@
 
                                             <VBox spacing="8">
                                                 <children>
-                                                    <Label text="Password" styleClass="form-label" />
+                                                    <Label text="%common.password" styleClass="form-label" />
                                                     <PasswordField fx:id="passwordField"
                                                                    maxWidth="Infinity"
                                                                    styleClass="form-input" />
@@ -126,7 +126,7 @@
 
                                             <VBox spacing="8">
                                                 <children>
-                                                    <Label text="Repeat password" styleClass="form-label" />
+                                                    <Label text="%users.repeatPassword" styleClass="form-label" />
                                                     <PasswordField fx:id="repeatPasswordField"
                                                                    maxWidth="Infinity"
                                                                    styleClass="form-input" />
@@ -135,12 +135,12 @@
 
                                             <VBox spacing="10">
                                                 <children>
-                                                    <Label text="Role" styleClass="form-label" />
-                                                    <RadioButton fx:id="waiterRadio" text="Waiter"
+                                                    <Label text="%common.role" styleClass="form-label" />
+                                                    <RadioButton fx:id="waiterRadio" text="%role.waiter"
                                                                  toggleGroup="$roleToggleGroup" />
-                                                    <RadioButton fx:id="chefRadio" text="Chef"
+                                                    <RadioButton fx:id="chefRadio" text="%role.chef"
                                                                  toggleGroup="$roleToggleGroup" />
-                                                    <RadioButton fx:id="managerRadio" text="Manager"
+                                                    <RadioButton fx:id="managerRadio" text="%role.manager"
                                                                  toggleGroup="$roleToggleGroup" />
                                                 </children>
 
@@ -161,14 +161,14 @@
                                                 <children>
                                                     <Region HBox.hgrow="ALWAYS" />
                                                     <Button fx:id="deleteUserButton"
-                                                        text="Delete"
+                                                        text="%common.delete"
                                                         onAction="#onDeleteUser"
                                                             wrapText="true"
                                                         visible="false"
                                                         managed="false"
                                                             styleClass="delete-action-button" />
                                                     <Button fx:id="submitUserButton"
-                                                            text="Create user"
+                                                            text="%users.createUser"
                                                             onAction="#onSubmitUser"
                                                             wrapText="true"
                                                             styleClass="green-action-button" />

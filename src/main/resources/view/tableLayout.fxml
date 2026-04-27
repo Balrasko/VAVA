@@ -50,25 +50,25 @@
 
                                 <HBox alignment="CENTER_RIGHT" spacing="12" >
                                     <children>
-                                        <Button fx:id="editCancelButton" text="Cancel"
+                                        <Button fx:id="editCancelButton" text="%common.cancel"
                                             onAction="#onCancelTableEditMode"
                                             visible="false" managed="false"
                                             styleClass="secondary-action-button" />
 
-                                        <Button fx:id="editZoneButton" text="Edit zone"
+                                        <Button fx:id="editZoneButton" text="%tableLayout.editZone"
                                             onAction="#onEditCurrentZone"
                                             styleClass="secondary-action-button" />
 
-                                        <Button fx:id="deleteZoneButton" text="Delete zone"
+                                        <Button fx:id="deleteZoneButton" text="%tableLayout.deleteZone"
                                             onAction="#onDeleteCurrentZone"
                                             styleClass="secondary-action-button"
                                             style="-fx-background-color: -app-delete; -fx-border-color: transparent;" />
 
-                                        <Button fx:id="addTableButton" text="Add table"
+                                        <Button fx:id="addTableButton" text="%tableLayout.addTable"
                                             onAction="#onOpenAddTableForm"
                                             styleClass="green-action-button" />
 
-                                        <Button fx:id="dragButton" text="Enter Edit Mode"
+                                        <Button fx:id="dragButton" text="%tableLayout.enterEditMode"
                                             onAction="#toggleDragging"
                                             styleClass="green-action-button" />
                                     </children>
@@ -88,7 +88,7 @@
                     styleClass="layout-form-panel">
                     <children>
 
-                        <Label fx:id="layoutFormTitle" text="Manage layout"
+                        <Label fx:id="layoutFormTitle" text="%tableLayout.manageLayout"
                             styleClass="menu-category-title" />
                         <Label fx:id="layoutFormHint" styleClass="menu-item-description" />
 
@@ -96,24 +96,24 @@
                             <children>
                                 <VBox spacing="8">
                                     <children>
-                                        <Label text="Zone" styleClass="form-label" />
+                                        <Label text="%tableLayout.zone" styleClass="form-label" />
                                         <ComboBox fx:id="tableZoneComboBox" styleClass="form-input" />
                                     </children>
                                 </VBox>
                                 <VBox spacing="8">
                                     <children>
-                                        <Label text="Table number" styleClass="form-label" />
+                                        <Label text="%tableLayout.tableNumber" styleClass="form-label" />
                                         <TextField fx:id="tableNumberField" styleClass="form-input" />
                                     </children>
                                 </VBox>
-                                <CheckBox fx:id="tableAvailabilityCheck" text="Available"
+                                <CheckBox fx:id="tableAvailabilityCheck" text="%common.available"
                                     styleClass="form-label" />
                             </children>
                         </VBox>
 
                         <VBox fx:id="zoneFieldsContainer" spacing="8">
                             <children>
-                                <Label text="Zone name" styleClass="form-label" />
+                                <Label text="%tableLayout.zoneName" styleClass="form-label" />
                                 <TextField fx:id="zoneNameField" styleClass="form-input" />
                             </children>
                         </VBox>
@@ -122,15 +122,15 @@
 
                         <HBox alignment="CENTER_RIGHT" spacing="12">
                             <children>
-                                <Button text="Cancel" onAction="#onCloseLayoutForm"
+                                <Button text="%common.cancel" onAction="#onCloseLayoutForm"
                                     styleClass="secondary-action-button"
                                     style="-fx-border-color: -app-blue-border; -fx-border-radius: 24;" />
-                                <Button fx:id="deleteLayoutButton" text="Delete"
+                                <Button fx:id="deleteLayoutButton" text="%common.delete"
                                     visible="false" managed="false"
                                     onAction="#onDeleteLayoutEntity"
                                     styleClass="secondary-action-button"
                                     style="-fx-background-color: -app-delete; -fx-border-color: transparent;" />
-                                <Button fx:id="submitLayoutButton" text="Save"
+                                <Button fx:id="submitLayoutButton" text="%common.save"
                                     onAction="#onSubmitLayoutForm"
                                     styleClass="green-action-button" />
                             </children>

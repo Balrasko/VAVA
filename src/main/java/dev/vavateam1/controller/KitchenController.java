@@ -9,6 +9,7 @@ import dev.vavateam1.dto.OrderItemDto;
 import dev.vavateam1.model.OrderStatus;
 import dev.vavateam1.service.AuthService;
 import dev.vavateam1.service.KitchenService;
+import dev.vavateam1.util.I18n;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -30,6 +31,9 @@ public class KitchenController {
     @FXML
     private VBox thirdColumn;
 
+    @FXML
+    private Button languageButton;
+
     private final AuthService authService;
     private final KitchenService kitchenService;
     private final ViewSwitcher viewSwitcher;
@@ -43,7 +47,16 @@ public class KitchenController {
 
     @FXML
     public void initialize() {
+        if (languageButton != null) {
+            languageButton.setText(I18n.nextLanguageCode());
+        }
         refreshOrders();
+    }
+
+    @FXML
+    private void switchLanguage() throws Exception {
+        I18n.toggleLocale();
+        viewSwitcher.reloadCurrentView();
     }
 
     private void refreshOrders() {
@@ -89,10 +102,10 @@ public class KitchenController {
         header.getStyleClass().add(getStatusStyleClass(order.getStatus()));
 
         VBox titleBox = new VBox(2);
-        Label tableLabel = new Label("Table " + order.getTableNumber());
+        Label tableLabel = new Label(I18n.t("kitchen.table", String.valueOf(order.getTableNumber())));
         tableLabel.getStyleClass().add("chef-card-title");
 
-        Label orderLabel = new Label("Order #" + order.getId());
+        Label orderLabel = new Label(I18n.t("kitchen.order", String.valueOf(order.getId())));
         orderLabel.getStyleClass().add("chef-card-subtitle");
 
         titleBox.getChildren().addAll(tableLabel, orderLabel);
@@ -101,7 +114,7 @@ public class KitchenController {
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
         if (order.getStatus() == OrderStatus.DONE) {
-            Button deleteButton = new Button("DEL");
+            Button deleteButton = new Button(I18n.t("kitchen.deleteShort"));
             deleteButton.getStyleClass().add("chef-delete-button");
             deleteButton.setOnAction(event -> {
                 kitchenService.deleteDoneOrder(order.getId());
@@ -118,7 +131,7 @@ public class KitchenController {
             itemsBox.getChildren().add(createOrderItem(item, order.getStatus()));
         }
 
-        Button statusButton = new Button("Close order");
+        Button statusButton = new Button(I18n.t("kitchen.closeOrder"));
         statusButton.getStyleClass().add("chef-status-button");
         boolean canCloseOrder = order.getStatus() == OrderStatus.DONE;
         statusButton.setDisable(!canCloseOrder);
@@ -163,7 +176,7 @@ public class KitchenController {
             itemBox.getChildren().add(noteLabel);
         }
 
-        Button doneButton = new Button("Done");
+        Button doneButton = new Button(I18n.t("common.done"));
         doneButton.getStyleClass().add("chef-item-done-button");
         boolean itemDone = item.getOrderItem() != null && OrderStatus.DONE.equals(item.getOrderItem().getStatus());
         doneButton.setDisable(itemDone);
@@ -185,10 +198,10 @@ public class KitchenController {
         emptyState.setPadding(new Insets(32));
         emptyState.getStyleClass().add("chef-empty-state");
 
-        Label title = new Label("No kitchen orders");
+        Label title = new Label(I18n.t("kitchen.noOrders"));
         title.getStyleClass().add("chef-empty-title");
 
-        Label subtitle = new Label("Done orders deleted with DEL will disappear from the board.");
+        Label subtitle = new Label(I18n.t("kitchen.doneOrdersDeleted"));
         subtitle.getStyleClass().add("chef-empty-subtitle");
         subtitle.setWrapText(true);
 
@@ -206,9 +219,9 @@ public class KitchenController {
 
     private String getStatusButtonText(OrderStatus status) {
         return switch (status) {
-            case RECEIVED -> "Start";
-            case IN_PROGRESS -> "Mark done";
-            case DONE, SERVED -> "Done";
+            case RECEIVED -> I18n.t("kitchen.start");
+            case IN_PROGRESS -> I18n.t("kitchen.markDone");
+            case DONE, SERVED -> I18n.t("common.done");
         };
     }
 

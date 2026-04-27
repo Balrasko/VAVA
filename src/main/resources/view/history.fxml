@@ -42,12 +42,12 @@
                                 onAction="#closeDetail"
                                 style="-fx-background-color:transparent; -fx-text-fill:-app-text; -fx-font-size:14; -fx-cursor:hand;" />
 
-                        <Button text="refund"
+                        <Button text="%history.refund"
                                 fx:id="refundButton"
                                 onAction="#refundSelectedOrder"
                                 style="-fx-background-color:-app-delete; -fx-text-fill:-app-foreground; -fx-background-radius:20;" />
 
-                        <Button text="print copy"
+                        <Button text="%history.printCopy"
                                 fx:id="printCopyButton"
                                 onAction="#printCopy"
                                 style="-fx-background-color:-app-add; -fx-text-fill:-app-foreground; -fx-background-radius:20;" />
