@@ -53,6 +53,8 @@ public class MenuController {
     @FXML
     private TextField discountField;
     @FXML
+    private TextField pluCodeField;
+    @FXML
     private MenuButton ingredientsButton;
     @FXML
     private TextField categoryNameField;
@@ -78,6 +80,7 @@ public class MenuController {
     private int selectedCategoryId = -1;
     private int editingMenuItemId = -1;
     private int editingCategoryId = -1;
+    private Integer editingMenuItemCode;
 
     @Inject
     public MenuController(MenuService menuService, InventoryIngredientDao inventoryIngredientDao) {
@@ -142,11 +145,12 @@ public class MenuController {
         }
 
         int categoryId = resolveCategoryId(categoryField.getValue());
+        int itemCode = resolveMenuItemCode();
 
         MenuItem item = new MenuItem(
                 editingMenuItemId > 0 ? editingMenuItemId : 0,
                 categoryId,
-                editingMenuItemId > 0 ? 0 : generateItemCode(),
+            itemCode,
                 nameField.getText(),
                 parseDecimal(priceField.getText()),
                 true,
@@ -220,7 +224,41 @@ public class MenuController {
             setFieldError(discountField, false);
         }
 
+        String pluCodeText = pluCodeField.getText() != null ? pluCodeField.getText().trim() : "";
+        if (!pluCodeText.isEmpty()) {
+            try {
+                int pluCode = Integer.parseInt(pluCodeText);
+                boolean duplicatePluCode = menuService.getMenuItems().stream()
+                        .anyMatch(item -> item.getItemCode() == pluCode && item.getId() != editingMenuItemId);
+
+                if (pluCode <= 0 || duplicatePluCode) {
+                    setFieldError(pluCodeField, true);
+                    valid = false;
+                } else {
+                    setFieldError(pluCodeField, false);
+                }
+            } catch (NumberFormatException e) {
+                setFieldError(pluCodeField, true);
+                valid = false;
+            }
+        } else {
+            setFieldError(pluCodeField, false);
+        }
+
         return valid;
+    }
+
+    private int resolveMenuItemCode() {
+        String pluCodeText = pluCodeField.getText() != null ? pluCodeField.getText().trim() : "";
+        if (!pluCodeText.isEmpty()) {
+            return Integer.parseInt(pluCodeText);
+        }
+
+        if (editingMenuItemCode != null && editingMenuItemCode > 0) {
+            return editingMenuItemCode;
+        }
+
+        return generateItemCode();
     }
 
     private void setFieldError(TextField field, boolean error) {
@@ -292,6 +330,7 @@ public class MenuController {
         menuFormPanel.setVisible(false);
         menuFormPanel.setManaged(false);
         editingMenuItemId = -1;
+        editingMenuItemCode = null;
         updateFormMode();
     }
 
@@ -341,6 +380,7 @@ public class MenuController {
     private void clearForm() {
         nameField.clear();
         descriptionField.clear();
+        pluCodeField.clear();
         if (categoryField != null) {
             categoryField.getSelectionModel().clearSelection();
             categoryField.setValue(null);
@@ -353,6 +393,8 @@ public class MenuController {
             });
             updateIngredientsButtonText();
         }
+
+        editingMenuItemCode = null;
     }
 
     private void updateFormMode() {
@@ -403,8 +445,10 @@ public class MenuController {
 
     private void openEditForm(MenuItem item) {
         editingMenuItemId = item.getId();
+        editingMenuItemCode = item.getItemCode();
         nameField.setText(item.getName());
         descriptionField.setText(item.getDescription());
+        pluCodeField.setText(item.getItemCode() > 0 ? String.valueOf(item.getItemCode()) : "");
         categoryField.setValue(resolveCategoryName(item.getCategoryId()));
         priceField.setText(item.getPrice() != null ? item.getPrice().toString() : "");
         discountField.setText(item.getDiscount() != null ? item.getDiscount().toString() : "");
