@@ -19,23 +19,23 @@
     <!-- MENU ITEMS -->
     <HBox styleClass="sidebar-item"
           onMouseClicked="#showTableView">
-        <Label text="Tables" styleClass="sidebar-label"/>
+        <Label text="%nav.tables" styleClass="sidebar-label"/>
     </HBox>
 
     <HBox styleClass="sidebar-item"
           onMouseClicked="#showClosing">
-        <Label text="Closing" styleClass="sidebar-label"/>
+        <Label text="%nav.closing" styleClass="sidebar-label"/>
     </HBox>
 
     <HBox styleClass="sidebar-item"
           onMouseClicked="#showHistory">
-        <Label text="History" styleClass="sidebar-label"/>
+        <Label text="%nav.history" styleClass="sidebar-label"/>
     </HBox>
 
         <HBox fx:id="managerPanelItem"
           styleClass="sidebar-item"
           onMouseClicked="#showManager">
-        <Label text="Manager panel" styleClass="sidebar-label"/>
+        <Label text="%nav.managerPanel" styleClass="sidebar-label"/>
     </HBox>
 
     <!-- SPACER -->
@@ -48,15 +48,15 @@
                    text="U"
                    styleClass="sidebar-avatar-label"/>
         </StackPane>
-        <Label text="Logged in as"
+        <Label text="%nav.loggedInAs"
                styleClass="sidebar-profile-caption"/>
         <Label fx:id="loggedInRoleLabel"
-               text="Waiter"
+               text="%role.waiter"
                styleClass="sidebar-profile-role"/>
     </VBox>
 
     <!-- LOGOUT -->
-    <Button text="Logout"
+    <Button text="%nav.logout"
             onAction="#logout"
             maxWidth="1.7976931348623157E308"
             styleClass="sidebar-logout-button"/>
@@ -83,6 +83,10 @@
                   minHeight="56.0"
                   maxHeight="56.0"
                   alignment="CENTER_LEFT"/>
+            <Button fx:id="languageButton"
+                    text="SK"
+                    onAction="#switchLanguage"
+                    styleClass="nav-tab" />
           </HBox>
         </children>
       </VBox>

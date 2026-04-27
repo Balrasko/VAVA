@@ -81,7 +81,7 @@
                                                     <children>
                                                         <Region HBox.hgrow="ALWAYS" />
                                                         <Button fx:id="editCategoryButton"
-                                                                text="Edit category"
+                                                                text="%menu.editCategory"
                                                                 onAction="#onEditCategory"
                                                             minHeight="46"
                                                             prefHeight="46"
@@ -89,7 +89,7 @@
                                                                 wrapText="true"
                                                                 styleClass="secondary-action-button" />
                                                         <Button fx:id="addMenuButton"
-                                                                text="Add item"
+                                                                text="%menu.addItem"
                                                                 onAction="#onAddMenu"
                                                             minHeight="46"
                                                             prefHeight="46"
@@ -133,13 +133,13 @@
                                         </HBox>
 
                                         <Label fx:id="menuFormTitle"
-                                               text="Add item"
+                                               text="%menu.addItem"
                                                wrapText="true"
                                                styleClass="menu-category-title" />
 
                                         <VBox spacing="8">
                                             <children>
-                                                <Label text="Name" styleClass="form-label" />
+                                                <Label text="%common.name" styleClass="form-label" />
                                                 <TextField fx:id="nameField"
                                                            maxWidth="Infinity"
                                                            styleClass="form-input" />
@@ -148,7 +148,7 @@
 
                                         <VBox spacing="8">
                                             <children>
-                                                <Label text="Description" styleClass="form-label" />
+                                                <Label text="%menu.description" styleClass="form-label" />
                                                 <TextField fx:id="descriptionField"
                                                            maxWidth="Infinity"
                                                            styleClass="form-input" />
@@ -157,9 +157,9 @@
 
                                         <VBox spacing="8">
                                             <children>
-                                                <Label text="Ingredients" styleClass="form-label" />
+                                                <Label text="%menu.ingredients" styleClass="form-label" />
                                                 <MenuButton fx:id="ingredientsButton"
-                                                            text="Select ingredients..."
+                                                            text="%menu.selectIngredients"
                                                             maxWidth="Infinity"
                                                             styleClass="form-input" />
                                             </children>
@@ -167,7 +167,7 @@
 
                                         <VBox spacing="8">
                                             <children>
-                                                <Label text="Category" styleClass="form-label" />
+                                                <Label text="%common.category" styleClass="form-label" />
                                                 <ComboBox fx:id="categoryField"
                                                           maxWidth="Infinity"
                                                           styleClass="form-input" />
@@ -178,7 +178,7 @@
                                             <children>
                                                 <VBox spacing="8" HBox.hgrow="ALWAYS">
                                                     <children>
-                                                        <Label text="Price" styleClass="form-label" />
+                                                        <Label text="%menu.price" styleClass="form-label" />
                                                         <TextField fx:id="priceField"
                                                                    maxWidth="Infinity"
                                                                    styleClass="form-input" />
@@ -187,7 +187,7 @@
 
                                                 <VBox spacing="8" HBox.hgrow="ALWAYS">
                                                     <children>
-                                                        <Label text="Discount" styleClass="form-label" />
+                                                        <Label text="%common.discount" styleClass="form-label" />
                                                         <TextField fx:id="discountField"
                                                                    maxWidth="Infinity"
                                                                    styleClass="form-input" />
@@ -202,14 +202,14 @@
                                             <children>
                                                 <Region HBox.hgrow="ALWAYS" />
                                                 <Button fx:id="deleteMenuButton"
-                                                        text="Delete"
+                                                        text="%common.delete"
                                                         visible="false"
                                                         managed="false"
                                                         wrapText="false"
                                                         onAction="#onDeleteMenu"
                                                     styleClass="delete-action-button" />
                                                 <Button fx:id="submitMenuButton"
-                                                        text="Add menu"
+                                                        text="%menu.addMenu"
                                                         onAction="#onSubmitMenu"
                                                         wrapText="false"
                                                         styleClass="green-action-button" />
@@ -247,13 +247,13 @@
                                         </HBox>
 
                                         <Label fx:id="categoryFormTitle"
-                                               text="Add category"
+                                               text="%menu.addCategory"
                                                wrapText="true"
                                                styleClass="menu-category-title" />
 
                                         <VBox spacing="8">
                                             <children>
-                                                <Label text="Category name" styleClass="form-label" />
+                                                <Label text="%menu.categoryName" styleClass="form-label" />
                                                 <TextField fx:id="categoryNameField"
                                                            maxWidth="Infinity"
                                                            styleClass="form-input" />
@@ -266,14 +266,14 @@
                                             <children>
                                                 <Region HBox.hgrow="ALWAYS" />
                                                 <Button fx:id="deleteCategoryButton"
-                                                        text="Delete"
+                                                        text="%common.delete"
                                                         visible="false"
                                                         managed="false"
                                                         wrapText="false"
                                                         onAction="#onDeleteCategory"
                                                     styleClass="delete-action-button" />
                                                 <Button fx:id="submitCategoryButton"
-                                                        text="Add category"
+                                                        text="%menu.addCategory"
                                                         onAction="#onSubmitCategory"
                                                         wrapText="false"
                                                         styleClass="green-action-button" />

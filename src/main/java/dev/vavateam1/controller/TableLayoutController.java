@@ -15,6 +15,7 @@ import com.google.inject.Inject;
 import dev.vavateam1.model.Location;
 import dev.vavateam1.model.Table;
 import dev.vavateam1.service.TableService;
+import dev.vavateam1.util.I18n;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -174,7 +175,7 @@ public class TableLayoutController {
         dragging = true;
         snapshotOriginalPositions();
         pendingDeletedTableIds.clear();
-        dragButton.setText("Save");
+        dragButton.setText(I18n.t("common.save"));
         setEditModeActionButtonsVisible(true);
         setAddTableButtonVisible(false);
         setZoneActionButtonsVisible(false);
@@ -184,7 +185,7 @@ public class TableLayoutController {
 
     private void endDragMode() {
         dragging = false;
-        dragButton.setText("Enter Edit Mode");
+        dragButton.setText(I18n.t("tableLayout.enterEditMode"));
         setEditModeActionButtonsVisible(false);
         setAddTableButtonVisible(true);
         setZoneActionButtonsVisible(true);
@@ -276,9 +277,9 @@ public class TableLayoutController {
         selectedTable = null;
         selectedZone = null;
 
-        layoutFormTitle.setText("Add table");
-        layoutFormHint.setText("Create a table in the active zone.");
-        submitLayoutButton.setText("Add table");
+        layoutFormTitle.setText(I18n.t("tableLayout.addTable"));
+        layoutFormHint.setText(I18n.t("tableLayout.addTableHint"));
+        submitLayoutButton.setText(I18n.t("tableLayout.addTable"));
 
         showTableFields(true);
         showZoneFields(false);
@@ -296,9 +297,9 @@ public class TableLayoutController {
         selectedTable = null;
         selectedZone = null;
 
-        layoutFormTitle.setText("Add zone");
-        layoutFormHint.setText("Create a new zone tab.");
-        submitLayoutButton.setText("Add zone");
+        layoutFormTitle.setText(I18n.t("tableLayout.addZone"));
+        layoutFormHint.setText(I18n.t("tableLayout.addZoneHint"));
+        submitLayoutButton.setText(I18n.t("tableLayout.addZone"));
 
         showTableFields(false);
         showZoneFields(true);
@@ -313,9 +314,9 @@ public class TableLayoutController {
         selectedTable = null;
         selectedZone = zone;
 
-        layoutFormTitle.setText("Edit zone");
-        layoutFormHint.setText("Editing zone " + zone.getName() + ".");
-        submitLayoutButton.setText("Save zone");
+        layoutFormTitle.setText(I18n.t("tableLayout.editZone"));
+        layoutFormHint.setText(I18n.t("tableLayout.editZoneHint", zone.getName()));
+        submitLayoutButton.setText(I18n.t("tableLayout.saveZone"));
 
         showTableFields(false);
         showZoneFields(true);
@@ -595,7 +596,7 @@ public class TableLayoutController {
         box.setPrefSize(160, 80);
         box.getStyleClass().add("table-card");
 
-        String locationName = locationNamesById.getOrDefault(table.getLocationId(), "Zone");
+        String locationName = locationNamesById.getOrDefault(table.getLocationId(), I18n.t("tableLayout.fallbackZone"));
         Label label = new Label(locationName + " " + table.getTableNumber());
         label.getStyleClass().add("table-card-label");
         box.getChildren().add(label);
@@ -698,9 +699,9 @@ public class TableLayoutController {
         selectedTable = table;
         selectedZone = null;
 
-        layoutFormTitle.setText("Edit table");
-        layoutFormHint.setText("Editing table " + table.getTableNumber() + ".");
-        submitLayoutButton.setText("Save table");
+        layoutFormTitle.setText(I18n.t("tableLayout.editTable"));
+        layoutFormHint.setText(I18n.t("tableLayout.editTableHint", String.valueOf(table.getTableNumber())));
+        submitLayoutButton.setText(I18n.t("tableLayout.saveTable"));
 
         showTableFields(true);
         showZoneFields(false);

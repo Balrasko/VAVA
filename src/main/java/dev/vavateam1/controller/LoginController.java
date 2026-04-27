@@ -5,6 +5,7 @@ import java.io.IOException;
 import com.google.inject.Inject;
 
 import dev.vavateam1.service.AuthService;
+import dev.vavateam1.util.I18n;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -33,6 +34,22 @@ public class LoginController {
     @FXML
     private Button loginButton;
 
+    @FXML
+    private Button languageButton;
+
+    @FXML
+    private void initialize() {
+        if (languageButton != null) {
+            languageButton.setText(I18n.nextLanguageCode());
+        }
+    }
+
+    @FXML
+    private void switchLanguage() throws IOException {
+        I18n.toggleLocale();
+        viewSwitcher.reloadCurrentView();
+    }
+
     // https://emailregex.com/index.html
     private static final java.util.regex.Pattern EMAIL_PATTERN = java.util.regex.Pattern
             .compile(
@@ -44,7 +61,7 @@ public class LoginController {
         String password = passwordField.getText();
 
         if (!EMAIL_PATTERN.matcher(email).matches()) {
-            errorLabel.setText("Please enter a valid email address");
+            errorLabel.setText(I18n.t("login.invalidEmail"));
             return;
         }
 
@@ -53,7 +70,7 @@ public class LoginController {
         if (authService.login(email, password)) {
             viewSwitcher.SetView("/view/dashboard.fxml");
         } else {
-            errorLabel.setText("Invalid credentials");
+            errorLabel.setText(I18n.t("login.invalidCredentials"));
             loginButton.setDisable(false);
         }
     }

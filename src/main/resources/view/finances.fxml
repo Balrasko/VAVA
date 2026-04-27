@@ -36,7 +36,7 @@
                                     alignment="CENTER_LEFT"
                                     style="-fx-background-color:-app-foreground; -fx-background-radius:16; -fx-padding:8 14 8 14;">
                                     <children>
-                                        <Label text="Total sales"
+                                        <Label text="%finance.totalSales"
                                             style="-fx-text-fill:-app-text; -fx-font-size:12px;" />
                                         <Label fx:id="dailySalesLabel"
                                             text="2453.65"
@@ -49,7 +49,7 @@
                                     alignment="CENTER_LEFT"
                                     style="-fx-background-color:-app-foreground; -fx-background-radius:16; -fx-padding:8 14 8 14;">
                                     <children>
-                                        <Label text="Sold items"
+                                        <Label text="%finance.soldItems"
                                             style="-fx-text-fill:-app-text; -fx-font-size:12px;" />
                                         <Label fx:id="soldItemsTotalLabel"
                                             text="45"
@@ -59,7 +59,7 @@
 
                                 <Region HBox.hgrow="ALWAYS" />
 
-                                <Button text="Export finance report"
+                                <Button text="%finance.exportReport"
                                         onAction="#onExportFinanceReport"
                                         style="-fx-background-color:-app-add; -fx-text-fill:-app-text; -fx-background-radius:24; -fx-padding:10 24 10 24; -fx-cursor:hand; -fx-font-size:14;" />
                             </children>
@@ -68,11 +68,11 @@
                         <HBox spacing="12" alignment="CENTER_LEFT">
                             <children>
                                 <TextField fx:id="searchField"
-                                        promptText="Search item..."
+                                        promptText="%finance.search"
                                         onAction="#onApplyFilter"
                                         prefWidth="300"
                                         style="-fx-background-color:-app-foreground; -fx-background-radius:24; -fx-border-radius:24; -fx-padding:10 16 10 16; -fx-font-size:14; -fx-text-fill:-app-text; -fx-prompt-text-fill:-app-text-muted;" />
-                                <Button text="Filter"
+                                <Button text="%common.filter"
                                         onAction="#onToggleFilterPanel"
                                         style="-fx-background-color:-app-foreground; -fx-text-fill:-app-text; -fx-background-radius:24; -fx-border-color:-app-blue-border; -fx-border-radius:24; -fx-padding:10 20 10 20; -fx-cursor:hand;" />
                             </children>
@@ -86,33 +86,33 @@
                             <children>
                                 <HBox spacing="16" alignment="CENTER_LEFT">
                                     <children>
-                                        <Label text="Category:"
+                                        <Label text="%finance.categoryLabel"
                                                style="-fx-font-size:13; -fx-text-fill:-app-text;" />
                                         <ComboBox fx:id="categoryCombo"
-                                                  promptText="All categories"
+                                                  promptText="%finance.allCategories"
                                                   prefWidth="200"
                                                   style="-fx-background-radius:12; -fx-font-size:13;" />
 
-                                        <Label text="Sold from:"
+                                        <Label text="%finance.soldFrom"
                                                style="-fx-font-size:13; -fx-text-fill:-app-text;" />
                                         <DatePicker fx:id="fromDatePicker"
-                                                    promptText="From date"
+                                                    promptText="%finance.fromDate"
                                                     prefWidth="160"
                                                     style="-fx-font-size:13;" />
 
-                                        <Label text="to:"
+                                        <Label text="%finance.toLabel"
                                                style="-fx-font-size:13; -fx-text-fill:-app-text;" />
                                         <DatePicker fx:id="toDatePicker"
-                                                    promptText="To date"
+                                                    promptText="%finance.toDate"
                                                     prefWidth="160"
                                                     style="-fx-font-size:13;" />
 
                                         <Region HBox.hgrow="ALWAYS" />
 
-                                        <Button text="Apply"
+                                        <Button text="%common.apply"
                                                 onAction="#onApplyFilter"
                                                 style="-fx-background-color:-app-blue-border; -fx-text-fill:-app-foreground; -fx-background-radius:20; -fx-padding:8 20 8 20; -fx-cursor:hand; -fx-font-size:13;" />
-                                        <Button text="Clear"
+                                        <Button text="%common.clear"
                                                 onAction="#onClearFilter"
                                                 style="-fx-background-color:-app-background; -fx-text-fill:-app-text; -fx-background-radius:20; -fx-border-color:-app-border; -fx-border-radius:20; -fx-padding:8 20 8 20; -fx-cursor:hand; -fx-font-size:13;" />
                                     </children>
@@ -130,25 +130,25 @@
                             </columnConstraints>
                             <children>
                                 <Label fx:id="itemIdHeaderLabel"
-                                    text="Item ID"
+                                    text="%finance.itemId"
                                     onMouseClicked="#onSortByItemId"
                                     GridPane.columnIndex="0"
                                     GridPane.halignment="CENTER"
                                     style="-fx-font-weight:bold; -fx-font-size:14px; -fx-text-fill:-app-text; -fx-cursor:hand;" />
                                 <Label fx:id="itemNameHeaderLabel"
-                                    text="Name"
+                                    text="%common.name"
                                     onMouseClicked="#onSortByName"
                                     GridPane.columnIndex="1"
                                     GridPane.halignment="CENTER"
                                     style="-fx-font-weight:bold; -fx-font-size:14px; -fx-text-fill:-app-text; -fx-cursor:hand;" />
                                 <Label fx:id="soldPiecesHeaderLabel"
-                                    text="Sold pieces"
+                                    text="%finance.soldPieces"
                                     onMouseClicked="#onSortBySoldPieces"
                                     GridPane.columnIndex="2"
                                     GridPane.halignment="CENTER"
                                     style="-fx-font-weight:bold; -fx-font-size:14px; -fx-text-fill:-app-text; -fx-cursor:hand;" />
                                 <Label fx:id="pricePerPieceHeaderLabel"
-                                    text="Price per piece"
+                                    text="%finance.pricePerPiece"
                                     onMouseClicked="#onSortByPricePerPiece"
                                     GridPane.columnIndex="3"
                                     GridPane.halignment="CENTER"

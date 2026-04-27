@@ -10,6 +10,7 @@ import com.google.inject.Inject;
 import dev.vavateam1.model.Location;
 import dev.vavateam1.model.Table;
 import dev.vavateam1.service.TableService;
+import dev.vavateam1.util.I18n;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -82,7 +83,7 @@ public class TablesController {
         StackPane box = new StackPane();
         box.setPrefSize(160, 80);
 
-        String locationName = locationNamesById.getOrDefault(table.getLocationId(), "Zone");
+        String locationName = locationNamesById.getOrDefault(table.getLocationId(), I18n.t("tableLayout.fallbackZone"));
         Label label = new Label(locationName + " " + table.getTableNumber());
 
         box.getChildren().add(label);

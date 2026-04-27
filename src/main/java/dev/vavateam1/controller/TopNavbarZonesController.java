@@ -9,6 +9,7 @@ import com.google.inject.Inject;
 
 import dev.vavateam1.model.Location;
 import dev.vavateam1.service.TableService;
+import dev.vavateam1.util.I18n;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -48,7 +49,7 @@ public class TopNavbarZonesController {
 
         try {
             for (Location location : locations) {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/top-navbar-zone-item.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/top-navbar-zone-item.fxml"), I18n.bundle());
                 Node node = loader.load();
 
                 Button zoneButton = (Button) node.lookup("#zoneButton");

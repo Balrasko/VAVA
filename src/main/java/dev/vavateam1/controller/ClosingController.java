@@ -11,6 +11,7 @@ import dev.vavateam1.report.ClosingSummary;
 import dev.vavateam1.model.User;
 import dev.vavateam1.service.AuthService;
 import dev.vavateam1.service.ClosingService;
+import dev.vavateam1.util.I18n;
 import javafx.fxml.FXML;
 import javafx.print.PrinterJob;
 import javafx.scene.control.Alert;
@@ -99,20 +100,20 @@ public class ClosingController {
         boolean created = closingService.closeDay(currentUser.getId());
         if (created) {
             showInfo(
-                    "Closing created",
-                    "Closing for " + currentSummary.businessDate().format(REPORT_DATE_FORMAT) + " was saved.");
+                    I18n.t("closing.created"),
+                    I18n.t("closing.createdMessage", currentSummary.businessDate().format(REPORT_DATE_FORMAT)));
             return;
         }
 
         showWarning(
-                "Closing already exists",
-                "Closing for " + currentSummary.businessDate().format(REPORT_DATE_FORMAT) + " has already been saved.");
+                I18n.t("closing.alreadyExists"),
+                I18n.t("closing.alreadyExistsMessage", currentSummary.businessDate().format(REPORT_DATE_FORMAT)));
     }
 
     @FXML
     private void onPrint() {
         if (currentSummary == null) {
-            showWarning("Nothing to print", "Closing summary is not loaded.");
+            showWarning(I18n.t("closing.nothingToPrint"), I18n.t("closing.summaryNotLoaded"));
             return;
         }
 
@@ -130,12 +131,12 @@ public class ClosingController {
 
     @FXML
     private void onCashFloat() {
-        handleAmountAction("Insert cash float", (userId, amount) -> closingService.addCashFloat(userId, amount));
+        handleAmountAction(I18n.t("closing.insertCashFloat"), (userId, amount) -> closingService.addCashFloat(userId, amount));
     }
 
     @FXML
     private void onWithdrawal() {
-        handleAmountAction("Withdraw cash", (userId, amount) -> closingService.withdrawCash(userId, amount));
+        handleAmountAction(I18n.t("closing.withdrawCash"), (userId, amount) -> closingService.withdrawCash(userId, amount));
     }
 
     private void reloadSummary() {
@@ -151,7 +152,7 @@ public class ClosingController {
         TextInputDialog dialog = new TextInputDialog();
         dialog.setTitle(title);
         dialog.setHeaderText(null);
-        dialog.setContentText("Amount:");
+        dialog.setContentText(I18n.t("closing.amount"));
 
         Optional<String> result = dialog.showAndWait();
         if (result.isEmpty()) {
@@ -163,16 +164,16 @@ public class ClosingController {
             currentSummary = action.execute(currentUser.getId(), amount);
             setClosingSummary(currentSummary);
         } catch (NumberFormatException e) {
-            showError("Invalid amount", "Please enter a valid numeric amount.");
+            showError(I18n.t("closing.invalidAmount"), I18n.t("closing.invalidAmountMessage"));
         } catch (IllegalArgumentException e) {
-            showError("Invalid amount", e.getMessage());
+            showError(I18n.t("closing.invalidAmount"), I18n.t("closing.amountGreaterThanZero"));
         }
     }
 
     private void exportClosingReport() {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Save closing report");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Text files", "*.txt"));
+        fileChooser.setTitle(I18n.t("closing.saveReport"));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(I18n.t("file.type.text"), "*.txt"));
         fileChooser.setInitialFileName("closing-" + currentSummary.businessDate().format(REPORT_DATE_FORMAT) + ".txt");
 
         var selectedFile = fileChooser.showSaveDialog(resolveWindow());
@@ -188,30 +189,23 @@ public class ClosingController {
     }
 
     private String buildPrintableReport() {
-        return """
-                Closing report
-                Date: %s
-
-                Total paid: %s
-                Total tips: %s
-                Grand total: %s
-                Cash float: %s
-                Cash: %s
-                Card: %s
-                """.formatted(
-                currentSummary.businessDate().format(REPORT_DATE_FORMAT),
-                formatMoney(currentSummary.totalPaid()),
-                formatMoney(currentSummary.totalTips()),
-                formatMoney(currentSummary.grandTotal()),
-                formatMoney(currentSummary.cashFloat()),
-                formatMoney(currentSummary.cash()),
-                formatMoney(currentSummary.card()));
+        return String.join(System.lineSeparator(),
+                I18n.t("closing.reportTitle"),
+                I18n.t("closing.date", currentSummary.businessDate().format(REPORT_DATE_FORMAT)),
+                "",
+                I18n.t("closing.totalPaid") + " " + formatMoney(currentSummary.totalPaid()),
+                I18n.t("closing.totalTips") + " " + formatMoney(currentSummary.totalTips()),
+                I18n.t("closing.grandTotal", formatMoney(currentSummary.grandTotal())),
+                I18n.t("closing.cashFloat") + ": " + formatMoney(currentSummary.cashFloat()),
+                I18n.t("common.cash") + ": " + formatMoney(currentSummary.cash()),
+                I18n.t("common.card") + ": " + formatMoney(currentSummary.card()),
+                "");
     }
 
     private User requireCurrentUser() {
         User currentUser = authService.getUser();
         if (currentUser == null) {
-            showError("User session missing", "No logged-in user was found.");
+            showError(I18n.t("closing.userSessionMissing"), I18n.t("closing.noLoggedInUser"));
         }
         return currentUser;
     }

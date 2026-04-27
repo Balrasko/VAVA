@@ -4,6 +4,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
 <VBox xmlns:fx="http://javafx.com/fxml"
@@ -12,7 +13,7 @@
     styleClass="chef-board-root"
     style="-fx-padding: 20;">
 
-    <Label text="Kitchen board"
+    <Label text="%kitchen.board"
         styleClass="chef-board-title" />
 
     <ScrollPane fitToWidth="true"
@@ -40,8 +41,13 @@
     </ScrollPane>
 
     <HBox alignment="CENTER_LEFT">
-        <Button text="Logout"
+        <Button text="%nav.logout"
             onAction="#handleLogout"
+            styleClass="chef-logout-button" />
+        <Region HBox.hgrow="ALWAYS" />
+        <Button fx:id="languageButton"
+            text="SK"
+            onAction="#switchLanguage"
             styleClass="chef-logout-button" />
     </HBox>
 

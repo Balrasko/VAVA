@@ -19,6 +19,7 @@ import dev.vavateam1.dao.FinanceDao;
 import dev.vavateam1.model.Category;
 import dev.vavateam1.report.FinanceItemReport;
 import dev.vavateam1.report.FinanceReport;
+import dev.vavateam1.util.I18n;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
 import javafx.scene.control.Alert;
@@ -134,13 +135,13 @@ public class FinancesController {
     @FXML
     private void onExportFinanceReport() {
         if (currentReport == null) {
-            showError("Finance report export failed", "There is no finance report loaded.");
+            showError(I18n.t("finance.exportFailed"), I18n.t("finance.noReportLoaded"));
             return;
         }
 
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Export finance report");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("XML files", "*.xml"));
+        fileChooser.setTitle(I18n.t("finance.exportTitle"));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(I18n.t("file.type.xml"), "*.xml"));
         fileChooser.setInitialFileName("finance-report-" + currentReport.reportDate().format(FILE_DATE_FORMAT) + ".xml");
 
         Window window = itemsContainer.getScene() != null ? itemsContainer.getScene().getWindow() : null;
@@ -246,10 +247,10 @@ public class FinancesController {
     }
 
     private void refreshSortHeaderLabels() {
-        itemIdHeaderLabel.setText(buildHeaderText("Item ID", SortField.ITEM_ID));
-        itemNameHeaderLabel.setText(buildHeaderText("Name", SortField.NAME));
-        soldPiecesHeaderLabel.setText(buildHeaderText("Sold pieces", SortField.SOLD_PIECES));
-        pricePerPieceHeaderLabel.setText(buildHeaderText("Price per piece", SortField.PRICE_PER_PIECE));
+        itemIdHeaderLabel.setText(buildHeaderText(I18n.t("finance.itemId"), SortField.ITEM_ID));
+        itemNameHeaderLabel.setText(buildHeaderText(I18n.t("common.name"), SortField.NAME));
+        soldPiecesHeaderLabel.setText(buildHeaderText(I18n.t("finance.soldPieces"), SortField.SOLD_PIECES));
+        pricePerPieceHeaderLabel.setText(buildHeaderText(I18n.t("finance.pricePerPiece"), SortField.PRICE_PER_PIECE));
 
         itemIdHeaderLabel.setStyle(HEADER_LABEL_STYLE);
         itemNameHeaderLabel.setStyle(HEADER_LABEL_STYLE);
@@ -297,7 +298,7 @@ public class FinancesController {
         try {
             return Pattern.compile(rawPattern, Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
         } catch (PatternSyntaxException e) {
-            showError("Invalid regex", e.getDescription());
+            showError(I18n.t("finance.invalidRegex"), e.getDescription());
             return activeSearchPattern;
         }
     }
@@ -359,7 +360,7 @@ public class FinancesController {
         LocalDate fromDate = fromDatePicker.getValue();
         LocalDate toDate = toDatePicker.getValue();
         if (fromDate != null && toDate != null && fromDate.isAfter(toDate)) {
-            showError("Invalid date range", "\"Sold from\" date must be before or equal to \"to\" date.");
+            showError(I18n.t("finance.invalidDateRange"), I18n.t("finance.invalidDateRangeMessage"));
             return false;
         }
 
@@ -404,7 +405,7 @@ public class FinancesController {
 
     private record CategoryFilterOption(Integer id, String label) {
         private static CategoryFilterOption all() {
-            return new CategoryFilterOption(null, "All categories");
+            return new CategoryFilterOption(null, I18n.t("finance.allCategories"));
         }
 
         @Override

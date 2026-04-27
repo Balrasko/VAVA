@@ -38,6 +38,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import dev.vavateam1.service.OrderService;
+import dev.vavateam1.util.I18n;
 import com.google.inject.Inject;
 
 public class OrderController {
@@ -115,7 +116,7 @@ public class OrderController {
         this.table = table;
         this.dashboardController = dashboardController;
 
-        this.tableLabel.setText("Table " + table.getTableNumber());
+        this.tableLabel.setText(I18n.t("order.table", String.valueOf(table.getTableNumber())));
 
         this.totalLabelText.setVisible(splitBillMode);
         this.totalLabel.setVisible(splitBillMode);
@@ -369,7 +370,7 @@ public class OrderController {
         });
 
         // Note button
-        Button noteBtn = new Button(item.getNote() == null ? "Add note" : "Edit note");
+        Button noteBtn = new Button(item.getNote() == null ? I18n.t("order.addNote") : I18n.t("order.editNote"));
         noteBtn.getStyleClass().add("note-button");
         noteBtn.setMaxWidth(50);
 
@@ -379,10 +380,10 @@ public class OrderController {
         // Editable TextField
         TextField noteField = new TextField();
         noteField.setText(item.getNote() == null ? "" : item.getNote());
-        noteField.setPromptText("Enter note...");
+        noteField.setPromptText(I18n.t("order.enterNote"));
 
         // Save button for the text
-        Button noteSaveBtn = new Button("Save");
+        Button noteSaveBtn = new Button(I18n.t("common.save"));
         noteSaveBtn.getStyleClass().add("note-button");
 
         HBox noteBox = new HBox(5, noteField, noteSaveBtn);
@@ -421,14 +422,14 @@ public class OrderController {
         });
 
         // Discount
-        Button discountBtn = new Button("Discount");
+        Button discountBtn = new Button(I18n.t("common.discount"));
         discountBtn.getStyleClass().add("note-button");
         discountBtn.setPrefWidth(70);
 
         // Discount popup
         ContextMenu discountPopup = new ContextMenu();
 
-        Label discountLabel = new Label("Current discount: " + item.getDiscount().toString() + " €");
+        Label discountLabel = new Label(I18n.t("order.currentDiscount", item.getDiscount().toString()));
 
         CustomMenuItem discountCMI = new CustomMenuItem(discountLabel);
         discountCMI.setHideOnClick(false);
@@ -657,7 +658,7 @@ public class OrderController {
         }
 
         // Popup title
-        Label title = new Label("Table " + this.table.getTableNumber() + " Order Summary");
+        Label title = new Label(I18n.t("order.tableSummary", String.valueOf(this.table.getTableNumber())));
         title.setStyle("""
                     -fx-font-size: 36px;
                     -fx-padding: 8;
@@ -666,7 +667,7 @@ public class OrderController {
         HBox priceChangeButtons = new HBox(10);
 
         // Tip
-        Button tipBtn = new Button("Tip: " + tip.toString() + "%");
+        Button tipBtn = new Button(I18n.t("order.tip", tip.toString()));
         tipBtn.getStyleClass().add("note-button");
         tipBtn.setStyle("""
                     -fx-font-size: 26px;
@@ -679,12 +680,12 @@ public class OrderController {
         // Calculate total -> subtotal + subtotal * tip - discount
         total = paymentSubtotal.multiply(tip).divide(new BigDecimal(100)).add(paymentSubtotal).subtract(discount);
 
-        Label totalLabel = new Label("Total: €" + total.toString());
+        Label totalLabel = new Label(I18n.t("order.totalAmount", total.toString()));
         totalLabel.setStyle("""
                     -fx-font-size: 26px;
                 """);
 
-        Label subtotalLabel = new Label("Subtotal: €" + paymentSubtotal);
+        Label subtotalLabel = new Label(I18n.t("order.subtotalAmount", paymentSubtotal.toString()));
         subtotalLabel.setStyle("""
                     -fx-font-size: 24px;
                 """);
@@ -694,10 +695,10 @@ public class OrderController {
 
         // Editable TextField
         TextField tipField = new TextField();
-        tipField.setPromptText("Tip...%");
+        tipField.setPromptText(I18n.t("order.tipPrompt"));
 
         // Save button for the text
-        Button tipSaveBtn = new Button("Save");
+        Button tipSaveBtn = new Button(I18n.t("common.save"));
         tipSaveBtn.getStyleClass().add("note-button");
 
         HBox tipBox = new HBox(5, tipField, tipSaveBtn);
@@ -715,13 +716,13 @@ public class OrderController {
 
             // Don't allow a negative tip
             if (this.tip.compareTo(BigDecimal.ZERO) == -1) {
-                showToast("Tip cannot be a negative number.", false);
+                showToast(I18n.t("order.negativeTip"), false);
                 this.tip = BigDecimal.ZERO;
             }
 
-            tipBtn.setText("Tip: " + tip.toString() + "%");
+            tipBtn.setText(I18n.t("order.tip", tip.toString()));
             this.total = paymentSubtotal.multiply(tip).divide(new BigDecimal(100)).add(paymentSubtotal).subtract(discount);
-            totalLabel.setText("Total: €" + total.toString());
+            totalLabel.setText(I18n.t("order.totalAmount", total.toString()));
             tipPopup.hide();
         });
 
@@ -744,7 +745,7 @@ public class OrderController {
         });
 
         // Tip
-        Button discountBtn = new Button("Discount: €" + discount.toString());
+        Button discountBtn = new Button(I18n.t("order.discountAmount", discount.toString()));
         discountBtn.getStyleClass().add("note-button");
         discountBtn.setStyle("""
                     -fx-font-size: 26px;
@@ -759,10 +760,10 @@ public class OrderController {
 
         // Editable TextField
         TextField discountField = new TextField();
-        discountField.setPromptText("Discount...€");
+        discountField.setPromptText(I18n.t("order.discountPrompt"));
 
         // Save button for the text
-        Button discountSaveBtn = new Button("Save");
+        Button discountSaveBtn = new Button(I18n.t("common.save"));
         discountSaveBtn.getStyleClass().add("note-button");
 
         HBox discountbox = new HBox(5, discountField, discountSaveBtn);
@@ -776,12 +777,12 @@ public class OrderController {
                 this.discount = newDiscount.isBlank() ? BigDecimal.ZERO : new BigDecimal(newDiscount);
             } catch (NumberFormatException ex) {
                 this.discount = BigDecimal.ZERO;
-                showToast("Invalid input.", false);
+                showToast(I18n.t("order.invalidInput"), false);
             }
 
             // Don't allow a negative discount
             if (this.discount.compareTo(BigDecimal.ZERO) == -1) {
-                showToast("Discount cannot be a negative number.", false);
+                showToast(I18n.t("order.negativeDiscount"), false);
                 this.discount = BigDecimal.ZERO;
             }
 
@@ -793,10 +794,10 @@ public class OrderController {
             }
             else {
                 this.discount = BigDecimal.ZERO;
-                showToast("Total cannot be less than €0.", false);
+                showToast(I18n.t("order.totalBelowZero"), false);
             }
-            discountBtn.setText("Discount: €" + discount.toString());
-            totalLabel.setText("Total: €" + total.toString());
+            discountBtn.setText(I18n.t("order.discountAmount", discount.toString()));
+            totalLabel.setText(I18n.t("order.totalAmount", total.toString()));
             discountPopup.hide();
         });
 
@@ -820,17 +821,17 @@ public class OrderController {
 
         priceChangeButtons.getChildren().addAll(tipBtn, discountBtn);
 
-        Button cancelBtn = new Button("Cancel");
+        Button cancelBtn = new Button(I18n.t("common.cancel"));
         cancelBtn.getStyleClass().add("note-button");
         cancelBtn.setStyle("-fx-font-size: 24; -fx-background-color: -app-delete;");
 
-        Button cardPaymentBtn = new Button("Card Payment");
+        Button cardPaymentBtn = new Button(I18n.t("order.cardPayment"));
         cardPaymentBtn.getStyleClass().add("note-button");
         cardPaymentBtn.setStyle("-fx-font-size: 24; -fx-background-color: -app-add;");
         // Perform payment
         cardPaymentBtn.setOnAction(e -> processPayment(2, total, tip));
 
-        Button cashPaymentBtn = new Button("Cash Payment");
+        Button cashPaymentBtn = new Button(I18n.t("order.cashPayment"));
         cashPaymentBtn.getStyleClass().add("note-button");
         cashPaymentBtn.setStyle("-fx-font-size: 24; -fx-background-color: -app-add;");
         // Perform payment
@@ -892,7 +893,7 @@ public class OrderController {
         rootStack.getChildren().remove(paymentOverlay);
         this.tip = BigDecimal.ZERO;
         refreshOrderPanel();
-        showToast("Order payment successful.", true);
+        showToast(I18n.t("order.paymentSuccess"), true);
     }
 
     private void showToast(String message, Boolean msgType) {
@@ -1008,13 +1009,20 @@ public class OrderController {
         GridPane.setColumnSpan(pluDisplay, 2);
 
         // Close button
-        Button enterBtn = createPluButton("Enter");
+        Button enterBtn = createPluButton(I18n.t("order.enter"));
         enterBtn.getStyleClass().add("plu-keyboard-button");
         enterBtn.setOnAction(e -> enterPluCode());
         grid.add(enterBtn, 2, 0);
 
         // Layout of the buttons
         String[][] layout = {
+                { "1", "2", "3" },
+                { "4", "5", "6" },
+                { "7", "8", "9" },
+                { I18n.t("order.clearShort"), "0", "⌫" }
+        };
+
+        String[][] commands = {
                 { "1", "2", "3" },
                 { "4", "5", "6" },
                 { "7", "8", "9" },
@@ -1028,7 +1036,8 @@ public class OrderController {
                 Button btn = createPluButton(layout[row][col]);
                 grid.add(btn, col, row + 1);
 
-                btn.setOnAction(r -> handlePluInput(btn.getText()));
+                String input = commands[row][col];
+                btn.setOnAction(r -> handlePluInput(input));
             }
         }
 
@@ -1069,13 +1078,13 @@ public class OrderController {
         try {
             MenuItem item = orderService.getItemByPluCode(code);
             if (item == null) {
-                showToast("Wrong PLU code.", false);
+                showToast(I18n.t("order.wrongPlu"), false);
                 return;
             }
             addItemToOrder(item);
         }
         catch (RuntimeException e) {
-            showToast("Wrong PLU code.", false);
+            showToast(I18n.t("order.wrongPlu"), false);
         }
     }
 
