@@ -12,9 +12,13 @@ import javafx.stage.Stage;
 
 @Singleton
 public class ViewSwitcher {
+    public record DashboardState(String viewKey, int activeZoneId) {
+    }
+
     private Stage stage;
     private Injector injector;
     private String currentLocation;
+    private DashboardState dashboardState;
 
     public void InitStage(Stage stage, Injector injector) throws IOException {
         this.stage = stage;
@@ -37,5 +41,15 @@ public class ViewSwitcher {
 
     public void reloadCurrentView() throws IOException {
         SetView(currentLocation != null ? currentLocation : "/view/login.fxml");
+    }
+
+    public void setDashboardState(DashboardState dashboardState) {
+        this.dashboardState = dashboardState;
+    }
+
+    public DashboardState consumeDashboardState() {
+        DashboardState state = dashboardState;
+        dashboardState = null;
+        return state;
     }
 }

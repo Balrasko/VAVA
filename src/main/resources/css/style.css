@@ -603,6 +603,25 @@
   -fx-background-color: derive(-app-background, -4%);
 }
 
+.secondary-action-button-small {
+  -fx-background-color: -app-background;
+  -fx-text-fill: -app-text;
+  -fx-background-radius: 24;
+  -fx-border-color: -app-border;
+  -fx-border-radius: 24;
+  -fx-border-width: 2;
+  -fx-padding: 10 24 10 24;
+  -fx-cursor: hand;
+  -fx-font-size: 14;
+  -fx-min-height: 40;
+  -fx-pref-height: 40;
+  -fx-max-height: 40;
+}
+
+.secondary-action-button-small:hover {
+  -fx-background-color: derive(-app-background, -4%);
+}
+
 .delete-action-button {
   -fx-background-color: -app-delete;
   -fx-text-fill: -app-foreground;

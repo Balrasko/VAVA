@@ -11,6 +11,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.Priority?>
 <?import javafx.scene.layout.Region?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
@@ -59,18 +60,14 @@
                                             onAction="#onEditCurrentZone"
                                             styleClass="secondary-action-button" />
 
-                                        <Button fx:id="deleteZoneButton" text="%tableLayout.deleteZone"
-                                            onAction="#onDeleteCurrentZone"
-                                            styleClass="secondary-action-button"
-                                            style="-fx-background-color: -app-delete; -fx-border-color: transparent;" />
+                                        <Button fx:id="dragButton" text="%tableLayout.enterEditMode"
+                                            onAction="#toggleDragging"
+                                            styleClass="secondary-action-button" />
 
                                         <Button fx:id="addTableButton" text="%tableLayout.addTable"
                                             onAction="#onOpenAddTableForm"
                                             styleClass="green-action-button" />
-
-                                        <Button fx:id="dragButton" text="%tableLayout.enterEditMode"
-                                            onAction="#toggleDragging"
-                                            styleClass="green-action-button" />
+                                        
                                     </children>
                                 </HBox>
 
@@ -80,64 +77,80 @@
                     </children>
                 </VBox>
 
-                <VBox fx:id="layoutFormPanel"
-                    prefWidth="420" minWidth="420" maxWidth="420"
+                <ScrollPane fx:id="layoutFormPanel"
+                    fitToWidth="true"
+                    fitToHeight="true"
+                    hbarPolicy="NEVER"
+                    vbarPolicy="NEVER"
+                    pannable="false"
+                    prefWidth="360"
+                    minWidth="320"
+                    maxWidth="390"
                     maxHeight="Infinity"
-                    spacing="18"
-                    visible="false" managed="false"
-                    styleClass="layout-form-panel">
-                    <children>
-
-                        <Label fx:id="layoutFormTitle" text="%tableLayout.manageLayout"
-                            styleClass="menu-category-title" />
-                        <Label fx:id="layoutFormHint" styleClass="menu-item-description" />
-
-                        <VBox fx:id="tableFieldsContainer" spacing="12">
+                    visible="false"
+                    managed="false"
+                    styleClass="menu-form-panel">
+                    <content>
+                        <VBox spacing="18"
+                            fillWidth="true"
+                            styleClass="menu-form-content">
                             <children>
-                                <VBox spacing="8">
+                                <HBox alignment="CENTER_RIGHT">
                                     <children>
-                                        <Label text="%tableLayout.zone" styleClass="form-label" />
-                                        <ComboBox fx:id="tableZoneComboBox" styleClass="form-input" />
+                                        <Button text="✕"
+                                            onAction="#onCloseLayoutForm"
+                                            styleClass="form-close-button" />
+                                    </children>
+                                </HBox>
+
+                                <Label fx:id="layoutFormTitle" text="%tableLayout.manageLayout"
+                                    styleClass="menu-category-title" />
+                                <Label fx:id="layoutFormHint" styleClass="menu-item-description" />
+
+                                <VBox fx:id="tableFieldsContainer" spacing="12">
+                                    <children>
+                                        <VBox spacing="8">
+                                            <children>
+                                                <Label text="%tableLayout.zone" styleClass="form-label" />
+                                                <ComboBox fx:id="tableZoneComboBox" maxWidth="Infinity" styleClass="form-input" />
+                                            </children>
+                                        </VBox>
+                                        <VBox spacing="8">
+                                            <children>
+                                                <Label text="%tableLayout.tableNumber" styleClass="form-label" />
+                                                <TextField fx:id="tableNumberField" maxWidth="Infinity" styleClass="form-input" />
+                                            </children>
+                                        </VBox>
+                                        <CheckBox fx:id="tableAvailabilityCheck" text="%common.available"
+                                            styleClass="form-label" />
                                     </children>
                                 </VBox>
-                                <VBox spacing="8">
+
+                                <VBox fx:id="zoneFieldsContainer" spacing="8">
                                     <children>
-                                        <Label text="%tableLayout.tableNumber" styleClass="form-label" />
-                                        <TextField fx:id="tableNumberField" styleClass="form-input" />
+                                        <Label text="%tableLayout.zoneName" styleClass="form-label" />
+                                        <TextField fx:id="zoneNameField" maxWidth="Infinity" styleClass="form-input" />
                                     </children>
                                 </VBox>
-                                <CheckBox fx:id="tableAvailabilityCheck" text="%common.available"
-                                    styleClass="form-label" />
+
+                                <Region VBox.vgrow="ALWAYS" />
+
+                                <HBox alignment="CENTER_RIGHT" spacing="12">
+                                    <children>
+                                        <Region HBox.hgrow="ALWAYS" />
+                                        <Button fx:id="deleteLayoutButton" text="%common.delete"
+                                            visible="false" managed="false"
+                                            onAction="#onDeleteLayoutEntity"
+                                            styleClass="delete-action-button" />
+                                        <Button fx:id="submitLayoutButton" text="%common.save"
+                                            onAction="#onSubmitLayoutForm"
+                                            styleClass="green-action-button" />
+                                    </children>
+                                </HBox>
                             </children>
                         </VBox>
-
-                        <VBox fx:id="zoneFieldsContainer" spacing="8">
-                            <children>
-                                <Label text="%tableLayout.zoneName" styleClass="form-label" />
-                                <TextField fx:id="zoneNameField" styleClass="form-input" />
-                            </children>
-                        </VBox>
-
-                        <Region VBox.vgrow="ALWAYS" />
-
-                        <HBox alignment="CENTER_RIGHT" spacing="12">
-                            <children>
-                                <Button text="%common.cancel" onAction="#onCloseLayoutForm"
-                                    styleClass="secondary-action-button"
-                                    style="-fx-border-color: -app-blue-border; -fx-border-radius: 24;" />
-                                <Button fx:id="deleteLayoutButton" text="%common.delete"
-                                    visible="false" managed="false"
-                                    onAction="#onDeleteLayoutEntity"
-                                    styleClass="secondary-action-button"
-                                    style="-fx-background-color: -app-delete; -fx-border-color: transparent;" />
-                                <Button fx:id="submitLayoutButton" text="%common.save"
-                                    onAction="#onSubmitLayoutForm"
-                                    styleClass="green-action-button" />
-                            </children>
-                        </HBox>
-
-                    </children>
-                </VBox>
+                    </content>
+                </ScrollPane>
             </children>
         </HBox>
     </center>

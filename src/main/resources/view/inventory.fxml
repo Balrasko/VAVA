@@ -17,32 +17,25 @@
               ">
 
             <children>
-                <!-- Filter Buttons -->
+                <!-- Top Actions -->
                 <HBox spacing="12" alignment="CENTER_LEFT">
                     <children>
-                        <Button fx:id="allItemsButton"
-                                text="%inventory.allItems"
-                                onAction="#onFilterAllItems"
-                                style="-fx-background-color:-app-blue-primary; -fx-text-fill:-app-foreground; -fx-background-radius:20; -fx-padding:8 20 8 20; -fx-cursor:hand; -fx-font-size:14;" />
-                        <Button fx:id="lowStockButton"
-                                text="%inventory.lowStock"
-                                onAction="#onFilterLowStock"
-                                style="-fx-background-color:-app-blue-secondary; -fx-text-fill:-app-text; -fx-background-radius:20; -fx-padding:8 20 8 20; -fx-cursor:hand; -fx-font-size:14;" />
-                        <Button fx:id="criticalButton"
-                                text="%inventory.critical"
-                                onAction="#onFilterCritical"
-                                style="-fx-background-color:-app-blue-secondary; -fx-text-fill:-app-text; -fx-background-radius:20; -fx-padding:8 20 8 20; -fx-cursor:hand; -fx-font-size:14;" />
-
                         <Region HBox.hgrow="ALWAYS" />
 
                         <Button text="%common.import"
                                 minWidth="100"
+                                minHeight="40"
+                                prefHeight="40"
+                                maxHeight="40"
                                 onAction="#onImportInventory"
                                 maxWidth="Infinity"
                                 styleClass="inv-action-btn"/>
 
                         <Button text="%common.export"
                                 minWidth="100"
+                                minHeight="40"
+                                prefHeight="40"
+                                maxHeight="40"
                                 onAction="#onExportInventory"
                                 maxWidth="Infinity"
                                 styleClass="inv-action-btn"/>
@@ -58,7 +51,7 @@
                                    prefWidth="300"
                                    style="-fx-background-color:-app-foreground; -fx-background-radius:24; -fx-border-radius:24; -fx-padding:10 16 10 16; -fx-font-size:14; -fx-text-fill:-app-text; -fx-prompt-text-fill:-app-text-muted;" />
                         <Button text="%common.filter"
-                                onAction="#onApplyFilter"
+                                onAction="#onToggleFilterPanel"
                                 style="-fx-background-color:-app-foreground; -fx-text-fill:-app-text; -fx-background-radius:24; -fx-border-color:-app-blue-border; -fx-border-radius:24; -fx-padding:10 20 10 20; -fx-cursor:hand;" />
                     
                         <Region HBox.hgrow="ALWAYS" />
@@ -68,9 +61,67 @@
                                 minWidth="100"
                                 onAction="#toggleEditMode"
                                 maxWidth="Infinity"
-                                styleClass="inv-edit-btn"/>
+                            styleClass="secondary-action-button-small"/>
                     </children>
                 </HBox>
+
+                <!-- Filter Panel -->
+                <VBox fx:id="filterPanel"
+                      spacing="10"
+                      visible="false"
+                      managed="false"
+                      style="-fx-background-color:-app-foreground; -fx-background-radius:16; -fx-padding:14 18 14 18;">
+                    <children>
+                        <HBox spacing="16" alignment="CENTER_LEFT">
+                            <children>
+                                <Label text="%common.status"
+                                       style="-fx-font-size:13; -fx-text-fill:-app-text;" />
+
+                                <Button fx:id="allItemsButton"
+                                        text="%inventory.allItems"
+                                        onAction="#onFilterAllItems"
+                                        style="-fx-background-color:-app-blue-primary; -fx-text-fill:-app-foreground; -fx-background-radius:20; -fx-padding:8 20 8 20; -fx-cursor:hand; -fx-font-size:14;" />
+                                <Button fx:id="lowStockButton"
+                                        text="%inventory.lowStock"
+                                        onAction="#onFilterLowStock"
+                                        style="-fx-background-color:-app-blue-secondary; -fx-text-fill:-app-text; -fx-background-radius:20; -fx-padding:8 20 8 20; -fx-cursor:hand; -fx-font-size:14;" />
+                                <Button fx:id="criticalButton"
+                                        text="%inventory.critical"
+                                        onAction="#onFilterCritical"
+                                        style="-fx-background-color:-app-blue-secondary; -fx-text-fill:-app-text; -fx-background-radius:20; -fx-padding:8 20 8 20; -fx-cursor:hand; -fx-font-size:14;" />
+                            </children>
+                        </HBox>
+
+                        <HBox spacing="16" alignment="CENTER_LEFT">
+                            <children>
+                                <Label text="%common.quantity"
+                                       style="-fx-font-size:13; -fx-text-fill:-app-text;" />
+
+                                <TextField fx:id="quantityFromField"
+                                           promptText="%inventory.quantityFrom"
+                                           prefWidth="140"
+                                           style="-fx-background-radius:12; -fx-font-size:13;" />
+
+                                <Label text="%finance.toLabel"
+                                       style="-fx-font-size:13; -fx-text-fill:-app-text;" />
+
+                                <TextField fx:id="quantityToField"
+                                           promptText="%inventory.quantityTo"
+                                           prefWidth="140"
+                                           style="-fx-background-radius:12; -fx-font-size:13;" />
+
+                                <Region HBox.hgrow="ALWAYS" />
+
+                                <Button text="%common.apply"
+                                        onAction="#onApplyFilter"
+                                        style="-fx-background-color:-app-blue-border; -fx-text-fill:-app-foreground; -fx-background-radius:20; -fx-padding:8 20 8 20; -fx-cursor:hand; -fx-font-size:13;" />
+                                <Button text="%common.clear"
+                                        onAction="#onClearFilter"
+                                        style="-fx-background-color:-app-background; -fx-text-fill:-app-text; -fx-background-radius:20; -fx-border-color:-app-border; -fx-border-radius:20; -fx-padding:8 20 8 20; -fx-cursor:hand; -fx-font-size:13;" />
+                            </children>
+                        </HBox>
+                    </children>
+                </VBox>
 
                 <!-- Header Row -->
                 <GridPane hgap="0"

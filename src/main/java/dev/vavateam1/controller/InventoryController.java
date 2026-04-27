@@ -72,6 +72,9 @@ public class InventoryController {
     @FXML private Label minimalQuantityHeaderLabel;
     @FXML private Label statusHeaderLabel;
     @FXML private TextField searchField;
+    @FXML private VBox filterPanel;
+    @FXML private TextField quantityFromField;
+    @FXML private TextField quantityToField;
     @FXML private VBox itemsContainer;
     @FXML private Label toastLabel;
 
@@ -146,6 +149,24 @@ public class InventoryController {
     @FXML
     private void onApplyFilter() {
         activeSearchPattern = compilePattern(searchField.getText());
+        renderItems();
+    }
+
+    @FXML
+    private void onToggleFilterPanel() {
+        boolean shouldShow = !filterPanel.isVisible();
+        filterPanel.setVisible(shouldShow);
+        filterPanel.setManaged(shouldShow);
+    }
+
+    @FXML
+    private void onClearFilter() {
+        searchField.clear();
+        quantityFromField.clear();
+        quantityToField.clear();
+        activeSearchPattern = null;
+        currentFilter = CurrentFilter.ALL;
+        updateButtonStyles();
         renderItems();
     }
 
