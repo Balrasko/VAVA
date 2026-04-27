@@ -15,12 +15,12 @@
                 prefWidth="500"
                 maxWidth="Infinity"
                 HBox.hgrow="ALWAYS"
-                style="-fx-background:-app-surface-muted; -fx-background-color:-app-surface-muted; -fx-background-radius:12;">
+                style="-fx-background:-app-background; -fx-background-color:-app-background; -fx-background-radius:12;">
                 <content>
                         <VBox fx:id="ordersContainer"
                                 spacing="12"
                                 maxWidth="Infinity"
-                                style="-fx-padding:10; -fx-background-color:-app-surface-muted; -fx-background-radius:12;" />
+                                style="-fx-padding:10; -fx-background-color:-app-background; -fx-background-radius:12;" />
                 </content>
         </ScrollPane>
 
@@ -33,7 +33,7 @@
                 visible="false"
                 managed="false"
                 HBox.hgrow="ALWAYS"
-                style="-fx-background-color:-app-surface-muted; -fx-padding:10; -fx-background-radius:12;">
+                style="-fx-background-color:-app-background; -fx-padding:10; -fx-background-radius:12;">
 
                 <!-- ACTION BUTTONS -->
                 <HBox alignment="TOP_RIGHT" spacing="10">

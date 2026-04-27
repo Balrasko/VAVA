@@ -83,6 +83,7 @@
                   minHeight="56.0"
                   maxHeight="56.0"
                   alignment="CENTER_LEFT"/>
+            <Region HBox.hgrow="ALWAYS" />
             <Button fx:id="languageButton"
                     text="SK"
                     onAction="#switchLanguage"

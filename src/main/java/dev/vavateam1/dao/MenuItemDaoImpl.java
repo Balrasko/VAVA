@@ -108,18 +108,19 @@ public class MenuItemDaoImpl implements MenuItemDao {
     @Override
     public void updateMenuItem(MenuItem menuItem) {
         log.info("Updating menu item id: {}", menuItem.getId());
-        String sql = "UPDATE menu_items SET category_id = ?, name = ?, price = ?, availability = ?, description = ?, to_kitchen = ?, discount = ?, updated_at = NOW() "
+        String sql = "UPDATE menu_items SET category_id = ?, item_code = ?, name = ?, price = ?, availability = ?, description = ?, to_kitchen = ?, discount = ?, updated_at = NOW() "
                 + "WHERE id = ? AND deleted_at IS NULL";
         try (Connection conn = connectionFactory.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, menuItem.getCategoryId());
-            stmt.setString(2, menuItem.getName());
-            stmt.setBigDecimal(3, menuItem.getPrice());
-            stmt.setBoolean(4, menuItem.isAvailability());
-            stmt.setString(5, menuItem.getDescription());
-            stmt.setBoolean(6, menuItem.isToKitchen());
-            stmt.setBigDecimal(7, menuItem.getDiscount());
-            stmt.setInt(8, menuItem.getId());
+            stmt.setInt(2, menuItem.getItemCode());
+            stmt.setString(3, menuItem.getName());
+            stmt.setBigDecimal(4, menuItem.getPrice());
+            stmt.setBoolean(5, menuItem.isAvailability());
+            stmt.setString(6, menuItem.getDescription());
+            stmt.setBoolean(7, menuItem.isToKitchen());
+            stmt.setBigDecimal(8, menuItem.getDiscount());
+            stmt.setInt(9, menuItem.getId());
             stmt.executeUpdate();
             log.info("Menu item updated id: {}", menuItem.getId());
         } catch (SQLException e) {

@@ -16,7 +16,7 @@
           prefWidth="500"
           maxWidth="Infinity"
           HBox.hgrow="ALWAYS"
-          style="-fx-padding:10; -fx-background-color:-app-surface-muted; -fx-background-radius:12;">
+            style="-fx-padding:10; -fx-background-color:-app-background; -fx-background-radius:12;">
 
         <children>
             <HBox spacing="16.0" alignment="CENTER_LEFT">
@@ -27,28 +27,31 @@
                             onAction="#onClosing"
                             prefWidth="122.0"
                             prefHeight="50.0"
-                            style="-fx-background-color: -app-surface-soft; -fx-background-radius: 16; -fx-text-fill: -app-text; -fx-font-size: 12px; -fx-cursor: hand;"/>
+                            styleClass="closing-action-button"/>
 
                     <Button fx:id="printButton"
                             text="%common.print"
                             onAction="#onPrint"
                             prefWidth="122.0"
                             prefHeight="50.0"
-                            style="-fx-background-color: -app-surface-soft; -fx-background-radius: 16; -fx-text-fill: -app-text; -fx-font-size: 12px; -fx-cursor: hand;"/>
+                            styleClass="closing-action-button"/>
 
                     <Button fx:id="cashFloatButton"
                             text="%closing.cashFloat"
                             onAction="#onCashFloat"
-                            prefWidth="122.0"
+                            prefWidth="155.0"
                             prefHeight="50.0"
-                            style="-fx-background-color: -app-surface-soft; -fx-background-radius: 16; -fx-text-fill: -app-text; -fx-font-size: 12px; -fx-cursor: hand;"/>
+                            wrapText="true"
+                            styleClass="closing-action-button"/>
 
                     <Button fx:id="withdrawalButton"
                             text="%closing.withdrawal"
                             onAction="#onWithdrawal"
                             prefWidth="122.0"
                             prefHeight="50.0"
-                            style="-fx-background-color: -app-surface-soft; -fx-background-radius: 16; -fx-text-fill: -app-text; -fx-font-size: 12px; -fx-cursor: hand;"/>
+                            styleClass="closing-action-button"/>
+
+                        <Region HBox.hgrow="ALWAYS"/>
                     
                     <!-- TOTAL BUTTONS -->
                     <HBox spacing="18.0" alignment="CENTER_RIGHT">
@@ -56,7 +59,7 @@
                             <VBox prefWidth="166.0"
                                     prefHeight="54.0"
                                     alignment="CENTER"
-                                    style="-fx-background-color: -app-surface-soft; -fx-background-radius: 16; -fx-padding: 8 14 8 14;">
+                                    style="-fx-background-color: -app-foreground; -fx-background-radius: 16; -fx-padding: 8 14 8 14;">
                                 <children>
                                     <Label text="%closing.totalPaid"
                                             alignment="CENTER"
@@ -71,7 +74,7 @@
                             <VBox prefWidth="166.0"
                                     prefHeight="54.0"
                                     alignment="CENTER"
-                                    style="-fx-background-color: -app-surface-soft; -fx-background-radius: 16; -fx-padding: 8 14 8 14;">
+                                    style="-fx-background-color: -app-foreground; -fx-background-radius: 16; -fx-padding: 8 14 8 14;">
                                 <children>
                                     <Label text="%closing.totalTips"
                                             alignment="CENTER"
@@ -89,7 +92,7 @@
 
             <!-- SUMMARY TABLE -->
             <VBox spacing="10.0"
-                    style="-fx-background-color: -app-background; -fx-background-radius: 18; -fx-padding: 18 22 18 22;">
+                    style="-fx-background-color: -app-foreground; -fx-background-radius: 18; -fx-padding: 18 22 18 22;">
                 <children>
                     <HBox>
                         <children>

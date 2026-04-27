@@ -24,6 +24,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -60,7 +61,7 @@ public class TableLayoutController {
     private Button deleteZoneButton;
 
     @FXML
-    private VBox layoutFormPanel;
+    private ScrollPane layoutFormPanel;
 
     @FXML
     private Label layoutFormTitle;
@@ -130,6 +131,7 @@ public class TableLayoutController {
         }
 
         renderTables();
+        setDragButtonSaveMode(false);
         setEditModeActionButtonsVisible(false);
         setAddTableButtonVisible(true);
         hideForm();
@@ -176,6 +178,7 @@ public class TableLayoutController {
         snapshotOriginalPositions();
         pendingDeletedTableIds.clear();
         dragButton.setText(I18n.t("common.save"));
+        setDragButtonSaveMode(true);
         setEditModeActionButtonsVisible(true);
         setAddTableButtonVisible(false);
         setZoneActionButtonsVisible(false);
@@ -186,12 +189,22 @@ public class TableLayoutController {
     private void endDragMode() {
         dragging = false;
         dragButton.setText(I18n.t("tableLayout.enterEditMode"));
+        setDragButtonSaveMode(false);
         setEditModeActionButtonsVisible(false);
         setAddTableButtonVisible(true);
         setZoneActionButtonsVisible(true);
         originalPositions.clear();
         pendingDeletedTableIds.clear();
         renderTables();
+    }
+
+    private void setDragButtonSaveMode(boolean saveMode) {
+        if (dragButton == null) {
+            return;
+        }
+
+        dragButton.getStyleClass().removeAll("green-action-button", "secondary-action-button");
+        dragButton.getStyleClass().add(saveMode ? "green-action-button" : "secondary-action-button");
     }
 
     private void setEditModeActionButtonsVisible(boolean visible) {

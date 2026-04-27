@@ -22,6 +22,15 @@ import javafx.util.Duration;
 
 public class DashboardController {
     private static final double SIDEBAR_OPEN_WIDTH = 208;
+    private static final String VIEW_TABLES = "tables";
+    private static final String VIEW_TABLE_LAYOUT = "tableLayout";
+    private static final String VIEW_FINANCES = "finances";
+    private static final String VIEW_INVENTORY = "inventory";
+    private static final String VIEW_USERS = "users";
+    private static final String VIEW_MENU = "menu";
+    private static final String VIEW_CLOSING = "closing";
+    private static final String VIEW_HISTORY = "history";
+    private static final String VIEW_KITCHEN = "kitchen";
 
     private final AuthService authService;
     private final ViewSwitcher viewSwitcher;
@@ -62,6 +71,7 @@ public class DashboardController {
     private TopNavbarZonesController topNavbarZonesController;
     private TablesController tablesController;
     private int activeZoneId = 1;
+    private String currentViewKey = VIEW_TABLES;
 
     private boolean sidebarVisible = false;
 
@@ -72,6 +82,7 @@ public class DashboardController {
         User currentUser = authService.getUser();
         boolean isKitchenStaff = currentUser != null && currentUser.getRoleId() == 3;
         isAdmin = currentUser != null && currentUser.getRoleId() == 1;
+        ViewSwitcher.DashboardState restoredState = viewSwitcher.consumeDashboardState();
 
         sidebar.setPrefWidth(0);
         sidebar.setMinWidth(0);
@@ -103,6 +114,9 @@ public class DashboardController {
                 sidebar.setManaged(false);
                 topSection.setVisible(false);
                 topSection.setManaged(false);
+            } else if (restoredState != null) {
+                activeZoneId = restoredState.activeZoneId();
+                restoreView(restoredState.viewKey());
             } else {
                 showTableView();
             }
@@ -113,8 +127,42 @@ public class DashboardController {
 
     @FXML
     private void switchLanguage() throws Exception {
+        viewSwitcher.setDashboardState(new ViewSwitcher.DashboardState(currentViewKey, activeZoneId));
         I18n.toggleLocale();
         viewSwitcher.reloadCurrentView();
+    }
+
+    private void restoreView(String viewKey) throws Exception {
+        switch (viewKey) {
+            case VIEW_TABLE_LAYOUT -> showManagerView(VIEW_TABLE_LAYOUT);
+            case VIEW_FINANCES -> showManagerView(VIEW_FINANCES);
+            case VIEW_INVENTORY -> showManagerView(VIEW_INVENTORY);
+            case VIEW_USERS -> showManagerView(VIEW_USERS);
+            case VIEW_MENU -> showManagerView(VIEW_MENU);
+            case VIEW_CLOSING -> showClosing();
+            case VIEW_HISTORY -> showHistory();
+            default -> showTableView();
+        }
+    }
+
+    private void showManagerView(String tabName) throws Exception {
+        if (!isAdmin) {
+            showTableView();
+            return;
+        }
+
+        loadManagerTopNavbar();
+        if (topNavbarController != null) {
+            topNavbarController.setActiveTab(tabName);
+        }
+
+        switch (tabName) {
+            case VIEW_FINANCES -> showFinances();
+            case VIEW_INVENTORY -> showInventory();
+            case VIEW_USERS -> showUsers();
+            case VIEW_MENU -> showMenu();
+            default -> showTableLayout();
+        }
     }
 
     @FXML
@@ -235,6 +283,7 @@ public class DashboardController {
         tablesController.setActiveZone(activeZoneId);
 
         contentArea.getChildren().setAll(view);
+        currentViewKey = VIEW_TABLES;
 
         loadZonesTopNavbar();
     }
@@ -259,6 +308,7 @@ public class DashboardController {
 
         Parent view = loader.load();
         contentArea.getChildren().setAll(view);
+        currentViewKey = VIEW_KITCHEN;
     }
 
     @FXML
@@ -271,6 +321,7 @@ public class DashboardController {
             contentArea.getChildren().clear();
             contentArea.getChildren().add(loader.load());
             tablesController = null;
+            currentViewKey = VIEW_CLOSING;
             setTopNavbarVisible(false);
 
         } catch (Exception e) {
@@ -286,6 +337,7 @@ public class DashboardController {
 
             contentArea.getChildren().clear();
             contentArea.getChildren().add(loader.load());
+            currentViewKey = VIEW_MENU;
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -305,6 +357,7 @@ public class DashboardController {
             contentArea.getChildren().clear();
             contentArea.getChildren().add(loader.load());
             tablesController = null;
+            currentViewKey = VIEW_USERS;
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -322,6 +375,7 @@ public class DashboardController {
             contentArea.getChildren().clear();
             contentArea.getChildren().add(loader.load());
             tablesController = null;
+            currentViewKey = VIEW_HISTORY;
             setTopNavbarVisible(false);
 
         } catch (Exception e) {
@@ -340,6 +394,7 @@ public class DashboardController {
         try {
             loadManagerTopNavbar();
             showTableLayout();
+            currentViewKey = VIEW_TABLE_LAYOUT;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -355,6 +410,7 @@ public class DashboardController {
             contentArea.getChildren().clear();
             contentArea.getChildren().add(loader.load());
             tablesController = null;
+            currentViewKey = VIEW_FINANCES;
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -375,6 +431,7 @@ public class DashboardController {
             contentArea.getChildren().clear();
             contentArea.getChildren().add(loader.load());
             tablesController = null;
+            currentViewKey = VIEW_INVENTORY;
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -391,6 +448,7 @@ public class DashboardController {
             contentArea.getChildren().clear();
             contentArea.getChildren().add(loader.load());
             tablesController = null;
+            currentViewKey = VIEW_TABLE_LAYOUT;
 
         } catch (Exception e) {
             e.printStackTrace();
