@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 public class KitchenOrder {
     private int id;
     private int tableNumber;
+    private String locationName;
     private List<OrderItemDto> items = new ArrayList<>();
     private OrderStatus status;
 }

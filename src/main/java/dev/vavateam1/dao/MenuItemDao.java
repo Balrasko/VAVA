@@ -6,6 +6,8 @@ import java.util.List;
 public interface MenuItemDao {
     List<MenuItem> getAllMenuItems();
 
+    List<MenuItem> getAllMenuItemsIncludingDeleted();
+
     List<MenuItem> getMenuItemsByCategoryId(int categoryId);
 
     void addMenuItem(MenuItem menuItem);

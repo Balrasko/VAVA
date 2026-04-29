@@ -14,6 +14,8 @@ public interface OrderService {
 
     List<MenuItem> getMenuItems();
 
+    List<MenuItem> getMenuItemsIncludingDeleted();
+
     List<OrderItem> getOrderItems(Table table);
 
     OrderItem createOrderFromMenu(MenuItem menuItem, Table table);

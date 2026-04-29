@@ -42,7 +42,7 @@ public class OrderItemDto {
     }
 
     public BigDecimal getDiscount() {
-        return BigDecimal.ZERO;
+        return orderItem.getDiscount() != null ? orderItem.getDiscount() : BigDecimal.ZERO;
     }
 
     public BigDecimal getPrice() {

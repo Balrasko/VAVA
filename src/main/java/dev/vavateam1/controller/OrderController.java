@@ -111,7 +111,8 @@ public class OrderController {
     public void initData(Table table, DashboardController dashboardController) {
         this.categories = orderService.getCategories(); // Get all categories
         this.menuItems = orderService.getMenuItems(); // Get all menu items
-        this.orderItemViews = getOrderItemViews(orderService.getOrderItems(table)); // Get order items for the table if
+        this.orderItemViews = getOrderItemViews(orderService.getOrderItems(table),
+                orderService.getMenuItemsIncludingDeleted()); // Get order items for the table if
                                                                                     // there are any
         this.table = table;
         this.dashboardController = dashboardController;
@@ -124,18 +125,29 @@ public class OrderController {
         loadOrderItems();
     }
 
-    private List<OrderItemDto> getOrderItemViews(List<OrderItem> orderItems) {
+    private List<OrderItemDto> getOrderItemViews(List<OrderItem> orderItems, List<MenuItem> orderMenuItems) {
         // Get available order items for the current table if there are any
 
         List<OrderItemDto> orderItemViews = new ArrayList<>();
         for (OrderItem item : orderItems) {
-            MenuItem menuItem = menuItems.stream().filter(m -> m.getId() == item.getMenuItemId()).findFirst()
-                    .orElseThrow(() -> new RuntimeException("MenuItem not found."));
+            MenuItem menuItem = orderMenuItems.stream().filter(m -> m.getId() == item.getMenuItemId()).findFirst()
+                    .orElseGet(() -> createDeletedMenuItemFallback(item));
 
             orderItemViews.add(new OrderItemDto(item, menuItem));
         }
 
         return orderItemViews;
+    }
+
+    private MenuItem createDeletedMenuItemFallback(OrderItem orderItem) {
+        MenuItem fallback = new MenuItem();
+        fallback.setId(orderItem.getMenuItemId());
+        fallback.setName(I18n.t("order.deletedMenuItem", String.valueOf(orderItem.getMenuItemId())));
+        fallback.setPrice(orderItem.getPrice());
+        fallback.setAvailability(false);
+        fallback.setToKitchen(false);
+        fallback.setDiscount(BigDecimal.ZERO);
+        return fallback;
     }
 
     private void loadCategories() {
@@ -247,7 +259,7 @@ public class OrderController {
             orderItemViews.add(newItem);
             orderPanel.getChildren().add(createOrderItemRow(newItem));
 
-            subtotal = subtotal.add(menuItem.getPrice());
+            subtotal = subtotal.add(newItem.getPrice());
             total = calculateSplitSubtotal();
             updateTotals();
         }

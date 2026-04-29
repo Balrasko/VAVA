@@ -14,12 +14,16 @@ import dev.vavateam1.service.ClosingService;
 import dev.vavateam1.util.I18n;
 import javafx.fxml.FXML;
 import javafx.print.PrinterJob;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
 
@@ -119,7 +123,7 @@ public class ClosingController {
 
         PrinterJob printerJob = PrinterJob.createPrinterJob();
         if (printerJob != null && printerJob.showPrintDialog(resolveWindow())) {
-            boolean success = printerJob.printPage(rootContainer);
+            boolean success = printerJob.printPage(createPrintableReportNode());
             if (success) {
                 printerJob.endJob();
                 return;
@@ -200,6 +204,23 @@ public class ClosingController {
                 I18n.t("common.cash") + ": " + formatMoney(currentSummary.cash()),
                 I18n.t("common.card") + ": " + formatMoney(currentSummary.card()),
                 "");
+    }
+
+    private Node createPrintableReportNode() {
+        VBox report = new VBox(8);
+        report.setAlignment(Pos.TOP_LEFT);
+        report.setPadding(new Insets(24));
+        report.setPrefWidth(360);
+        report.setStyle("-fx-background-color:white;");
+
+        for (String line : buildPrintableReport().split("\\R")) {
+            Label label = new Label(line);
+            label.setWrapText(true);
+            label.setStyle("-fx-text-fill:black; -fx-font-size:12;");
+            report.getChildren().add(label);
+        }
+
+        return report;
     }
 
     private User requireCurrentUser() {

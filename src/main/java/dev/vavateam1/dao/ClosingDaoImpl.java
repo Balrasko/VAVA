@@ -36,7 +36,12 @@ public class ClosingDaoImpl implements ClosingDao {
                 COALESCE(SUM(p.amount), 0) AS sales_total,
                 COALESCE(SUM(CASE WHEN LOWER(pm.name) = 'cash' THEN p.amount ELSE 0 END), 0) AS cash_total,
                 COALESCE(SUM(CASE WHEN LOWER(pm.name) <> 'cash' THEN p.amount ELSE 0 END), 0) AS card_total,
-                COALESCE(SUM(p.amount * COALESCE(p.tip, 0) / 100.0), 0) AS tips_total
+                COALESCE(SUM(
+                    CASE
+                        WHEN COALESCE(p.tip, 0) > 0 THEN p.amount - (p.amount / (1 + (p.tip / 100.0)))
+                        ELSE 0
+                    END
+                ), 0) AS tips_total
             FROM payments p
             JOIN payment_methods pm ON pm.id = p.method_id
             WHERE COALESCE(p.refunded, FALSE) = FALSE
@@ -187,7 +192,7 @@ public class ClosingDaoImpl implements ClosingDao {
         }
 
         BigDecimal netCashFloat = normalize(cashFloat.subtract(withdrawals));
-        BigDecimal totalPaid = normalize(salesTotal.add(tipsTotal));
+        BigDecimal totalPaid = normalize(salesTotal);
         BigDecimal grandTotal = normalize(netCashFloat.add(cashTotal).add(cardTotal));
 
         return new ClosingSummary(

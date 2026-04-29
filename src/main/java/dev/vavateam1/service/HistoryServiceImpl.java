@@ -69,14 +69,25 @@ public class HistoryServiceImpl implements HistoryService {
         List<OrderItem> orderItems = orderItemDao.findByPayment(paymentId);
         Map<Integer, MenuItem> menuItemsById = new HashMap<>();
 
-        for (MenuItem menuItem : menuItemDao.getAllMenuItems()) {
+        for (MenuItem menuItem : menuItemDao.getAllMenuItemsIncludingDeleted()) {
             menuItemsById.put(menuItem.getId(), menuItem);
         }
 
         return orderItems.stream()
-                .filter(orderItem -> menuItemsById.containsKey(orderItem.getMenuItemId()))
-                .map(orderItem -> new OrderItemDto(orderItem, menuItemsById.get(orderItem.getMenuItemId())))
+                .map(orderItem -> new OrderItemDto(orderItem, menuItemsById.getOrDefault(
+                        orderItem.getMenuItemId(), createDeletedMenuItemFallback(orderItem))))
                 .toList();
+    }
+
+    private MenuItem createDeletedMenuItemFallback(OrderItem orderItem) {
+        MenuItem fallback = new MenuItem();
+        fallback.setId(orderItem.getMenuItemId());
+        fallback.setName("Deleted item #" + orderItem.getMenuItemId());
+        fallback.setPrice(orderItem.getPrice());
+        fallback.setAvailability(false);
+        fallback.setToKitchen(false);
+        fallback.setDiscount(BigDecimal.ZERO);
+        return fallback;
     }
 
     @Override

@@ -4,8 +4,11 @@ import dev.vavateam1.dao.CategoryDao;
 import dev.vavateam1.dao.MenuItemDao;
 import dev.vavateam1.dao.OrderItemDao;
 import dev.vavateam1.dao.PaymentDao;
+import dev.vavateam1.dto.CreateOrder;
 import dev.vavateam1.model.MenuItem;
+import dev.vavateam1.model.OrderItem;
 import dev.vavateam1.model.Table;
+import org.mockito.ArgumentCaptor;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -59,5 +62,30 @@ class OrderServiceImplTest {
 
         assertThrows(IllegalArgumentException.class,
             () -> orderService.createOrderFromMenu(menuItem, null));
+    }
+
+    @Test
+    void createOrderFromMenu_menuDiscount_appliesDiscountToCreatedOrder() {
+        MenuItem menuItem = new MenuItem();
+        menuItem.setId(10);
+        menuItem.setName("Pizza");
+        menuItem.setPrice(new BigDecimal("10.00"));
+        menuItem.setDiscount(new BigDecimal("25"));
+
+        Table table = new Table();
+        table.setId(4);
+
+        OrderItem createdOrderItem = new OrderItem();
+        createdOrderItem.setId(99);
+        when(orderItemDao.createOrderItem(any(CreateOrder.class))).thenReturn(createdOrderItem);
+
+        orderService.createOrderFromMenu(menuItem, table);
+
+        ArgumentCaptor<CreateOrder> captor = ArgumentCaptor.forClass(CreateOrder.class);
+        verify(orderItemDao).createOrderItem(captor.capture());
+        CreateOrder createOrder = captor.getValue();
+
+        assertEquals(new BigDecimal("25"), createOrder.getDiscount());
+        assertEquals(new BigDecimal("7.50"), createOrder.getPrice());
     }
 }
