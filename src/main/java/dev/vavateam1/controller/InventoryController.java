@@ -87,6 +87,8 @@ public class InventoryController {
     private Pattern activeSearchPattern;
 
     private boolean editMode = false;
+    private BigDecimal quantityFrom;
+    private BigDecimal quantityTo;
 
     @Inject
     public InventoryController(InventoryIngredientDao inventoryIngredientDao) {
@@ -149,6 +151,9 @@ public class InventoryController {
     @FXML
     private void onApplyFilter() {
         activeSearchPattern = compilePattern(searchField.getText());
+        if (!updateQuantityRangeFilter()) {
+            return;
+        }
         renderItems();
     }
 
@@ -165,6 +170,8 @@ public class InventoryController {
         quantityFromField.clear();
         quantityToField.clear();
         activeSearchPattern = null;
+        quantityFrom = null;
+        quantityTo = null;
         currentFilter = CurrentFilter.ALL;
         updateButtonStyles();
         renderItems();
@@ -310,6 +317,7 @@ public class InventoryController {
     private List<InventoryIngredient> getFilteredItems() {
         return allItems.stream()
                 .filter(this::matchesCurrentFilter)
+                .filter(this::matchesQuantityRange)
                 .filter(this::matchesSearch)
                 .toList();
     }
@@ -321,6 +329,14 @@ public class InventoryController {
             case LOW_STOCK -> status == ItemStatus.LOW || status == ItemStatus.CRITICAL;
             case CRITICAL -> status == ItemStatus.CRITICAL;
         };
+    }
+
+    private boolean matchesQuantityRange(InventoryIngredient item) {
+        BigDecimal quantity = zeroIfNull(item.getQuantity());
+        if (quantityFrom != null && quantity.compareTo(quantityFrom) < 0) {
+            return false;
+        }
+        return quantityTo == null || quantity.compareTo(quantityTo) <= 0;
     }
 
     private boolean matchesSearch(InventoryIngredient item) {
@@ -685,6 +701,33 @@ public class InventoryController {
         }
     }
 
+    private boolean updateQuantityRangeFilter() {
+        BigDecimal from;
+        BigDecimal to;
+
+        try {
+            from = parseOptionalDecimal(quantityFromField.getText());
+            to = parseOptionalDecimal(quantityToField.getText());
+        } catch (NumberFormatException e) {
+            showError(I18n.t("inventory.invalidFieldFormat"), I18n.t("inventory.invalidFieldFormat"));
+            return false;
+        }
+
+        if ((from != null && from.signum() < 0) || (to != null && to.signum() < 0)) {
+            showError(I18n.t("inventory.invalidQuantityRange"), I18n.t("inventory.invalidQuantityRangeMessage"));
+            return false;
+        }
+
+        if (from != null && to != null && from.compareTo(to) > 0) {
+            showError(I18n.t("inventory.invalidQuantityRange"), I18n.t("inventory.invalidQuantityRangeMessage"));
+            return false;
+        }
+
+        quantityFrom = from;
+        quantityTo = to;
+        return true;
+    }
+
     private List<InventoryIngredient> readInventoryXml(Path path) throws IOException {
         List<InventoryIngredient> importedItems = new ArrayList<>();
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -781,6 +824,14 @@ public class InventoryController {
         if (value == null || value.isBlank()) {
             return BigDecimal.ZERO;
         }
+        return new BigDecimal(value.trim());
+    }
+
+    private BigDecimal parseOptionalDecimal(String value) {
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+
         return new BigDecimal(value.trim());
     }
 

@@ -115,6 +115,12 @@ public class FinancesController {
         LocalDate fromDate = fromDatePicker != null ? fromDatePicker.getValue() : null;
         LocalDate toDate = toDatePicker != null ? toDatePicker.getValue() : null;
         Integer categoryId = getSelectedCategoryId();
+        LocalDate reportDate = currentReport != null ? currentReport.reportDate() : null;
+
+        if (reportDate != null && fromDate == null && toDate == null) {
+            fromDate = reportDate;
+            toDate = reportDate;
+        }
 
         financeItems.clear();
         financeItems.addAll(financeDao.getFinanceItems(fromDate, toDate, categoryId));

@@ -13,8 +13,10 @@ import com.google.inject.Inject;
 import dev.vavateam1.dao.MenuItemDao;
 import dev.vavateam1.dao.OrderItemDao;
 import dev.vavateam1.dao.TableDao;
+import dev.vavateam1.dao.LocationDao;
 import dev.vavateam1.dto.KitchenOrder;
 import dev.vavateam1.dto.OrderItemDto;
+import dev.vavateam1.model.Location;
 import dev.vavateam1.model.MenuItem;
 import dev.vavateam1.model.OrderItem;
 import dev.vavateam1.model.OrderStatus;
@@ -28,19 +30,24 @@ public class KitchenService {
     private final OrderItemDao orderItemDao;
     private final MenuItemDao menuItemDao;
     private final TableDao tableDao;
+    private final LocationDao locationDao;
 
     @Inject
-    public KitchenService(OrderItemDao orderItemDao, MenuItemDao menuItemDao, TableDao tableDao) {
+    public KitchenService(OrderItemDao orderItemDao, MenuItemDao menuItemDao, TableDao tableDao,
+            LocationDao locationDao) {
         this.orderItemDao = orderItemDao;
         this.menuItemDao = menuItemDao;
         this.tableDao = tableDao;
+        this.locationDao = locationDao;
     }
 
     public List<KitchenOrder> getAllOrders() {
-        Map<Integer, MenuItem> menuItemsById = menuItemDao.getAllMenuItems().stream()
+        Map<Integer, MenuItem> menuItemsById = menuItemDao.getAllMenuItemsIncludingDeleted().stream()
                 .collect(Collectors.toMap(MenuItem::getId, item -> item));
-        Map<Integer, Integer> tableNumbersById = tableDao.findAll().stream()
-                .collect(Collectors.toMap(Table::getId, Table::getTableNumber));
+        Map<Integer, Table> tablesById = tableDao.findAll().stream()
+                .collect(Collectors.toMap(Table::getId, table -> table));
+        Map<Integer, String> locationNamesById = locationDao.findAll().stream()
+                .collect(Collectors.toMap(Location::getId, Location::getName));
 
         Map<Integer, List<OrderItem>> itemsByTable = new LinkedHashMap<>();
         for (OrderItem item : orderItemDao.getUnpaidOrderItems()) {
@@ -54,7 +61,8 @@ public class KitchenService {
         }
 
         return itemsByTable.entrySet().stream()
-                .map(entry -> toKitchenOrder(entry.getKey(), entry.getValue(), menuItemsById, tableNumbersById))
+                .map(entry -> toKitchenOrder(entry.getKey(), entry.getValue(), menuItemsById, tablesById,
+                        locationNamesById))
                 .sorted(Comparator.comparingInt(KitchenOrder::getId))
                 .toList();
     }
@@ -122,17 +130,19 @@ public class KitchenService {
     }
 
     private KitchenOrder toKitchenOrder(int tableId, List<OrderItem> items, Map<Integer, MenuItem> menuItemsById,
-            Map<Integer, Integer> tableNumbersById) {
+            Map<Integer, Table> tablesById, Map<Integer, String> locationNamesById) {
         List<OrderItemDto> itemDtos = items.stream()
                 .map(item -> toOrderItemDto(item, menuItemsById))
                 .toList();
 
-        int tableNumber = tableNumbersById.getOrDefault(tableId, tableId);
+        Table table = tablesById.get(tableId);
+        int tableNumber = table != null ? table.getTableNumber() : tableId;
+        String locationName = table != null ? locationNamesById.get(table.getLocationId()) : null;
         OrderStatus status = deriveOrderStatus(items);
 
         // For aggregated kitchen board orders, table id is a stable identifier for
         // actions.
-        return new KitchenOrder(tableId, tableNumber, itemDtos, status);
+        return new KitchenOrder(tableId, tableNumber, locationName, itemDtos, status);
     }
 
     private OrderItemDto toOrderItemDto(OrderItem item, Map<Integer, MenuItem> menuItemsById) {

@@ -1,6 +1,7 @@
 package dev.vavateam1.service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -50,6 +51,11 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public List<MenuItem> getMenuItemsIncludingDeleted() {
+        return menuItemDao.getAllMenuItemsIncludingDeleted();
+    }
+
+    @Override
     public List<OrderItem> getOrderItems(Table table) {
         return orderItemDao.getOrderItemsByTableId(table.getId());
     }
@@ -66,6 +72,8 @@ public class OrderServiceImpl implements OrderService {
         }
 
         log.info("Creating order item for menu item '{}' (id: {}) on table id: {}", menuItem.getName(), menuItem.getId(), table.getId());
+        BigDecimal itemDiscount = normalizeDiscount(menuItem.getDiscount());
+        BigDecimal discountedPrice = applyDiscount(menuItem.getPrice(), itemDiscount);
 
         CreateOrder createDto = new CreateOrder(
                 menuItem.getId(),
@@ -73,8 +81,8 @@ public class OrderServiceImpl implements OrderService {
                 waiterId,
                 table.getId(),
                 1,
-                BigDecimal.ZERO,
-                menuItem.getPrice(),
+                itemDiscount,
+                discountedPrice,
                 null,
                 OrderStatus.RECEIVED);
 
@@ -153,6 +161,24 @@ public class OrderServiceImpl implements OrderService {
                 item.getPrice(),
                 item.getNote(),
                 item.getStatus());
+    }
+
+    private BigDecimal normalizeDiscount(BigDecimal discount) {
+        if (discount == null || discount.compareTo(BigDecimal.ZERO) < 0) {
+            return BigDecimal.ZERO;
+        }
+
+        if (discount.compareTo(new BigDecimal("100")) > 0) {
+            return new BigDecimal("100");
+        }
+
+        return discount;
+    }
+
+    private BigDecimal applyDiscount(BigDecimal price, BigDecimal discountPercent) {
+        BigDecimal safePrice = price != null ? price : BigDecimal.ZERO;
+        BigDecimal multiplier = BigDecimal.ONE.subtract(discountPercent.divide(new BigDecimal("100"), 4, RoundingMode.HALF_UP));
+        return safePrice.multiply(multiplier).setScale(2, RoundingMode.HALF_UP);
     }
 
 }

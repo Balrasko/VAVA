@@ -83,7 +83,7 @@
               </VBox>
 
               <!-- RIGHT PANEL -->
-              <VBox fx:id="orderPanel"
+              <VBox fx:id="orderActionsPanel"
               spacing="12"
               prefWidth="500"
               maxWidth="Infinity"

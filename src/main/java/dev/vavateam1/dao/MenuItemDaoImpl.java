@@ -47,6 +47,17 @@ public class MenuItemDaoImpl implements MenuItemDao {
     public List<MenuItem> getAllMenuItems() {
         log.info("Fetching all menu items");
         String sql = "SELECT * FROM menu_items WHERE deleted_at IS NULL";
+        return fetchMenuItems(sql);
+    }
+
+    @Override
+    public List<MenuItem> getAllMenuItemsIncludingDeleted() {
+        log.info("Fetching all menu items including deleted");
+        String sql = "SELECT * FROM menu_items";
+        return fetchMenuItems(sql);
+    }
+
+    private List<MenuItem> fetchMenuItems(String sql) {
         List<MenuItem> items = new ArrayList<>();
         try (Connection conn = connectionFactory.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql)) {

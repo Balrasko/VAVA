@@ -15,6 +15,8 @@ import dev.vavateam1.service.HistoryService;
 import dev.vavateam1.util.I18n;
 import javafx.fxml.FXML;
 import javafx.print.PrinterJob;
+import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -23,9 +25,12 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
+import dev.vavateam1.model.User;
+import dev.vavateam1.service.AuthService;
 
 public class HistoryController {
 
+    private static final int MANAGER_ROLE_ID = 1;
     private static final DateTimeFormatter DISPLAY_FORMAT = DateTimeFormatter.ofPattern("d.M.yyyy HH:mm");
     private static final DateTimeFormatter DAY_FORMAT = DateTimeFormatter.ofPattern("d.M.yyyy");
 
@@ -45,11 +50,13 @@ public class HistoryController {
     private Button printCopyButton;
 
     private final HistoryService historyService;
+    private final AuthService authService;
     private PaymentDto selectedPayment;
 
     @Inject
-    public HistoryController(HistoryService historyService) {
+    public HistoryController(HistoryService historyService, AuthService authService) {
         this.historyService = historyService;
+        this.authService = authService;
     }
 
     @FXML
@@ -58,6 +65,9 @@ public class HistoryController {
 
         detailPanel.setVisible(false);
         detailPanel.setManaged(false);
+        boolean canRefund = canCurrentUserRefund();
+        refundButton.setVisible(canRefund);
+        refundButton.setManaged(canRefund);
     }
 
     private void loadPayments() {
@@ -126,7 +136,7 @@ public class HistoryController {
         selectedPayment = payment;
         detailPanel.setVisible(true);
         detailPanel.setManaged(true);
-        refundButton.setDisable(Boolean.TRUE.equals(payment.getRefunded()));
+        refundButton.setDisable(!canCurrentUserRefund() || Boolean.TRUE.equals(payment.getRefunded()));
 
         detailContainer.getChildren().clear();
         List<OrderItemDto> orderItems = historyService.getOrderItemsByPaymentId(payment.getId());
@@ -194,7 +204,7 @@ public class HistoryController {
         PrinterJob printerJob = PrinterJob.createPrinterJob();
         Window window = detailPanel.getScene() != null ? detailPanel.getScene().getWindow() : null;
         if (printerJob != null && printerJob.showPrintDialog(window)) {
-            boolean success = printerJob.printPage(detailPanel);
+            boolean success = printerJob.printPage(createPrintableReceipt());
             if (success) {
                 printerJob.endJob();
                 return;
@@ -262,6 +272,10 @@ public class HistoryController {
         if (selectedPayment == null || Boolean.TRUE.equals(selectedPayment.getRefunded())) {
             return;
         }
+        if (!canCurrentUserRefund()) {
+            showWarning(I18n.t("history.refundNotAllowed"));
+            return;
+        }
 
         try {
             historyService.refund(selectedPayment.getId());
@@ -288,6 +302,28 @@ public class HistoryController {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    private boolean canCurrentUserRefund() {
+        User currentUser = authService != null ? authService.getUser() : null;
+        return currentUser != null && currentUser.getRoleId() == MANAGER_ROLE_ID;
+    }
+
+    private Node createPrintableReceipt() {
+        VBox receipt = new VBox(6);
+        receipt.setPadding(new Insets(18));
+        receipt.setMaxWidth(320);
+        receipt.setStyle("-fx-background-color:white; -fx-text-fill:black;");
+
+        for (String line : buildReceiptText().split("\\R")) {
+            Label label = new Label(line);
+            label.setWrapText(true);
+            label.setMaxWidth(300);
+            label.setStyle("-fx-text-fill:black; -fx-font-size:11;");
+            receipt.getChildren().add(label);
+        }
+
+        return receipt;
     }
 
     private String localizePaymentMethod(String methodName) {
