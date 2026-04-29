@@ -102,7 +102,8 @@ public class KitchenController {
         header.getStyleClass().add(getStatusStyleClass(order.getStatus()));
 
         VBox titleBox = new VBox(2);
-        Label tableLabel = new Label(I18n.t("kitchen.table", String.valueOf(order.getTableNumber())));
+        Label tableLabel = new Label(
+                I18n.t("kitchen.table", order.getLocationName(), String.valueOf(order.getTableNumber())));
         tableLabel.getStyleClass().add("chef-card-title");
 
         Label orderLabel = new Label(I18n.t("kitchen.order", String.valueOf(order.getId())));
