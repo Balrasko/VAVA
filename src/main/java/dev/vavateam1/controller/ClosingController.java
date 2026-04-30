@@ -1,9 +1,21 @@
 package dev.vavateam1.controller;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.nio.file.Path;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import com.google.inject.Inject;
 
@@ -13,23 +25,16 @@ import dev.vavateam1.service.AuthService;
 import dev.vavateam1.service.ClosingService;
 import dev.vavateam1.util.I18n;
 import javafx.fxml.FXML;
-import javafx.print.PrinterJob;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
-
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.nio.file.Files;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 public class ClosingController {
 
@@ -121,16 +126,7 @@ public class ClosingController {
             return;
         }
 
-        PrinterJob printerJob = PrinterJob.createPrinterJob();
-        if (printerJob != null && printerJob.showPrintDialog(resolveWindow())) {
-            boolean success = printerJob.printPage(createPrintableReportNode());
-            if (success) {
-                printerJob.endJob();
-                return;
-            }
-        }
-
-        exportClosingReport();
+        exportClosingReportXml();
     }
 
     @FXML
@@ -174,53 +170,58 @@ public class ClosingController {
         }
     }
 
-    private void exportClosingReport() {
+    private void exportClosingReportXml() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle(I18n.t("closing.saveReport"));
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(I18n.t("file.type.text"), "*.txt"));
-        fileChooser.setInitialFileName("closing-" + currentSummary.businessDate().format(REPORT_DATE_FORMAT) + ".txt");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(I18n.t("file.type.xml"), "*.xml"));
+        fileChooser.setInitialFileName("closing-" + currentSummary.businessDate().format(REPORT_DATE_FORMAT) + ".xml");
 
         var selectedFile = fileChooser.showSaveDialog(resolveWindow());
         if (selectedFile == null) {
             return;
         }
 
-        try (BufferedWriter writer = Files.newBufferedWriter(selectedFile.toPath())) {
-            writer.write(buildPrintableReport());
+        try {
+            writeClosingXml(selectedFile.toPath());
         } catch (IOException e) {
             throw new RuntimeException("Failed to export closing report", e);
         }
     }
 
-    private String buildPrintableReport() {
-        return String.join(System.lineSeparator(),
-                I18n.t("closing.reportTitle"),
-                I18n.t("closing.date", currentSummary.businessDate().format(REPORT_DATE_FORMAT)),
-                "",
-                I18n.t("closing.totalPaid") + " " + formatMoney(currentSummary.totalPaid()),
-                I18n.t("closing.totalTips") + " " + formatMoney(currentSummary.totalTips()),
-                I18n.t("closing.grandTotal", formatMoney(currentSummary.grandTotal())),
-                I18n.t("closing.cashFloat") + ": " + formatMoney(currentSummary.cashFloat()),
-                I18n.t("common.cash") + ": " + formatMoney(currentSummary.cash()),
-                I18n.t("common.card") + ": " + formatMoney(currentSummary.card()),
-                "");
+    private void writeClosingXml(Path path) throws IOException {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        try {
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            Document document = builder.newDocument();
+
+            Element rootElement = document.createElement("closingReport");
+            document.appendChild(rootElement);
+
+            appendTextElement(document, rootElement, "businessDate",
+                    currentSummary.businessDate().format(REPORT_DATE_FORMAT));
+            appendTextElement(document, rootElement, "totalPaid", formatMoney(currentSummary.totalPaid()));
+            appendTextElement(document, rootElement, "totalTips", formatMoney(currentSummary.totalTips()));
+            appendTextElement(document, rootElement, "grandTotal", formatMoney(currentSummary.grandTotal()));
+            appendTextElement(document, rootElement, "cashFloat", formatMoney(currentSummary.cashFloat()));
+            appendTextElement(document, rootElement, "cash", formatMoney(currentSummary.cash()));
+            appendTextElement(document, rootElement, "card", formatMoney(currentSummary.card()));
+
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+
+            transformer.transform(new DOMSource(document), new StreamResult(path.toFile()));
+        } catch (ParserConfigurationException | TransformerException e) {
+            throw new IOException("Failed to write closing XML", e);
+        }
     }
 
-    private Node createPrintableReportNode() {
-        VBox report = new VBox(8);
-        report.setAlignment(Pos.TOP_LEFT);
-        report.setPadding(new Insets(24));
-        report.setPrefWidth(360);
-        report.setStyle("-fx-background-color:white;");
-
-        for (String line : buildPrintableReport().split("\\R")) {
-            Label label = new Label(line);
-            label.setWrapText(true);
-            label.setStyle("-fx-text-fill:black; -fx-font-size:12;");
-            report.getChildren().add(label);
-        }
-
-        return report;
+    private void appendTextElement(Document document, Element parent, String tagName, String value) {
+        Element element = document.createElement(tagName);
+        element.setTextContent(value);
+        parent.appendChild(element);
     }
 
     private User requireCurrentUser() {

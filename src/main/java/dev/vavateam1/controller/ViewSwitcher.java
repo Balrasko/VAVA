@@ -6,13 +6,17 @@ import com.google.inject.Injector;
 import com.google.inject.Singleton;
 
 import dev.vavateam1.App;
+import dev.vavateam1.model.Table;
 import dev.vavateam1.util.I18n;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 @Singleton
 public class ViewSwitcher {
-    public record DashboardState(String viewKey, int activeZoneId) {
+    public record DashboardState(String viewKey, int activeZoneId, Table activeOrderTable) {
+        public DashboardState(String viewKey, int activeZoneId) {
+            this(viewKey, activeZoneId, null);
+        }
     }
 
     private Stage stage;
