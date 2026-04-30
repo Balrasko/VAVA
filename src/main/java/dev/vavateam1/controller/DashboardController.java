@@ -31,6 +31,7 @@ public class DashboardController {
     private static final String VIEW_CLOSING = "closing";
     private static final String VIEW_HISTORY = "history";
     private static final String VIEW_KITCHEN = "kitchen";
+    private static final String VIEW_ORDER = "order";
 
     private final AuthService authService;
     private final ViewSwitcher viewSwitcher;
@@ -72,6 +73,7 @@ public class DashboardController {
     private TablesController tablesController;
     private int activeZoneId = 1;
     private String currentViewKey = VIEW_TABLES;
+    private Table activeOrderTable;
 
     private boolean sidebarVisible = false;
 
@@ -116,6 +118,7 @@ public class DashboardController {
                 topSection.setManaged(false);
             } else if (restoredState != null) {
                 activeZoneId = restoredState.activeZoneId();
+                activeOrderTable = restoredState.activeOrderTable();
                 restoreView(restoredState.viewKey());
             } else {
                 showTableView();
@@ -127,13 +130,14 @@ public class DashboardController {
 
     @FXML
     private void switchLanguage() throws Exception {
-        viewSwitcher.setDashboardState(new ViewSwitcher.DashboardState(currentViewKey, activeZoneId));
+        viewSwitcher.setDashboardState(new ViewSwitcher.DashboardState(currentViewKey, activeZoneId, activeOrderTable));
         I18n.toggleLocale();
         viewSwitcher.reloadCurrentView();
     }
 
     private void restoreView(String viewKey) throws Exception {
         switch (viewKey) {
+            case VIEW_ORDER -> restoreOrderView();
             case VIEW_TABLE_LAYOUT -> showManagerView(VIEW_TABLE_LAYOUT);
             case VIEW_FINANCES -> showManagerView(VIEW_FINANCES);
             case VIEW_INVENTORY -> showManagerView(VIEW_INVENTORY);
@@ -143,6 +147,15 @@ public class DashboardController {
             case VIEW_HISTORY -> showHistory();
             default -> showTableView();
         }
+    }
+
+    private void restoreOrderView() throws Exception {
+        if (activeOrderTable == null) {
+            showTableView();
+            return;
+        }
+
+        showOrderView(activeOrderTable);
     }
 
     private void showManagerView(String tabName) throws Exception {
@@ -284,6 +297,7 @@ public class DashboardController {
 
         contentArea.getChildren().setAll(view);
         currentViewKey = VIEW_TABLES;
+        activeOrderTable = null;
 
         loadZonesTopNavbar();
     }
@@ -300,6 +314,9 @@ public class DashboardController {
 
         contentArea.getChildren().setAll(view);
         setTopNavbarVisible(false);
+        activeZoneId = table.getLocationId();
+        activeOrderTable = table;
+        currentViewKey = VIEW_ORDER;
     }
 
     private void showKitchenView() throws Exception {
@@ -321,6 +338,7 @@ public class DashboardController {
             contentArea.getChildren().clear();
             contentArea.getChildren().add(loader.load());
             tablesController = null;
+            activeOrderTable = null;
             currentViewKey = VIEW_CLOSING;
             setTopNavbarVisible(false);
 
@@ -337,6 +355,7 @@ public class DashboardController {
 
             contentArea.getChildren().clear();
             contentArea.getChildren().add(loader.load());
+            activeOrderTable = null;
             currentViewKey = VIEW_MENU;
 
         } catch (Exception e) {
@@ -357,6 +376,7 @@ public class DashboardController {
             contentArea.getChildren().clear();
             contentArea.getChildren().add(loader.load());
             tablesController = null;
+            activeOrderTable = null;
             currentViewKey = VIEW_USERS;
 
         } catch (Exception e) {
@@ -375,6 +395,7 @@ public class DashboardController {
             contentArea.getChildren().clear();
             contentArea.getChildren().add(loader.load());
             tablesController = null;
+            activeOrderTable = null;
             currentViewKey = VIEW_HISTORY;
             setTopNavbarVisible(false);
 
@@ -410,6 +431,7 @@ public class DashboardController {
             contentArea.getChildren().clear();
             contentArea.getChildren().add(loader.load());
             tablesController = null;
+            activeOrderTable = null;
             currentViewKey = VIEW_FINANCES;
 
         } catch (Exception e) {
@@ -431,6 +453,7 @@ public class DashboardController {
             contentArea.getChildren().clear();
             contentArea.getChildren().add(loader.load());
             tablesController = null;
+            activeOrderTable = null;
             currentViewKey = VIEW_INVENTORY;
 
         } catch (Exception e) {
@@ -448,6 +471,7 @@ public class DashboardController {
             contentArea.getChildren().clear();
             contentArea.getChildren().add(loader.load());
             tablesController = null;
+            activeOrderTable = null;
             currentViewKey = VIEW_TABLE_LAYOUT;
 
         } catch (Exception e) {
