@@ -1,0 +1,19 @@
+{{- if and .Values.postgresql.enabled .Values.pgadmin.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "vava.fullname" . }}-pgadmin
+  labels:
+    {{- include "vava.labels" . | nindent 4 }}
+    app.kubernetes.io/component: pgadmin
+spec:
+  type: {{ .Values.pgadmin.service.type }}
+  ports:
+    - name: http
+      port: {{ .Values.pgadmin.service.port }}
+      targetPort: http
+      protocol: TCP
+  selector:
+    {{- include "vava.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: pgadmin
+{{- end }}

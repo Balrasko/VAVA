@@ -1,0 +1,49 @@
+nameOverride: ""
+fullnameOverride: ""
+
+postgresql:
+  enabled: true
+  image:
+    repository: postgres
+    tag: "17"
+    pullPolicy: IfNotPresent
+  database: vava-restaurant
+  username: postgres
+  password: postgres
+  existingSecret: ""
+  service:
+    type: ClusterIP
+    port: 5432
+  persistence:
+    enabled: true
+    size: 1Gi
+    storageClassName: ""
+  initdb:
+    enabled: true
+    existingConfigMap: ""
+  resources: {}
+
+pgadmin:
+  enabled: false
+  image:
+    repository: dpage/pgadmin4
+    tag: latest
+    pullPolicy: IfNotPresent
+  email: admin@vava.com
+  password: admin
+  service:
+    type: ClusterIP
+    port: 80
+  resources: {}
+
+app:
+  enabled: false
+  replicaCount: 1
+  image:
+    repository: vava-app
+    tag: latest
+    pullPolicy: IfNotPresent
+  javaToolOptions: "--enable-native-access=ALL-UNNAMED"
+  command: []
+  args: []
+  resources: {}

@@ -1,0 +1,14 @@
+{{- if and .Values.postgresql.enabled .Values.postgresql.initdb.enabled (not .Values.postgresql.initdb.existingConfigMap) }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "vava.postgresql.initConfigMapName" . }}
+  labels:
+    {{- include "vava.labels" . | nindent 4 }}
+    app.kubernetes.io/component: postgresql
+data:
+  01-schema.sql: |-
+{{ .Files.Get "files/db/schema.sql" | indent 4 }}
+  02-seed.sql: |-
+{{ .Files.Get "files/db/seed.sql" | indent 4 }}
+{{- end }}

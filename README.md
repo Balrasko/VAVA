@@ -102,6 +102,58 @@ RESTAURANT_DB_PORT=5433
 
 If the Java application is ever moved into the same Docker Compose network, use `RESTAURANT_DB_HOST=db` and `RESTAURANT_DB_PORT=5432` instead.
 
+### Run PostgreSQL on minikube with Helm
+
+The local Helm chart lives in `charts/vava`. It deploys PostgreSQL with the same schema and seed data used by Docker Compose:
+
+```bash
+minikube start
+helm upgrade --install vava ./charts/vava --namespace vava --create-namespace --kube-context minikube
+kubectl --context minikube -n vava rollout status statefulset/vava-postgresql
+helm test vava -n vava --kube-context minikube
+```
+
+Useful Helm commands:
+
+```bash
+helm upgrade --install vava ./charts/vava --namespace vava --create-namespace --kube-context minikube
+helm test vava -n vava --kube-context minikube
+helm uninstall vava -n vava --kube-context minikube
+```
+
+Use `kubectl port-forward` to connect the desktop JavaFX JAR to the minikube database:
+
+```bash
+kubectl --context minikube -n vava port-forward svc/vava-postgresql 5433:5432
+java -jar target/vavateam1-1.0-SNAPSHOT.jar
+```
+
+If Docker Compose PostgreSQL is already using port `5433`, either stop it or forward minikube to another local port and update `.env`.
+
+For a presentation, other people on the same network can connect to the minikube PostgreSQL through your machine if you bind the port-forward to all interfaces:
+
+```bash
+kubectl --context minikube -n vava port-forward --address 0.0.0.0 svc/vava-postgresql 15432:5432
+```
+
+Then they use your Mac's LAN IP address and port `15432`:
+
+```bash
+ipconfig getifaddr en0
+```
+
+```env
+RESTAURANT_DB_HOST=<your-mac-lan-ip>
+RESTAURANT_DB_PORT=15432
+RESTAURANT_DB_NAME=vava-restaurant
+RESTAURANT_DB_USER=postgres
+RESTAURANT_DB_PASSWORD=postgres
+```
+
+This is only a local demo setup. Keep it on a trusted network and stop the port-forward with `Ctrl+C` after the presentation.
+
+More details are in `charts/vava/README.md`.
+
 ## Code organization
 
 The source code lives under `src/main/java/dev/vavateam1/` and follows a standard MVC layout:
