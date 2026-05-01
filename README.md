@@ -11,8 +11,22 @@ Prosim robte pull request/merge request nech tu nemame potom bordel v tom a nech
 
 > ⚠️ If you have multiple java versions installed set `JAVA_HOME` to the correct version
 
-```
+# Linux / Mac (bash/zsh)
+
+```bash
 export JAVA_HOME=/path/to/jdk-25
+```
+
+# Windows CMD
+
+```bash
+set JAVA_HOME=C:\path\to\jdk-25
+```
+
+# Windows PowerShell
+
+```bash
+$env:JAVA_HOME = "C:\path\to\jdk-25"
 ```
 
 Verify with `mvn -version`
@@ -59,14 +73,33 @@ docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 ```
 
 ### Seed DB
+
+Docker automatically applies the schema and seed data on first startup from a clean state — no manual seeding is needed for local development.
+
+If you need to re-seed manually:
+
 ```bash
-zsh ./seed.sh
+bash ./seed.sh
 ```
 
+> ⚠️ Requires a bash-compatible shell. On Windows use **Git Bash** or **WSL**.
+
 ### ENV set
+
+Copy `.env.example` and fill in your values:
+
 ```bash
-zsh ./run.sh
+cp .env.example .env
 ```
+
+By default the application reads `.env` automatically. If environment variables are not picked up by your IDE or shell, run the application via:
+
+```bash
+bash ./run.sh
+```
+
+> ⚠️ Requires a bash-compatible shell. On Windows use **Git Bash** or **WSL**.
+
 ### Run the application
 
 ```bash
@@ -158,24 +191,37 @@ More details are in `charts/vava/README.md`.
 
 The source code lives under `src/main/java/dev/vavateam1/` and follows a standard MVC layout:
 
-| Package / File | Purpose                                                                                         |
-| -------------- | ----------------------------------------------------------------------------------------------- |
-| `App.java`     | Application entry point; extends `javafx.application.Application` and launches the JavaFX stage |
-| `controller/`  | JavaFX controllers – handle UI events and mediate between view and service layers               |
-| `model/`       | Plain data/domain objects (POJOs, records, enums)                                               |
-| `service/`     | Business logic and data-access services consumed by controllers                                 |
-| `view/`        | Custom JavaFX components or FXML-related view helpers                                           |
+| Package / File    | Purpose                                                                                                                   |
+|-------------------|---------------------------------------------------------------------------------------------------------------------------|
+| `App.java`        | Application entry point; extends `javafx.application.Application` and launches the JavaFX stage                           |
+| `AppModule.java`  | Google Guice dependency injection module – binds interfaces to their implementations                                      |
+| `SystemInfo.java` | Exposes runtime environment details (Java version, JavaFX version)                                                        |
+| `controller/`     | JavaFX controllers – handle UI events and mediate between view and service layers                                         |
+| `model/`          | Plain data/domain objects (POJOs, records, enums)                                                                         |
+| `dao/`            | Data Access Objects – direct database access via JDBC                                                                     |
+| `dto/`            | Data Transfer Objects – composite objects passed between layers                                                           |
+| `service/`        | Business logic consumed by controllers                                                                                    |
+| `data/`           | Infrastructure layer – database configuration, connection factory, security config, and local database initializer/seeder |
+| `report/`         | Report model classes used for finance and closing summaries                                                               |
+| `util/`           | Shared utility and helper classes                                                                                         |
 
 Resources are organised under `src/main/resources/` and copied to the classpath root by Maven at build time:
 
-| Folder  | Purpose                                 |
-| ------- | --------------------------------------- |
-| `view/` | FXML layout files loaded by controllers |
-| `css/`  | Stylesheets applied to JavaFX scenes    |
+| Folder        | Purpose                                                                                    |
+|---------------|--------------------------------------------------------------------------------------------|
+| `css/`        | Stylesheets applied to JavaFX scenes                                                       |
+| `db/`         | SQL schema and seed scripts                                                                |
+| `i18n/`       | Internationalisation / localisation bundles                                                |
+| `img/`        | Image assets used in the UI                                                                |
+| `view/`       | FXML layout files loaded by controllers                                                    |
+| `logback.xml` | Logback configuration – logs to console and to a rolling daily file under `logs/`          |
 
 ## Seed DB users
 
-Users (id, name, email, password)
-1, Admin User, admin@vava.com, admin123
-3, Jožko Čašník, waiter1@vava.com, waiter123
-4, Fero Kuchár, chef1@vava.com, chef123
+| ID | Role   | Name          | Email              | Password   |
+|----|--------|---------------|--------------------|------------|
+| 1  | ADMIN  | Mister Admin  | admin@vava.com     | admin123   |
+| 2  | WAITER | Waiter1       | waiter1@vava.com   | waiter123  |
+| 3  | WAITER | Waiter2       | waiter2@vava.com   | waiter123  |
+| 4  | CHEF   | Le Chef1      | chef1@vava.com     | chef123    |
+| 5  | CHEF   | Le Chef2      | chef2@vava.com     | chef123    |
