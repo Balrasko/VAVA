@@ -1,6 +1,4 @@
-Semestralny projekt z predmetu VAVA na FIIT STU 2025/2026
-
-Prosim robte pull request/merge request nech tu nemame potom bordel v tom a nech sa to lahsie merguje potom
+Semestral project from the subject VAVA on FIIT STU 2025/2026
 
 ## Development setup
 
@@ -86,13 +84,9 @@ bash ./seed.sh
 
 ### ENV set
 
-Copy `.env.example` and fill in your values:
+Copy `.env.example` and fill in your values.
 
-```bash
-cp .env.example .env
-```
-
-By default the application reads `.env` automatically. If environment variables are not picked up by your IDE or shell, run the application via:
+By default, the application reads `.env` automatically. If environment variables are not picked up by your IDE or shell, run the application via:
 
 ```bash
 bash ./run.sh
@@ -216,7 +210,7 @@ Resources are organised under `src/main/resources/` and copied to the classpath 
 | `view/`       | FXML layout files loaded by controllers                                                    |
 | `logback.xml` | Logback configuration – logs to console and to a rolling daily file under `logs/`          |
 
-## Seed DB users
+## Seed DB users for testing
 
 | ID | Role   | Name          | Email              | Password   |
 |----|--------|---------------|--------------------|------------|
