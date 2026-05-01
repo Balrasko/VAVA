@@ -58,6 +58,7 @@ public class UsersController {
     @FXML
     private void initialize() {
         configureRoleToggleGroup();
+        configureFieldErrorClearing();
         reloadUsers();
         hideForm();
     }
@@ -81,22 +82,17 @@ public class UsersController {
 
     @FXML
     private void onSubmitUser() {
-        String email = emailField.getText().trim();
-        if (!email.isBlank() && !EMAIL_PATTERN.matcher(email).matches()) {
-            showFormError(I18n.t("login.invalidEmail"));
-            return;
-        }
-
-        if (editingUserId == null && !passwordField.getText().isBlank() && !passwordField.getText().equals(repeatPasswordField.getText())) {
-            showFormError(I18n.t("users.passwordsDoNotMatch"));
+        if (!validateUserForm()) {
             return;
         }
 
         clearFormError();
 
+        String email = emailField.getText().trim();
+
         User user = new User();
         user.setName(buildFullName());
-        user.setEmail(email.isBlank() ? "new.user@vava.com" : email);
+        user.setEmail(email);
         user.setRoleId(resolveSelectedRoleId());
         if (!passwordField.getText().isBlank()) {
             user.setPasswordHash(passwordField.getText());
@@ -182,7 +178,78 @@ public class UsersController {
         passwordField.clear();
         repeatPasswordField.clear();
         selectRole(waiterRoleButton);
+        clearFieldErrors();
         clearFormError();
+    }
+
+    private boolean validateUserForm() {
+        boolean valid = true;
+        boolean editingUser = editingUserId != null;
+
+        valid &= validateRequired(nameField);
+        valid &= validateRequired(surnameField);
+        valid &= validateRequired(emailField);
+
+        String email = emailField.getText().trim();
+        boolean invalidEmail = !email.isBlank() && !EMAIL_PATTERN.matcher(email).matches();
+        if (invalidEmail) {
+            setFieldError(emailField, true);
+            valid = false;
+        }
+
+        boolean passwordProvided = !passwordField.getText().isBlank() || !repeatPasswordField.getText().isBlank();
+        if (!editingUser || passwordProvided) {
+            valid &= validateRequired(passwordField);
+            valid &= validateRequired(repeatPasswordField);
+        } else {
+            setFieldError(passwordField, false);
+            setFieldError(repeatPasswordField, false);
+        }
+
+        boolean passwordsFilled = !passwordField.getText().isBlank() && !repeatPasswordField.getText().isBlank();
+        if (passwordsFilled && !passwordField.getText().equals(repeatPasswordField.getText())) {
+            setFieldError(passwordField, true);
+            setFieldError(repeatPasswordField, true);
+            showFormError(I18n.t("users.passwordsDoNotMatch"));
+            return false;
+        }
+
+        if (!valid) {
+            showFormError(invalidEmail ? I18n.t("login.invalidEmail") : I18n.t("users.requiredFields"));
+            return false;
+        }
+
+        clearFormError();
+        return true;
+    }
+
+    private boolean validateRequired(TextField field) {
+        boolean valid = field.getText() != null && !field.getText().trim().isEmpty();
+        setFieldError(field, !valid);
+        return valid;
+    }
+
+    private void setFieldError(TextField field, boolean error) {
+        if (error) {
+            if (!field.getStyleClass().contains("form-input-error")) {
+                field.getStyleClass().add("form-input-error");
+            }
+        } else {
+            field.getStyleClass().remove("form-input-error");
+        }
+    }
+
+    private void clearFieldErrors() {
+        setFieldError(nameField, false);
+        setFieldError(surnameField, false);
+        setFieldError(emailField, false);
+        setFieldError(passwordField, false);
+        setFieldError(repeatPasswordField, false);
+    }
+
+    private void configureFieldErrorClearing() {
+        List.of(nameField, surnameField, emailField, passwordField, repeatPasswordField)
+                .forEach(field -> field.textProperty().addListener((observable, oldValue, newValue) -> setFieldError(field, false)));
     }
 
     private void configureRoleToggleGroup() {
@@ -314,5 +381,7 @@ public class UsersController {
             case 3 -> selectRole(chefRoleButton);
             default -> selectRole(waiterRoleButton);
         }
+        clearFieldErrors();
+        clearFormError();
     }
 }
