@@ -176,9 +176,12 @@ CREATE TABLE IF NOT EXISTS order_items (
     );
 
 
+-----------------------------------------------------------------------------------------------------------------
+
+
 -- INDEXES
 CREATE INDEX IF NOT EXISTS idx_payments_active_created_date
-    ON payments ((created_at::date))
+    ON payments (created_at)
     WHERE COALESCE(refunded, FALSE) = FALSE;
 
 CREATE INDEX IF NOT EXISTS idx_order_items_payment_id

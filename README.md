@@ -56,19 +56,25 @@ The base setup starts:
 - `db`
 - `pgadmin`
 
-and does not persist PostgreSQL data, so init scripts are applied from a clean state.
-
 Start the default development setup with:
 
 ```bash
-docker-compose down && docker-compose up -d
+docker-compose down -v && docker-compose up -d
 ```
+
+> ⚠️ The base setup does not persist PostgreSQL data — init scripts are applied from a clean state on every `down -v && up`.
 
 For a persistent production-style database, use the override file:
 
 ```bash
 docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 ```
+
+> ⚠️ The prod setup uses a named Docker volume (`postgres_data`) that persists between restarts. Init scripts only run once on a clean volume. To reset the database completely:
+> ```bash
+> docker-compose -f docker-compose.yml -f docker-compose.prod.yml down -v
+> docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+> ```
 
 ### Seed DB
 

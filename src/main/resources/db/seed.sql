@@ -46,8 +46,8 @@ INSERT INTO inventory_ingredients (name, quantity, minimal_quantity, unit, cost_
 ('Red Wine', 50, 20,  'l',   5.0),
 ('White Wine',    50, 20,  'l',   5.0),
 ('Mineral Water', 100, 35, 'l',   0.5),
-('Mint',   1,  2,  'kg',  8.0);
-
+('Mint',   1,  2,  'kg',  8.0)
+ON CONFLICT (name) DO NOTHING;
 
 -- Users (Role IDs: 1=ADMIN, 2=WAITER, 3=CHEF)
 INSERT INTO users (role_id, name, email, password) VALUES
