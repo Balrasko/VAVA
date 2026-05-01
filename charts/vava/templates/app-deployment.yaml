@@ -1,0 +1,57 @@
+{{- if .Values.app.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "vava.fullname" . }}-app
+  labels:
+    {{- include "vava.labels" . | nindent 4 }}
+    app.kubernetes.io/component: app
+spec:
+  replicas: {{ .Values.app.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "vava.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: app
+  template:
+    metadata:
+      labels:
+        {{- include "vava.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: app
+    spec:
+      containers:
+        - name: app
+          image: "{{ .Values.app.image.repository }}:{{ .Values.app.image.tag }}"
+          imagePullPolicy: {{ .Values.app.image.pullPolicy }}
+          {{- with .Values.app.command }}
+          command:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.app.args }}
+          args:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          env:
+            - name: RESTAURANT_DB_HOST
+              value: {{ printf "%s-postgresql" (include "vava.fullname" .) | quote }}
+            - name: RESTAURANT_DB_PORT
+              value: {{ .Values.postgresql.service.port | quote }}
+            - name: RESTAURANT_DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "vava.postgresql.secretName" . }}
+                  key: postgres-database
+            - name: RESTAURANT_DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "vava.postgresql.secretName" . }}
+                  key: postgres-user
+            - name: RESTAURANT_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "vava.postgresql.secretName" . }}
+                  key: postgres-password
+            - name: JAVA_TOOL_OPTIONS
+              value: {{ .Values.app.javaToolOptions | quote }}
+          resources:
+            {{- toYaml .Values.app.resources | nindent 12 }}
+{{- end }}

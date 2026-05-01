@@ -1,0 +1,28 @@
+{{- if .Values.postgresql.enabled }}
+apiVersion: v1
+kind: Pod
+metadata:
+  name: {{ include "vava.fullname" . }}-postgresql-test
+  labels:
+    {{- include "vava.labels" . | nindent 4 }}
+    app.kubernetes.io/component: test
+  annotations:
+    "helm.sh/hook": test
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  restartPolicy: Never
+  containers:
+    - name: pg-isready
+      image: "{{ .Values.postgresql.image.repository }}:{{ .Values.postgresql.image.tag }}"
+      imagePullPolicy: {{ .Values.postgresql.image.pullPolicy }}
+      env:
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "vava.postgresql.secretName" . }}
+              key: postgres-password
+      command:
+        - /bin/sh
+        - -ec
+        - pg_isready -h {{ include "vava.fullname" . }}-postgresql -p {{ .Values.postgresql.service.port }} -U {{ .Values.postgresql.username | quote }} -d {{ .Values.postgresql.database | quote }}
+{{- end }}

@@ -1,0 +1,42 @@
+{{- if and .Values.postgresql.enabled .Values.pgadmin.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "vava.fullname" . }}-pgadmin
+  labels:
+    {{- include "vava.labels" . | nindent 4 }}
+    app.kubernetes.io/component: pgadmin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "vava.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: pgadmin
+  template:
+    metadata:
+      labels:
+        {{- include "vava.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: pgadmin
+    spec:
+      containers:
+        - name: pgadmin
+          image: "{{ .Values.pgadmin.image.repository }}:{{ .Values.pgadmin.image.tag }}"
+          imagePullPolicy: {{ .Values.pgadmin.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          env:
+            - name: PGADMIN_DEFAULT_EMAIL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "vava.postgresql.secretName" . }}
+                  key: pgadmin-email
+            - name: PGADMIN_DEFAULT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "vava.postgresql.secretName" . }}
+                  key: pgadmin-password
+          resources:
+            {{- toYaml .Values.pgadmin.resources | nindent 12 }}
+{{- end }}

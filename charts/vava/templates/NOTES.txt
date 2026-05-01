@@ -1,0 +1,15 @@
+VAVA stack has been installed into namespace {{ .Release.Namespace }}.
+
+PostgreSQL service:
+  {{ include "vava.fullname" . }}-postgresql:{{ .Values.postgresql.service.port }}
+
+To use the minikube PostgreSQL from the desktop JavaFX JAR, run:
+  kubectl -n {{ .Release.Namespace }} port-forward svc/{{ include "vava.fullname" . }}-postgresql 5433:{{ .Values.postgresql.service.port }}
+
+Then run the app from the repository root:
+  java -jar target/vavateam1-1.0-SNAPSHOT.jar
+
+If local port 5433 is already used, forward another port and update RESTAURANT_DB_PORT in .env.
+
+The JavaFX app Deployment is disabled by default. Kubernetes can run the process,
+but it will not show a desktop UI without a display/VNC setup.
