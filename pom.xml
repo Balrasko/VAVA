@@ -97,6 +97,8 @@
   </dependencies>
 
   <build>
+    <finalName>RestaurantApp</finalName>
+
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

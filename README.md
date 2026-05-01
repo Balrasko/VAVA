@@ -84,7 +84,7 @@ mvn clean package
 Run it from the repository root so the application can read `.env`:
 
 ```bash
-java -jar target/vavateam1-1.0-SNAPSHOT.jar
+java -jar target/RestaurantApp.jar
 ```
 
 The JAR does not contain PostgreSQL. Start the Docker database first:
