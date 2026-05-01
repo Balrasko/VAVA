@@ -13,9 +13,10 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
-import javafx.scene.control.RadioButton;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Toggle;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -37,9 +38,9 @@ public class UsersController {
     @FXML private PasswordField passwordField;
     @FXML private PasswordField repeatPasswordField;
     @FXML private ToggleGroup roleToggleGroup;
-    @FXML private RadioButton waiterRadio;
-    @FXML private RadioButton chefRadio;
-    @FXML private RadioButton managerRadio;
+    @FXML private ToggleButton waiterRoleButton;
+    @FXML private ToggleButton chefRoleButton;
+    @FXML private ToggleButton managerRoleButton;
     @FXML private Button deleteUserButton;
     @FXML private Button submitUserButton;
 
@@ -56,6 +57,7 @@ public class UsersController {
 
     @FXML
     private void initialize() {
+        configureRoleToggleGroup();
         reloadUsers();
         hideForm();
     }
@@ -179,8 +181,34 @@ public class UsersController {
         emailField.clear();
         passwordField.clear();
         repeatPasswordField.clear();
-        waiterRadio.setSelected(true);
+        selectRole(waiterRoleButton);
         clearFormError();
+    }
+
+    private void configureRoleToggleGroup() {
+        if (roleToggleGroup == null) {
+            roleToggleGroup = new ToggleGroup();
+        }
+
+        waiterRoleButton.setToggleGroup(roleToggleGroup);
+        chefRoleButton.setToggleGroup(roleToggleGroup);
+        managerRoleButton.setToggleGroup(roleToggleGroup);
+
+        roleToggleGroup.selectedToggleProperty().addListener((observable, previousToggle, selectedToggle) -> {
+            if (selectedToggle == null) {
+                selectRole(previousToggle != null ? previousToggle : waiterRoleButton);
+            }
+        });
+
+        if (roleToggleGroup.getSelectedToggle() == null) {
+            selectRole(waiterRoleButton);
+        }
+    }
+
+    private void selectRole(Toggle toggle) {
+        if (toggle != null) {
+            roleToggleGroup.selectToggle(toggle);
+        }
     }
 
     private String buildFullName() {
@@ -193,8 +221,9 @@ public class UsersController {
     }
 
     private int resolveSelectedRoleId() {
-        if (managerRadio.isSelected()) return 1;
-        if (chefRadio.isSelected()) return 3;
+        Toggle selectedRole = roleToggleGroup.getSelectedToggle();
+        if (selectedRole == managerRoleButton) return 1;
+        if (selectedRole == chefRoleButton) return 3;
         return 2;
     }
 
@@ -280,8 +309,10 @@ public class UsersController {
         emailField.setText(user.getEmail());
         passwordField.clear();
         repeatPasswordField.clear();
-        managerRadio.setSelected(user.getRoleId() == 1);
-        chefRadio.setSelected(user.getRoleId() == 3);
-        waiterRadio.setSelected(user.getRoleId() == 2);
+        switch (user.getRoleId()) {
+            case 1 -> selectRole(managerRoleButton);
+            case 3 -> selectRole(chefRoleButton);
+            default -> selectRole(waiterRoleButton);
+        }
     }
 }

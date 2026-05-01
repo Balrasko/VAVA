@@ -483,6 +483,23 @@
   -fx-text-fill: -app-text;
 }
 
+.role-toggle-button {
+  -fx-background-color: transparent;
+  -fx-text-fill: -app-text;
+  -fx-background-radius: 16;
+  -fx-border-color: -app-border-soft;
+  -fx-border-radius: 16;
+  -fx-border-width: 1;
+  -fx-padding: 10 12;
+  -fx-cursor: hand;
+}
+
+.role-toggle-button:selected {
+  -fx-background-color: -app-blue-primary;
+  -fx-text-fill: -app-foreground;
+  -fx-border-color: -app-blue-primary;
+}
+
 .green-action-button {
   -fx-background-color: -app-add;
   -fx-text-fill: -app-text;

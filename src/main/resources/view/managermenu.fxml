@@ -18,21 +18,10 @@
             styleClass="page-root">
 
     <center>
-        <ScrollPane fitToWidth="true"
-                    fitToHeight="true"
-                    hbarPolicy="AS_NEEDED"
-                    vbarPolicy="AS_NEEDED"
-                    styleClass="page-scroll">
-            <content>
-                <VBox fillWidth="true"
-                      maxWidth="Infinity"
-                      maxHeight="Infinity">
-                    <children>
                         <HBox spacing="20"
                               alignment="TOP_LEFT"
                               maxWidth="Infinity"
                               fillHeight="true"
-                              VBox.vgrow="ALWAYS"
                               styleClass="page-content">
                             <children>
 
@@ -69,12 +58,17 @@
                                               styleClass="menu-inner-panel">
                                             <children>
 
-                                                <VBox fx:id="categorySectionsContainer"
-                                                      spacing="18"
-                                                      maxHeight="Infinity"
-                                                      VBox.vgrow="ALWAYS" />
-
-                                                <Region VBox.vgrow="ALWAYS" />
+                                                <ScrollPane fitToWidth="true"
+                                                            hbarPolicy="NEVER"
+                                                            vbarPolicy="AS_NEEDED"
+                                                            VBox.vgrow="ALWAYS"
+                                                            styleClass="page-scroll">
+                                                    <content>
+                                                        <VBox fx:id="categorySectionsContainer"
+                                                              spacing="18"
+                                                              maxWidth="Infinity" />
+                                                    </content>
+                                                </ScrollPane>
 
                                                 <HBox alignment="CENTER_RIGHT"
                                                       spacing="12">
@@ -293,9 +287,5 @@
 
                             </children>
                         </HBox>
-                    </children>
-                </VBox>
-            </content>
-        </ScrollPane>
     </center>
 </BorderPane>
