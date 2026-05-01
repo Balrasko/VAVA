@@ -95,6 +95,10 @@ public class KitchenService {
     }
 
     public void markOrderItemDone(int orderItemId) {
+        advanceOrderItemStatus(orderItemId);
+    }
+
+    public void advanceOrderItemStatus(int orderItemId) {
         OrderItem item = orderItemDao.getUnpaidOrderItems().stream()
                 .filter(candidate -> candidate.getId() != null && candidate.getId() == orderItemId)
                 .findFirst()
@@ -104,7 +108,7 @@ public class KitchenService {
             return;
         }
 
-        item.setStatus(OrderStatus.DONE);
+        item.setStatus(item.getStatus() == OrderStatus.RECEIVED ? OrderStatus.IN_PROGRESS : OrderStatus.DONE);
         orderItemDao.updateOrderItem(item);
     }
 
@@ -161,13 +165,13 @@ public class KitchenService {
                 .map(OrderItem::getStatus)
                 .collect(Collectors.toSet());
 
-    if (statuses.contains(OrderStatus.RECEIVED)) {
+        if (statuses.stream().allMatch(OrderStatus.DONE::equals)) {
+            return OrderStatus.DONE;
+        }
+        if (statuses.contains(OrderStatus.IN_PROGRESS) || statuses.contains(OrderStatus.DONE)) {
+            return OrderStatus.IN_PROGRESS;
+        }
         return OrderStatus.RECEIVED;
-    }
-    if (statuses.contains(OrderStatus.IN_PROGRESS)) {
-        return OrderStatus.IN_PROGRESS;
-    }
-        return OrderStatus.DONE;
     }
 
     private boolean isKitchenItem(OrderItem item, Map<Integer, MenuItem> menuItemsById) {

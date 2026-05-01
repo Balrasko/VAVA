@@ -2,6 +2,7 @@ package dev.vavateam1.controller;
 
 import dev.vavateam1.model.MenuItem;
 import dev.vavateam1.model.OrderItem;
+import dev.vavateam1.model.OrderStatus;
 import dev.vavateam1.model.Table;
 import dev.vavateam1.dto.OrderItemDto;
 import dev.vavateam1.model.Category;
@@ -244,11 +245,13 @@ public class OrderController {
 
         OrderItemDto existingItem = orderItemViews.stream()
                 .filter(item -> item.isSameItem(menuItem, null))
+                .filter(item -> canMergeOrderLine(menuItem, item))
                 .findFirst()
                 .orElse(null);
 
         if (existingItem != null) {
             existingItem.setQuantity(existingItem.getQuantity() + 1);
+            persistOrderItem(existingItem);
 
             refreshOrderPanel();
         } else {
@@ -355,6 +358,7 @@ public class OrderController {
                 } else {
                     item.setQuantity(quantity);
                     selectedQuantities.put(item, quantity);
+                    persistOrderItem(item);
                 }
             }
 
@@ -376,6 +380,7 @@ public class OrderController {
             } else {
                 item.setQuantity(item.getQuantity() + 1);
                 selectedQuantities.put(item, item.getQuantity());
+                persistOrderItem(item);
             }
 
             refreshOrderPanel();
@@ -411,6 +416,7 @@ public class OrderController {
                 item.setNote(newNote);
             }
 
+            persistOrderItem(item);
             notePopup.hide();
             refreshOrderPanel();
         });
@@ -902,6 +908,7 @@ public class OrderController {
 
         orderItemViews.removeAll(itemsToRemove);
         orderService.processPayment(ordersToProcess, paymentMethod, totalPrice, tip);
+        orderService.saveTempOrders(orderItemViews);
         rootStack.getChildren().remove(paymentOverlay);
         this.tip = BigDecimal.ZERO;
         refreshOrderPanel();
@@ -1098,6 +1105,19 @@ public class OrderController {
         catch (RuntimeException e) {
             showToast(I18n.t("order.wrongPlu"), false);
         }
+    }
+
+    private void persistOrderItem(OrderItemDto item) {
+        orderService.saveTempOrders(List.of(item));
+    }
+
+    private boolean canMergeOrderLine(MenuItem menuItem, OrderItemDto item) {
+        if (!menuItem.isToKitchen()) {
+            return true;
+        }
+
+        return item.getOrderItem().getStatus() == OrderStatus.RECEIVED
+                || item.getOrderItem().getStatus() == OrderStatus.IN_PROGRESS;
     }
 
     @FXML
