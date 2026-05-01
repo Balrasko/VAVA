@@ -61,6 +61,7 @@ public class FinancesController {
     private SortField activeSortField = SortField.ITEM_ID;
     private boolean ascendingSort = true;
     private FinanceReport currentReport;
+    private LocalDate latestReportDate;
     private Pattern activeSearchPattern;
     private BigDecimal displayedDailySales = BigDecimal.ZERO;
     private int displayedSoldItemsTotal = 0;
@@ -75,7 +76,8 @@ public class FinancesController {
     private void initialize() {
         searchField.setOnAction(event -> onApplyFilter());
         populateCategoryCombo();
-        reloadReport();
+        latestReportDate = financeDao.getFinanceReport().reportDate();
+        loadFinanceItems(null, null, null);
     }
 
     @FXML
@@ -115,17 +117,7 @@ public class FinancesController {
         LocalDate fromDate = fromDatePicker != null ? fromDatePicker.getValue() : null;
         LocalDate toDate = toDatePicker != null ? toDatePicker.getValue() : null;
         Integer categoryId = getSelectedCategoryId();
-        LocalDate reportDate = currentReport != null ? currentReport.reportDate() : null;
-
-        if (reportDate != null && fromDate == null && toDate == null) {
-            fromDate = reportDate;
-            toDate = reportDate;
-        }
-
-        financeItems.clear();
-        financeItems.addAll(financeDao.getFinanceItems(fromDate, toDate, categoryId));
-        sortItems();
-        renderItems();
+        loadFinanceItems(fromDate, toDate, categoryId);
     }
 
     @FXML
@@ -135,7 +127,7 @@ public class FinancesController {
         if (fromDatePicker != null) fromDatePicker.setValue(null);
         if (toDatePicker != null) toDatePicker.setValue(null);
         activeSearchPattern = null;
-        reloadReport();
+        loadFinanceItems(null, null, null);
     }
 
     @FXML
@@ -199,13 +191,30 @@ public class FinancesController {
         }
     }
 
-    private void reloadReport() {
-        currentReport = financeDao.getFinanceReport();
+    private void loadFinanceItems(LocalDate fromDate, LocalDate toDate, Integer categoryId) {
         financeItems.clear();
-        financeItems.addAll(currentReport.items());
+        financeItems.addAll(financeDao.getFinanceItems(fromDate, toDate, categoryId));
         sortItems();
         refreshSortHeaderLabels();
         renderItems();
+        currentReport = new FinanceReport(
+                resolveReportDate(fromDate, toDate),
+                displayedDailySales,
+                displayedSoldItemsTotal,
+                getFilteredItems());
+    }
+
+    private LocalDate resolveReportDate(LocalDate fromDate, LocalDate toDate) {
+        if (toDate != null) {
+            return toDate;
+        }
+        if (fromDate != null) {
+            return fromDate;
+        }
+        if (latestReportDate != null) {
+            return latestReportDate;
+        }
+        return LocalDate.now();
     }
 
     private void populateCategoryCombo() {

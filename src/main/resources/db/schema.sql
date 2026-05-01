@@ -174,3 +174,17 @@ CREATE TABLE IF NOT EXISTS order_items (
     updated_at TIMESTAMPTZ,
     deleted_at TIMESTAMPTZ
     );
+
+
+-- INDEXES
+CREATE INDEX IF NOT EXISTS idx_payments_active_created_date
+    ON payments ((created_at::date))
+    WHERE COALESCE(refunded, FALSE) = FALSE;
+
+CREATE INDEX IF NOT EXISTS idx_order_items_payment_id
+    ON order_items (payment_id)
+    WHERE payment_id IS NOT NULL;
+
+CREATE INDEX IF NOT EXISTS idx_menu_items_category_id_active
+    ON menu_items (category_id)
+    WHERE deleted_at IS NULL;
