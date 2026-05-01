@@ -73,6 +73,35 @@ zsh ./run.sh
 mvn clean javafx:run
 ```
 
+### Build and run executable JAR
+
+Build the executable JAR with:
+
+```bash
+mvn clean package
+```
+
+Run it from the repository root so the application can read `.env`:
+
+```bash
+java -jar target/RestaurantApp.jar
+```
+
+The JAR does not contain PostgreSQL. Start the Docker database first:
+
+```bash
+docker-compose up -d db
+```
+
+When the JAR runs on the host machine, keep the default `.env` database host and port:
+
+```env
+RESTAURANT_DB_HOST=localhost
+RESTAURANT_DB_PORT=5433
+```
+
+If the Java application is ever moved into the same Docker Compose network, use `RESTAURANT_DB_HOST=db` and `RESTAURANT_DB_PORT=5432` instead.
+
 ## Code organization
 
 The source code lives under `src/main/java/dev/vavateam1/` and follows a standard MVC layout:
@@ -96,6 +125,5 @@ Resources are organised under `src/main/resources/` and copied to the classpath 
 
 Users (id, name, email, password)
 1, Admin User, admin@vava.com, admin123
-2, Test Manager, manager@vava.com, manager123
 3, Jožko Čašník, waiter1@vava.com, waiter123
 4, Fero Kuchár, chef1@vava.com, chef123

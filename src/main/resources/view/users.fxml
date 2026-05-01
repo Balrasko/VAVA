@@ -3,9 +3,9 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
-<?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
@@ -134,19 +134,35 @@
                                             </VBox>
 
                                             <VBox spacing="10">
-                                                <children>
-                                                    <Label text="%common.role" styleClass="form-label" />
-                                                    <RadioButton fx:id="waiterRadio" text="%role.waiter"
-                                                                 toggleGroup="$roleToggleGroup" />
-                                                    <RadioButton fx:id="chefRadio" text="%role.chef"
-                                                                 toggleGroup="$roleToggleGroup" />
-                                                    <RadioButton fx:id="managerRadio" text="%role.manager"
-                                                                 toggleGroup="$roleToggleGroup" />
-                                                </children>
-
                                                 <fx:define>
                                                     <ToggleGroup fx:id="roleToggleGroup" />
                                                 </fx:define>
+
+                                                <children>
+                                                    <Label text="%common.role" styleClass="form-label" />
+                                                    <HBox spacing="8" fillHeight="true">
+                                                        <children>
+                                                            <ToggleButton fx:id="waiterRoleButton"
+                                                                          text="%role.waiter"
+                                                                          maxWidth="Infinity"
+                                                                          HBox.hgrow="ALWAYS"
+                                                                          toggleGroup="$roleToggleGroup"
+                                                                          styleClass="role-toggle-button" />
+                                                            <ToggleButton fx:id="chefRoleButton"
+                                                                          text="%role.chef"
+                                                                          maxWidth="Infinity"
+                                                                          HBox.hgrow="ALWAYS"
+                                                                          toggleGroup="$roleToggleGroup"
+                                                                          styleClass="role-toggle-button" />
+                                                            <ToggleButton fx:id="managerRoleButton"
+                                                                          text="%role.manager"
+                                                                          maxWidth="Infinity"
+                                                                          HBox.hgrow="ALWAYS"
+                                                                          toggleGroup="$roleToggleGroup"
+                                                                          styleClass="role-toggle-button" />
+                                                        </children>
+                                                    </HBox>
+                                                </children>
                                             </VBox>
 
                                             <Region VBox.vgrow="ALWAYS" />

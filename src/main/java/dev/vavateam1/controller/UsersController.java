@@ -13,9 +13,10 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
-import javafx.scene.control.RadioButton;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Toggle;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -37,9 +38,9 @@ public class UsersController {
     @FXML private PasswordField passwordField;
     @FXML private PasswordField repeatPasswordField;
     @FXML private ToggleGroup roleToggleGroup;
-    @FXML private RadioButton waiterRadio;
-    @FXML private RadioButton chefRadio;
-    @FXML private RadioButton managerRadio;
+    @FXML private ToggleButton waiterRoleButton;
+    @FXML private ToggleButton chefRoleButton;
+    @FXML private ToggleButton managerRoleButton;
     @FXML private Button deleteUserButton;
     @FXML private Button submitUserButton;
 
@@ -56,6 +57,8 @@ public class UsersController {
 
     @FXML
     private void initialize() {
+        configureRoleToggleGroup();
+        configureFieldErrorClearing();
         reloadUsers();
         hideForm();
     }
@@ -79,22 +82,17 @@ public class UsersController {
 
     @FXML
     private void onSubmitUser() {
-        String email = emailField.getText().trim();
-        if (!email.isBlank() && !EMAIL_PATTERN.matcher(email).matches()) {
-            showFormError(I18n.t("login.invalidEmail"));
-            return;
-        }
-
-        if (editingUserId == null && !passwordField.getText().isBlank() && !passwordField.getText().equals(repeatPasswordField.getText())) {
-            showFormError(I18n.t("users.passwordsDoNotMatch"));
+        if (!validateUserForm()) {
             return;
         }
 
         clearFormError();
 
+        String email = emailField.getText().trim();
+
         User user = new User();
         user.setName(buildFullName());
-        user.setEmail(email.isBlank() ? "new.user@vava.com" : email);
+        user.setEmail(email);
         user.setRoleId(resolveSelectedRoleId());
         if (!passwordField.getText().isBlank()) {
             user.setPasswordHash(passwordField.getText());
@@ -179,8 +177,105 @@ public class UsersController {
         emailField.clear();
         passwordField.clear();
         repeatPasswordField.clear();
-        waiterRadio.setSelected(true);
+        selectRole(waiterRoleButton);
+        clearFieldErrors();
         clearFormError();
+    }
+
+    private boolean validateUserForm() {
+        boolean valid = true;
+        boolean editingUser = editingUserId != null;
+
+        valid &= validateRequired(nameField);
+        valid &= validateRequired(surnameField);
+        valid &= validateRequired(emailField);
+
+        String email = emailField.getText().trim();
+        boolean invalidEmail = !email.isBlank() && !EMAIL_PATTERN.matcher(email).matches();
+        if (invalidEmail) {
+            setFieldError(emailField, true);
+            valid = false;
+        }
+
+        boolean passwordProvided = !passwordField.getText().isBlank() || !repeatPasswordField.getText().isBlank();
+        if (!editingUser || passwordProvided) {
+            valid &= validateRequired(passwordField);
+            valid &= validateRequired(repeatPasswordField);
+        } else {
+            setFieldError(passwordField, false);
+            setFieldError(repeatPasswordField, false);
+        }
+
+        boolean passwordsFilled = !passwordField.getText().isBlank() && !repeatPasswordField.getText().isBlank();
+        if (passwordsFilled && !passwordField.getText().equals(repeatPasswordField.getText())) {
+            setFieldError(passwordField, true);
+            setFieldError(repeatPasswordField, true);
+            showFormError(I18n.t("users.passwordsDoNotMatch"));
+            return false;
+        }
+
+        if (!valid) {
+            showFormError(invalidEmail ? I18n.t("login.invalidEmail") : I18n.t("users.requiredFields"));
+            return false;
+        }
+
+        clearFormError();
+        return true;
+    }
+
+    private boolean validateRequired(TextField field) {
+        boolean valid = field.getText() != null && !field.getText().trim().isEmpty();
+        setFieldError(field, !valid);
+        return valid;
+    }
+
+    private void setFieldError(TextField field, boolean error) {
+        if (error) {
+            if (!field.getStyleClass().contains("form-input-error")) {
+                field.getStyleClass().add("form-input-error");
+            }
+        } else {
+            field.getStyleClass().remove("form-input-error");
+        }
+    }
+
+    private void clearFieldErrors() {
+        setFieldError(nameField, false);
+        setFieldError(surnameField, false);
+        setFieldError(emailField, false);
+        setFieldError(passwordField, false);
+        setFieldError(repeatPasswordField, false);
+    }
+
+    private void configureFieldErrorClearing() {
+        List.of(nameField, surnameField, emailField, passwordField, repeatPasswordField)
+                .forEach(field -> field.textProperty().addListener((observable, oldValue, newValue) -> setFieldError(field, false)));
+    }
+
+    private void configureRoleToggleGroup() {
+        if (roleToggleGroup == null) {
+            roleToggleGroup = new ToggleGroup();
+        }
+
+        waiterRoleButton.setToggleGroup(roleToggleGroup);
+        chefRoleButton.setToggleGroup(roleToggleGroup);
+        managerRoleButton.setToggleGroup(roleToggleGroup);
+
+        roleToggleGroup.selectedToggleProperty().addListener((observable, previousToggle, selectedToggle) -> {
+            if (selectedToggle == null) {
+                selectRole(previousToggle != null ? previousToggle : waiterRoleButton);
+            }
+        });
+
+        if (roleToggleGroup.getSelectedToggle() == null) {
+            selectRole(waiterRoleButton);
+        }
+    }
+
+    private void selectRole(Toggle toggle) {
+        if (toggle != null) {
+            roleToggleGroup.selectToggle(toggle);
+        }
     }
 
     private String buildFullName() {
@@ -193,8 +288,9 @@ public class UsersController {
     }
 
     private int resolveSelectedRoleId() {
-        if (managerRadio.isSelected()) return 1;
-        if (chefRadio.isSelected()) return 3;
+        Toggle selectedRole = roleToggleGroup.getSelectedToggle();
+        if (selectedRole == managerRoleButton) return 1;
+        if (selectedRole == chefRoleButton) return 3;
         return 2;
     }
 
@@ -280,8 +376,12 @@ public class UsersController {
         emailField.setText(user.getEmail());
         passwordField.clear();
         repeatPasswordField.clear();
-        managerRadio.setSelected(user.getRoleId() == 1);
-        chefRadio.setSelected(user.getRoleId() == 3);
-        waiterRadio.setSelected(user.getRoleId() == 2);
+        switch (user.getRoleId()) {
+            case 1 -> selectRole(managerRoleButton);
+            case 3 -> selectRole(chefRoleButton);
+            default -> selectRole(waiterRoleButton);
+        }
+        clearFieldErrors();
+        clearFormError();
     }
 }

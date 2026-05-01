@@ -10,6 +10,8 @@ import dev.vavateam1.model.OrderStatus;
 import dev.vavateam1.service.AuthService;
 import dev.vavateam1.service.KitchenService;
 import dev.vavateam1.util.I18n;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -19,6 +21,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 
 public class KitchenController {
 
@@ -37,6 +40,7 @@ public class KitchenController {
     private final AuthService authService;
     private final KitchenService kitchenService;
     private final ViewSwitcher viewSwitcher;
+    private Timeline refreshTimeline;
 
     @Inject
     public KitchenController(AuthService authService, KitchenService kitchenService, ViewSwitcher viewSwitcher) {
@@ -51,10 +55,12 @@ public class KitchenController {
             languageButton.setText(I18n.nextLanguageCode());
         }
         refreshOrders();
+        startAutoRefresh();
     }
 
     @FXML
     private void switchLanguage() throws Exception {
+        stopAutoRefresh();
         I18n.toggleLocale();
         viewSwitcher.reloadCurrentView();
     }
@@ -134,12 +140,14 @@ public class KitchenController {
             itemsBox.getChildren().add(createOrderItem(item, order.getStatus()));
         }
 
-        Button statusButton = new Button(I18n.t("kitchen.closeOrder"));
+        Button statusButton = new Button(getStatusButtonText(order.getStatus()));
         statusButton.getStyleClass().add("chef-status-button");
-        boolean canCloseOrder = order.getStatus() == OrderStatus.DONE;
-        statusButton.setDisable(!canCloseOrder);
         statusButton.setOnAction(event -> {
-            kitchenService.deleteDoneOrder(order.getId());
+            if (order.getStatus() == OrderStatus.DONE) {
+                kitchenService.deleteDoneOrder(order.getId());
+            } else {
+                kitchenService.advanceOrderStatus(order.getId());
+            }
             refreshOrders();
         });
 
@@ -179,14 +187,15 @@ public class KitchenController {
             itemBox.getChildren().add(noteLabel);
         }
 
-        Button doneButton = new Button(I18n.t("common.done"));
+        OrderStatus itemStatus = item.getOrderItem() != null ? item.getOrderItem().getStatus() : status;
+        Button doneButton = new Button(getItemStatusButtonText(itemStatus));
         doneButton.getStyleClass().add("chef-item-done-button");
-        boolean itemDone = item.getOrderItem() != null && OrderStatus.DONE.equals(item.getOrderItem().getStatus());
+        boolean itemDone = OrderStatus.DONE.equals(itemStatus) || OrderStatus.SERVED.equals(itemStatus);
         doneButton.setDisable(itemDone);
         doneButton.setOnAction(event -> {
             Integer orderItemId = item.getOrderItemId();
             if (orderItemId != null) {
-                kitchenService.markOrderItemDone(orderItemId);
+                kitchenService.advanceOrderItemStatus(orderItemId);
                 refreshOrders();
             }
         });
@@ -224,12 +233,34 @@ public class KitchenController {
         return switch (status) {
             case RECEIVED -> I18n.t("kitchen.start");
             case IN_PROGRESS -> I18n.t("kitchen.markDone");
+            case DONE, SERVED -> I18n.t("kitchen.closeOrder");
+        };
+    }
+
+    private String getItemStatusButtonText(OrderStatus status) {
+        return switch (status) {
+            case RECEIVED -> I18n.t("kitchen.start");
+            case IN_PROGRESS -> I18n.t("common.done");
             case DONE, SERVED -> I18n.t("common.done");
         };
     }
 
+    private void startAutoRefresh() {
+        refreshTimeline = new Timeline(new KeyFrame(Duration.seconds(3), event -> refreshOrders()));
+        refreshTimeline.setCycleCount(Timeline.INDEFINITE);
+        refreshTimeline.play();
+    }
+
+    private void stopAutoRefresh() {
+        if (refreshTimeline != null) {
+            refreshTimeline.stop();
+            refreshTimeline = null;
+        }
+    }
+
     @FXML
     private void handleLogout() throws Exception {
+        stopAutoRefresh();
         authService.logout();
         viewSwitcher.SetView("/view/login.fxml");
     }
