@@ -46,8 +46,8 @@ INSERT INTO inventory_ingredients (name, quantity, minimal_quantity, unit, cost_
 ('Red Wine', 50, 20,  'l',   5.0),
 ('White Wine',    50, 20,  'l',   5.0),
 ('Mineral Water', 100, 35, 'l',   0.5),
-('Mint',   1,  2,  'kg',  8.0);
-
+('Mint',   1,  2,  'kg',  8.0)
+ON CONFLICT (name) DO NOTHING;
 
 -- Users (Role IDs: 1=ADMIN, 2=WAITER, 3=CHEF)
 INSERT INTO users (role_id, name, email, password) VALUES
@@ -58,9 +58,9 @@ INSERT INTO users (role_id, name, email, password) VALUES
 -- password: waiter123
 (2, 'Waiter2', 'waiter2@vava.com', '$2b$10$tRh8x9oqIv9bKSyN3Z4kx.vAL8GdRKQI9NArKo6KSN5Ry/fBbxwkm'),
 -- password: chef123
-(3, 'Le Chef1','chef1@vava.com',   '$2b$10$kP8HSfC7UOGGve4TzFnjz.fbnaNq7Yji8zvLv6BgKPmTr73DjD4tu'),
+(3, 'Le Chef1','chef1@vava.com', '$2b$10$kP8HSfC7UOGGve4TzFnjz.fbnaNq7Yji8zvLv6BgKPmTr73DjD4tu'),
 -- password: chef123
-(3, 'Le Chef2','chef2@vava.com',   '$2b$10$kP8HSfC7UOGGve4TzFnjz.fbnaNq7Yji8zvLv6BgKPmTr73DjD4tu')
+(3, 'Le Chef2','chef2@vava.com', '$2b$10$kP8HSfC7UOGGve4TzFnjz.fbnaNq7Yji8zvLv6BgKPmTr73DjD4tu')
 ON CONFLICT (email) DO NOTHING;
 
 

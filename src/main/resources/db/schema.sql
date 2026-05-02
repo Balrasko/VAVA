@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS roles (
 
 CREATE TABLE IF NOT EXISTS locations (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
+    name VARCHAR(255) NOT NULL UNIQUE,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ,
     deleted_at TIMESTAMPTZ
@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS locations (
 
 CREATE TABLE IF NOT EXISTS categories (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
+    name VARCHAR(255) NOT NULL UNIQUE,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ,
     deleted_at TIMESTAMPTZ
@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS payment_methods (
 
 CREATE TABLE IF NOT EXISTS inventory_ingredients (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
+    name VARCHAR(255) NOT NULL UNIQUE,
     quantity NUMERIC DEFAULT 0,
     minimal_quantity NUMERIC DEFAULT 0,
     unit VARCHAR,
@@ -89,7 +89,7 @@ CREATE TABLE IF NOT EXISTS menu_items (
     id SERIAL PRIMARY KEY,
     category_id INT REFERENCES categories(id),
     item_code INT NOT NULL UNIQUE,
-    name VARCHAR(255) NOT NULL,
+    name VARCHAR(255) NOT NULL UNIQUE,
     price NUMERIC NOT NULL,
     availability BOOLEAN DEFAULT TRUE,
     description TEXT,
@@ -176,9 +176,12 @@ CREATE TABLE IF NOT EXISTS order_items (
     );
 
 
+-----------------------------------------------------------------------------------------------------------------
+
+
 -- INDEXES
 CREATE INDEX IF NOT EXISTS idx_payments_active_created_date
-    ON payments ((created_at::date))
+    ON payments (created_at)
     WHERE COALESCE(refunded, FALSE) = FALSE;
 
 CREATE INDEX IF NOT EXISTS idx_order_items_payment_id
