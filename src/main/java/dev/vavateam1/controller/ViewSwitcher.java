@@ -8,6 +8,7 @@ import com.google.inject.Singleton;
 import dev.vavateam1.App;
 import dev.vavateam1.model.Table;
 import dev.vavateam1.util.I18n;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
@@ -34,12 +35,18 @@ public class ViewSwitcher {
     }
 
     public void SetView(String location) throws IOException {
-        // TODO: only switch the scene root instead of loading a new scene
         currentLocation = location;
         var loader = I18n.loader(App.class.getResource(location), injector);
-        Scene scene = new Scene(loader.load(), 1200, 800);
-        scene.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
-        stage.setScene(scene);
+        Parent root = loader.load();
+
+        Scene scene = stage.getScene();
+        if (scene == null) {
+            scene = new Scene(root, 1200, 800);
+            scene.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+            stage.setScene(scene);
+        } else {
+            scene.setRoot(root);
+        }
         stage.setTitle(I18n.t("app.title"));
     }
 
