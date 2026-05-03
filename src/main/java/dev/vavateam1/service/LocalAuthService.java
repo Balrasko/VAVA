@@ -13,6 +13,7 @@ import dev.vavateam1.dao.UserSessionDao;
 import dev.vavateam1.data.config.SecurityConfig;
 import dev.vavateam1.model.User;
 import dev.vavateam1.model.UserSession;
+import dev.vavateam1.util.I18n;
 
 public class LocalAuthService implements AuthService {
     private static final Logger log = LoggerFactory.getLogger(LocalAuthService.class);
@@ -55,6 +56,21 @@ public class LocalAuthService implements AuthService {
     @Override
     public User getUser() {
         return currentUser;
+    }
+
+    @Override
+    public boolean isManager() {
+        return currentUser != null && currentUser.getRoleId() == 1;
+    }
+
+    @Override
+    public String getRoleName(int roleId) {
+        return switch (roleId) {
+            case 1 -> I18n.t("role.admin");
+            case 2 -> I18n.t("role.waiter");
+            case 3 -> I18n.t("role.chef");
+            default -> I18n.t("role.user");
+        };
     }
 
     @Override

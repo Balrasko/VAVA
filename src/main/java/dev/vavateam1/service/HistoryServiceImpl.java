@@ -1,36 +1,35 @@
 package dev.vavateam1.service;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 
-import dev.vavateam1.dao.MenuItemDao;
 import dev.vavateam1.dao.OrderItemDao;
 import dev.vavateam1.dao.PaymentDao;
 import dev.vavateam1.dto.OrderItemDto;
 import dev.vavateam1.dto.PaymentDto;
-import dev.vavateam1.model.MenuItem;
-import dev.vavateam1.model.OrderItem;
 import dev.vavateam1.dto.PaymentSummary;
+import dev.vavateam1.model.OrderItem;
+import dev.vavateam1.util.I18n;
 
 public class HistoryServiceImpl implements HistoryService {
     private static final Logger log = LoggerFactory.getLogger(HistoryServiceImpl.class);
+    private static final DateTimeFormatter DISPLAY_FORMAT = DateTimeFormatter.ofPattern("d.M.yyyy HH:mm");
 
     private final PaymentDao paymentDao;
     private final OrderItemDao orderItemDao;
-    private final MenuItemDao menuItemDao;
+    private final OrderService orderService;
 
     @Inject
-    public HistoryServiceImpl(PaymentDao paymentDao, OrderItemDao orderItemDao, MenuItemDao menuItemDao) {
+    public HistoryServiceImpl(PaymentDao paymentDao, OrderItemDao orderItemDao, OrderService orderService) {
         this.paymentDao = paymentDao;
         this.orderItemDao = orderItemDao;
-        this.menuItemDao = menuItemDao;
+        this.orderService = orderService;
     }
 
     @Override
@@ -67,27 +66,51 @@ public class HistoryServiceImpl implements HistoryService {
     @Override
     public List<OrderItemDto> getOrderItemsByPaymentId(int paymentId) {
         List<OrderItem> orderItems = orderItemDao.findByPayment(paymentId);
-        Map<Integer, MenuItem> menuItemsById = new HashMap<>();
-
-        for (MenuItem menuItem : menuItemDao.getAllMenuItemsIncludingDeleted()) {
-            menuItemsById.put(menuItem.getId(), menuItem);
-        }
-
-        return orderItems.stream()
-                .map(orderItem -> new OrderItemDto(orderItem, menuItemsById.getOrDefault(
-                        orderItem.getMenuItemId(), createDeletedMenuItemFallback(orderItem))))
-                .toList();
+        return orderService.buildOrderItemViews(orderItems, orderService.getMenuItemsIncludingDeleted());
     }
 
-    private MenuItem createDeletedMenuItemFallback(OrderItem orderItem) {
-        MenuItem fallback = new MenuItem();
-        fallback.setId(orderItem.getMenuItemId());
-        fallback.setName("Deleted item #" + orderItem.getMenuItemId());
-        fallback.setPrice(orderItem.getPrice());
-        fallback.setAvailability(false);
-        fallback.setToKitchen(false);
-        fallback.setDiscount(BigDecimal.ZERO);
-        return fallback;
+    @Override
+    public String buildReceiptText(PaymentDto payment) {
+        List<OrderItemDto> orderItems = getOrderItemsByPaymentId(payment.getId());
+        StringBuilder sb = new StringBuilder();
+        sb.append(I18n.t("history.receiptTitle")).append("\n");
+        sb.append(I18n.t("history.order", String.valueOf(payment.getId()))).append("\n");
+        sb.append(I18n.t("history.date", payment.getCreatedAt().format(DISPLAY_FORMAT))).append("\n");
+        sb.append(I18n.t("history.waiter", String.valueOf(payment.getWaiterId()))).append("\n");
+
+        String methodText = payment.getPaymentMethodName() != null
+                ? localizePaymentMethod(payment.getPaymentMethodName()) : "-";
+        sb.append(I18n.t("history.payment", methodText)).append("\n");
+
+        String tipText = payment.getTip() != null
+                ? payment.getTip().stripTrailingZeros().toPlainString() + "%" : "-";
+        sb.append(I18n.t("history.tip", tipText)).append("\n\n");
+        sb.append(I18n.t("history.items")).append(":\n");
+
+        for (OrderItemDto item : orderItems) {
+            String priceText = item.getPrice() != null
+                    ? item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity()))
+                            .stripTrailingZeros().toPlainString() + "€" : "-";
+            sb.append("  ").append(item.getName()).append(" x").append(item.getQuantity())
+                    .append(" - ").append(priceText).append("\n");
+        }
+
+        sb.append("\n").append(I18n.t("history.total", payment.getAmount().toPlainString())).append("\n");
+
+        if (Boolean.TRUE.equals(payment.getRefunded())) {
+            sb.append(I18n.t("history.refunded")).append("\n");
+        }
+
+        return sb.toString();
+    }
+
+    private String localizePaymentMethod(String methodName) {
+        return switch (methodName.toLowerCase()) {
+            case "cash" -> I18n.t("common.cash");
+            case "card" -> I18n.t("common.card");
+            case "meal card" -> I18n.t("payment.mealCard");
+            default -> methodName;
+        };
     }
 
     @Override

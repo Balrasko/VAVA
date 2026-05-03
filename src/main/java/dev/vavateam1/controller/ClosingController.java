@@ -3,19 +3,8 @@ package dev.vavateam1.controller;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.nio.file.Path;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
 import com.google.inject.Inject;
 
@@ -33,8 +22,6 @@ import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 public class ClosingController {
 
@@ -182,46 +169,10 @@ public class ClosingController {
         }
 
         try {
-            writeClosingXml(selectedFile.toPath());
+            closingService.exportReport(currentSummary, selectedFile.toPath());
         } catch (IOException e) {
             throw new RuntimeException("Failed to export closing report", e);
         }
-    }
-
-    private void writeClosingXml(Path path) throws IOException {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        try {
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            Document document = builder.newDocument();
-
-            Element rootElement = document.createElement("closingReport");
-            document.appendChild(rootElement);
-
-            appendTextElement(document, rootElement, "businessDate",
-                    currentSummary.businessDate().format(REPORT_DATE_FORMAT));
-            appendTextElement(document, rootElement, "totalPaid", formatMoney(currentSummary.totalPaid()));
-            appendTextElement(document, rootElement, "totalTips", formatMoney(currentSummary.totalTips()));
-            appendTextElement(document, rootElement, "grandTotal", formatMoney(currentSummary.grandTotal()));
-            appendTextElement(document, rootElement, "cashFloat", formatMoney(currentSummary.cashFloat()));
-            appendTextElement(document, rootElement, "cash", formatMoney(currentSummary.cash()));
-            appendTextElement(document, rootElement, "card", formatMoney(currentSummary.card()));
-
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            Transformer transformer = transformerFactory.newTransformer();
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-            transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
-
-            transformer.transform(new DOMSource(document), new StreamResult(path.toFile()));
-        } catch (ParserConfigurationException | TransformerException e) {
-            throw new IOException("Failed to write closing XML", e);
-        }
-    }
-
-    private void appendTextElement(Document document, Element parent, String tagName, String value) {
-        Element element = document.createElement(tagName);
-        element.setTextContent(value);
-        parent.appendChild(element);
     }
 
     private User requireCurrentUser() {

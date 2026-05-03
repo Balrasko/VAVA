@@ -155,7 +155,7 @@
                                                                           toggleGroup="$roleToggleGroup"
                                                                           styleClass="role-toggle-button" />
                                                             <ToggleButton fx:id="managerRoleButton"
-                                                                          text="%role.manager"
+                                                                          text="%role.admin"
                                                                           maxWidth="Infinity"
                                                                           HBox.hgrow="ALWAYS"
                                                                           toggleGroup="$roleToggleGroup"

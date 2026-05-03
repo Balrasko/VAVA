@@ -8,4 +8,8 @@ public interface AuthService {
     public User getUser();
 
     public void logout();
+
+    boolean isManager();
+
+    String getRoleName(int roleId);
 }

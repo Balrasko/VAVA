@@ -8,6 +8,7 @@ import dev.vavateam1.model.User;
 import dev.vavateam1.service.AuthService;
 import dev.vavateam1.service.UsersService;
 import dev.vavateam1.util.I18n;
+import dev.vavateam1.util.ValidationUtils;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -24,9 +25,6 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
 public class UsersController {
-
-    private static final java.util.regex.Pattern EMAIL_PATTERN =
-            java.util.regex.Pattern.compile("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$");
 
     @FXML private VBox usersList;
     @FXML private ScrollPane userFormPanel;
@@ -191,7 +189,7 @@ public class UsersController {
         valid &= validateRequired(emailField);
 
         String email = emailField.getText().trim();
-        boolean invalidEmail = !email.isBlank() && !EMAIL_PATTERN.matcher(email).matches();
+        boolean invalidEmail = !email.isBlank() && !ValidationUtils.isValidEmail(email);
         if (invalidEmail) {
             setFieldError(emailField, true);
             valid = false;
@@ -294,14 +292,6 @@ public class UsersController {
         return 2;
     }
 
-    private String roleIdToName(int roleId) {
-        return switch (roleId) {
-            case 1 -> I18n.t("role.manager");
-            case 3 -> I18n.t("role.chef");
-            default -> I18n.t("role.waiter");
-        };
-    }
-
     private boolean isActive(UserWithSessionDto dto) {
         return dto.getSession() != null && dto.getSession().getLogoutTime() == null;
     }
@@ -322,7 +312,7 @@ public class UsersController {
         VBox identityBox = new VBox(8, nameLabel, emailLabel);
         HBox.setHgrow(identityBox, Priority.ALWAYS);
 
-        Label roleLabel = new Label(roleIdToName(user.getRoleId()));
+        Label roleLabel = new Label(authService.getRoleName(user.getRoleId()));
         roleLabel.getStyleClass().add("user-meta");
 
         Label statusText = new Label(active ? I18n.t("status.online") : I18n.t("status.offline"));

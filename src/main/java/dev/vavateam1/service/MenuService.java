@@ -22,4 +22,7 @@ public interface MenuService {
     void updateCategory(int categoryId, String name);
 
     void softDeleteCategory(int categoryId);
+
+    MenuItem getItemByPluCode(int pluCode);
+
 }

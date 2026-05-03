@@ -6,6 +6,7 @@ import java.util.List;
 import dev.vavateam1.model.Category;
 import dev.vavateam1.model.MenuItem;
 import dev.vavateam1.model.OrderItem;
+import dev.vavateam1.model.OrderStatus;
 import dev.vavateam1.model.Table;
 import dev.vavateam1.dto.OrderItemDto;
 
@@ -27,4 +28,8 @@ public interface OrderService {
     void deleteOrderItem(int orderItemId);
 
     void processPayment(List<OrderItem> ordersToProcess, int paymentMethod, BigDecimal totalPrice, BigDecimal tip);
+
+    List<OrderItemDto> buildOrderItemViews(List<OrderItem> orderItems, List<MenuItem> menuItems);
+
+    boolean canMergeOrderLine(MenuItem menuItem, OrderStatus currentStatus);
 }

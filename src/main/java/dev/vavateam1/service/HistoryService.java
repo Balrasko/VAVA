@@ -14,4 +14,6 @@ public interface HistoryService {
     List<OrderItemDto> getOrderItemsByPaymentId(int paymentId);
 
     void refund(int paymentId);
+
+    String buildReceiptText(PaymentDto payment);
 }

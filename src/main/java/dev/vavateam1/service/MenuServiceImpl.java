@@ -84,4 +84,10 @@ public class MenuServiceImpl implements MenuService {
         categoryDao.softDeleteCategory(categoryId);
         log.info("Category soft deleted id: {}", categoryId);
     }
+
+    @Override
+    public MenuItem getItemByPluCode(int pluCode) {
+        return menuItemDao.getItemByPluCode(pluCode);
+    }
+
 }

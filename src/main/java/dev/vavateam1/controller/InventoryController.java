@@ -2,28 +2,17 @@ package dev.vavateam1.controller;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import javax.xml.XMLConstants;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
 import com.google.inject.Inject;
 
-import dev.vavateam1.dao.InventoryIngredientDao;
 import dev.vavateam1.model.InventoryIngredient;
+import dev.vavateam1.model.InventoryItemStatus;
+import dev.vavateam1.service.InventoryService;
 import dev.vavateam1.util.I18n;
 import javafx.animation.FadeTransition;
 import javafx.animation.PauseTransition;
@@ -46,10 +35,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
 import javafx.util.Duration;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 public class InventoryController {
 
@@ -78,7 +63,7 @@ public class InventoryController {
     @FXML private VBox itemsContainer;
     @FXML private Label toastLabel;
 
-    private final InventoryIngredientDao inventoryIngredientDao;
+    private final InventoryService inventoryService;
     private final List<InventoryIngredient> allItems = new ArrayList<>();
 
     private CurrentFilter currentFilter = CurrentFilter.ALL;
@@ -91,8 +76,8 @@ public class InventoryController {
     private BigDecimal quantityTo;
 
     @Inject
-    public InventoryController(InventoryIngredientDao inventoryIngredientDao) {
-        this.inventoryIngredientDao = inventoryIngredientDao;
+    public InventoryController(InventoryService inventoryService) {
+        this.inventoryService = inventoryService;
     }
 
     @FXML
@@ -190,8 +175,8 @@ public class InventoryController {
         }
 
         try {
-            List<InventoryIngredient> importedIngredients = readInventoryXml(selectedFile.toPath());
-            inventoryIngredientDao.saveAll(importedIngredients);
+            List<InventoryIngredient> importedIngredients = inventoryService.importFromXml(selectedFile.toPath());
+            inventoryService.saveAll(importedIngredients);
             reloadInventory();
         } catch (IOException e) {
             throw new RuntimeException("Failed to import inventory", e);
@@ -212,7 +197,7 @@ public class InventoryController {
         }
 
         try {
-            writeInventoryXml(selectedFile.toPath(), getFilteredItems());
+            inventoryService.exportToXml(selectedFile.toPath(), getFilteredItems());
         } catch (IOException e) {
             throw new RuntimeException("Failed to export inventory", e);
         }
@@ -245,7 +230,7 @@ public class InventoryController {
 
     private void reloadInventory() {
         allItems.clear();
-        allItems.addAll(inventoryIngredientDao.findAll());
+        allItems.addAll(inventoryService.getAll());
         sortItems();
         refreshSortHeaderLabels();
         renderItems();
@@ -270,7 +255,7 @@ public class InventoryController {
             case NAME -> Comparator.comparing(item -> item.getName().toLowerCase());
             case QUANTITY -> Comparator.comparing(InventoryIngredient::getQuantity);
             case MINIMAL_QUANTITY -> Comparator.comparing(InventoryIngredient::getMinimalQuantity);
-            case STATUS -> Comparator.comparing(item -> statusFor(item).name());
+            case STATUS -> Comparator.comparing(item -> inventoryService.getStatus(item).name());
         };
 
         if (!ascendingSort) {
@@ -323,11 +308,11 @@ public class InventoryController {
     }
 
     private boolean matchesCurrentFilter(InventoryIngredient item) {
-        ItemStatus status = statusFor(item);
+        InventoryItemStatus status = inventoryService.getStatus(item);
         return switch (currentFilter) {
             case ALL -> true;
-            case LOW_STOCK -> status == ItemStatus.LOW || status == ItemStatus.CRITICAL;
-            case CRITICAL -> status == ItemStatus.CRITICAL;
+            case LOW_STOCK -> status == InventoryItemStatus.LOW || status == InventoryItemStatus.CRITICAL;
+            case CRITICAL -> status == InventoryItemStatus.CRITICAL;
         };
     }
 
@@ -346,7 +331,7 @@ public class InventoryController {
 
         String searchable = item.getId() + " " + item.getName() + " " + formatDecimal(item.getQuantity()) + " "
                 + formatDecimal(item.getMinimalQuantity()) + " " + safeValue(item.getUnit()) + " "
-                + formatDecimal(item.getCostPerUnit()) + " " + statusFor(item).name();
+                + formatDecimal(item.getCostPerUnit()) + " " + inventoryService.getStatus(item).name();
         return activeSearchPattern.matcher(searchable).find();
     }
 
@@ -376,7 +361,7 @@ public class InventoryController {
         row.add(createRowLabel(item.getName()), 1, 0);
         row.add(createRowLabel(formatDecimal(item.getQuantity())), 2, 0);
         row.add(createRowLabel(formatDecimal(item.getMinimalQuantity())), 3, 0);
-        row.add(createStatusIndicator(statusFor(item)), 4, 0);
+        row.add(createStatusIndicator(inventoryService.getStatus(item)), 4, 0);
 
         if (editMode) {
             Button deleteButton = new Button("✕");
@@ -414,7 +399,7 @@ public class InventoryController {
         no.setMinWidth(40);
 
         yes.setOnAction(e -> {
-            inventoryIngredientDao.delete(item.getId());
+            inventoryService.delete(item.getId());
             rootStack.getChildren().removeLast();
             reloadInventory();
             showToast(I18n.t("inventory.itemDeleted"), true);
@@ -457,7 +442,7 @@ public class InventoryController {
                 item.setQuantity(new BigDecimal(quantityField.getText()));
                 item.setMinimalQuantity(new BigDecimal(minQuantityField.getText()));
 
-                inventoryIngredientDao.saveAll(allItems);
+                inventoryService.saveAll(allItems);
 
                 reloadInventory();
 
@@ -490,7 +475,7 @@ public class InventoryController {
         return label;
     }
 
-    private Label createStatusIndicator(ItemStatus status) {
+    private Label createStatusIndicator(InventoryItemStatus status) {
         String statusStyle = switch (status) {
             case CRITICAL -> STATUS_STYLE_CRITICAL;
             case LOW -> STATUS_STYLE_LOW;
@@ -608,7 +593,7 @@ public class InventoryController {
                 item.setUnit(unitField.getText());
 
                 allItems.add(item);
-                inventoryIngredientDao.saveAll(allItems);
+                inventoryService.saveAll(allItems);
                 reloadInventory();
 
                 rootStack.getChildren().removeLast();
@@ -625,25 +610,6 @@ public class InventoryController {
         });
 
         showDialog(I18n.t("inventory.newItem"), content, List.of(save, cancel));
-    }
-
-    private ItemStatus statusFor(InventoryIngredient item) {
-        BigDecimal quantity = zeroIfNull(item.getQuantity());
-        BigDecimal minimalQuantity = zeroIfNull(item.getMinimalQuantity());
-
-        if (minimalQuantity.compareTo(BigDecimal.ZERO) <= 0) {
-            return quantity.compareTo(BigDecimal.ZERO) <= 0 ? ItemStatus.CRITICAL : ItemStatus.OK;
-        }
-
-        if (quantity.compareTo(minimalQuantity.multiply(new BigDecimal("0.5"))) <= 0) {
-            return ItemStatus.CRITICAL;
-        }
-
-        if (quantity.compareTo(minimalQuantity) < 0) {
-            return ItemStatus.LOW;
-        }
-
-        return ItemStatus.OK;
     }
 
     private void showToast(String message, Boolean msgType) {
@@ -728,105 +694,6 @@ public class InventoryController {
         return true;
     }
 
-    private List<InventoryIngredient> readInventoryXml(Path path) throws IOException {
-        List<InventoryIngredient> importedItems = new ArrayList<>();
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        try {
-            factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-            factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
-            factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
-            factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
-
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            Document document = builder.parse(path.toFile());
-
-            NodeList itemNodes = document.getElementsByTagName("item");
-            for (int i = 0; i < itemNodes.getLength(); i++) {
-                Element itemElement = (Element) itemNodes.item(i);
-                importedItems.add(mapImportedIngredient(itemElement));
-            }
-        } catch (ParserConfigurationException | SAXException e) {
-            throw new IOException("Invalid inventory XML", e);
-        }
-
-        return importedItems;
-    }
-
-    private InventoryIngredient mapImportedIngredient(Element itemElement) {
-        InventoryIngredient ingredient = new InventoryIngredient();
-        ingredient.setId(parseInteger(getChildText(itemElement, "id"), 0));
-        ingredient.setName(getChildText(itemElement, "name"));
-        ingredient.setQuantity(parseDecimal(getChildText(itemElement, "quantity")));
-        ingredient.setMinimalQuantity(parseDecimal(getChildText(itemElement, "minimal_quantity")));
-        ingredient.setUnit(getChildText(itemElement, "unit"));
-        ingredient.setCostPerUnit(parseDecimal(getChildText(itemElement, "cost_per_unit")));
-        return ingredient;
-    }
-
-    private void writeInventoryXml(Path path, List<InventoryIngredient> items) throws IOException {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        try {
-            factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            Document document = builder.newDocument();
-
-            Element rootElement = document.createElement("inventory");
-            document.appendChild(rootElement);
-
-            for (InventoryIngredient item : items) {
-                Element itemElement = document.createElement("item");
-                rootElement.appendChild(itemElement);
-
-                appendTextElement(document, itemElement, "id", String.valueOf(item.getId()));
-                appendTextElement(document, itemElement, "name", safeValue(item.getName()));
-                appendTextElement(document, itemElement, "quantity", formatDecimal(item.getQuantity()));
-                appendTextElement(document, itemElement, "minimal_quantity", formatDecimal(item.getMinimalQuantity()));
-                appendTextElement(document, itemElement, "unit", safeValue(item.getUnit()));
-                appendTextElement(document, itemElement, "cost_per_unit", formatDecimal(item.getCostPerUnit()));
-                appendTextElement(document, itemElement, "status", statusFor(item).name());
-            }
-
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            Transformer transformer = transformerFactory.newTransformer();
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-            transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
-
-            transformer.transform(new DOMSource(document), new StreamResult(path.toFile()));
-        } catch (ParserConfigurationException | TransformerException e) {
-            throw new IOException("Failed to write inventory XML", e);
-        }
-    }
-
-    private void appendTextElement(Document document, Element parent, String tagName, String value) {
-        Element element = document.createElement(tagName);
-        element.setTextContent(value);
-        parent.appendChild(element);
-    }
-
-    private String getChildText(Element parent, String tagName) {
-        NodeList childNodes = parent.getElementsByTagName(tagName);
-        if (childNodes.getLength() == 0) {
-            return "";
-        }
-        return childNodes.item(0).getTextContent().trim();
-    }
-
-    private int parseInteger(String value, int fallback) {
-        if (value == null || value.isBlank()) {
-            return fallback;
-        }
-        return Integer.parseInt(value.trim());
-    }
-
-    private BigDecimal parseDecimal(String value) {
-        if (value == null || value.isBlank()) {
-            return BigDecimal.ZERO;
-        }
-        return new BigDecimal(value.trim());
-    }
-
     private BigDecimal parseOptionalDecimal(String value) {
         if (value == null || value.isBlank()) {
             return null;
@@ -852,12 +719,6 @@ public class InventoryController {
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.showAndWait();
-    }
-
-    private enum ItemStatus {
-        OK,
-        LOW,
-        CRITICAL
     }
 
     private enum SortField {

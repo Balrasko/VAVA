@@ -44,12 +44,14 @@ public class AppModule extends AbstractModule {
         bind(OrderItemDao.class).to(OrderItemDaoImpl.class).in(Scopes.SINGLETON);
         bind(FinanceDao.class).to(FinanceDaoImpl.class).in(Scopes.SINGLETON);
         bind(InventoryIngredientDao.class).to(InventoryIngredientDaoImpl.class).in(Scopes.SINGLETON);
+        bind(InventoryService.class).to(InventoryServiceImpl.class).in(Scopes.SINGLETON);
         bind(HistoryService.class).to(HistoryServiceImpl.class).in(Scopes.SINGLETON);
         bind(KitchenService.class).in(Scopes.SINGLETON);
         bind(MenuItemDao.class).to(MenuItemDaoImpl.class).in(Scopes.SINGLETON);
         bind(MenuService.class).to(MenuServiceImpl.class).in(Scopes.SINGLETON);
         bind(OrderService.class).to(OrderServiceImpl.class).in(Scopes.SINGLETON);
         bind(ClosingService.class).to(ClosingServiceImpl.class).in(Scopes.SINGLETON);
+        bind(FinanceService.class).to(FinanceServiceImpl.class).in(Scopes.SINGLETON);
         bind(UsersService.class).to(UsersServiceImpl.class).in(Scopes.SINGLETON);
     }
 }
