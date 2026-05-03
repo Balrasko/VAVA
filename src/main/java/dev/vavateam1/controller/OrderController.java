@@ -2,7 +2,6 @@ package dev.vavateam1.controller;
 
 import dev.vavateam1.model.MenuItem;
 import dev.vavateam1.model.OrderItem;
-import dev.vavateam1.model.OrderStatus;
 import dev.vavateam1.model.Table;
 import dev.vavateam1.dto.OrderItemDto;
 import dev.vavateam1.model.Category;
@@ -112,9 +111,8 @@ public class OrderController {
     public void initData(Table table, DashboardController dashboardController) {
         this.categories = orderService.getCategories(); // Get all categories
         this.menuItems = orderService.getMenuItems(); // Get all menu items
-        this.orderItemViews = getOrderItemViews(orderService.getOrderItems(table),
-                orderService.getMenuItemsIncludingDeleted()); // Get order items for the table if
-                                                                                    // there are any
+        this.orderItemViews = orderService.buildOrderItemViews(orderService.getOrderItems(table),
+                orderService.getMenuItemsIncludingDeleted());
         this.table = table;
         this.dashboardController = dashboardController;
 
@@ -124,31 +122,6 @@ public class OrderController {
         this.totalLabel.setVisible(splitBillMode);
         loadCategories();
         loadOrderItems();
-    }
-
-    private List<OrderItemDto> getOrderItemViews(List<OrderItem> orderItems, List<MenuItem> orderMenuItems) {
-        // Get available order items for the current table if there are any
-
-        List<OrderItemDto> orderItemViews = new ArrayList<>();
-        for (OrderItem item : orderItems) {
-            MenuItem menuItem = orderMenuItems.stream().filter(m -> m.getId() == item.getMenuItemId()).findFirst()
-                    .orElseGet(() -> createDeletedMenuItemFallback(item));
-
-            orderItemViews.add(new OrderItemDto(item, menuItem));
-        }
-
-        return orderItemViews;
-    }
-
-    private MenuItem createDeletedMenuItemFallback(OrderItem orderItem) {
-        MenuItem fallback = new MenuItem();
-        fallback.setId(orderItem.getMenuItemId());
-        fallback.setName(I18n.t("order.deletedMenuItem", String.valueOf(orderItem.getMenuItemId())));
-        fallback.setPrice(orderItem.getPrice());
-        fallback.setAvailability(false);
-        fallback.setToKitchen(false);
-        fallback.setDiscount(BigDecimal.ZERO);
-        return fallback;
     }
 
     private void loadCategories() {
@@ -245,7 +218,7 @@ public class OrderController {
 
         OrderItemDto existingItem = orderItemViews.stream()
                 .filter(item -> item.isSameItem(menuItem, null))
-                .filter(item -> canMergeOrderLine(menuItem, item))
+                .filter(item -> orderService.canMergeOrderLine(menuItem, item.getOrderItem().getStatus()))
                 .findFirst()
                 .orElse(null);
 
@@ -1109,15 +1082,6 @@ public class OrderController {
 
     private void persistOrderItem(OrderItemDto item) {
         orderService.saveTempOrders(List.of(item));
-    }
-
-    private boolean canMergeOrderLine(MenuItem menuItem, OrderItemDto item) {
-        if (!menuItem.isToKitchen()) {
-            return true;
-        }
-
-        return item.getOrderItem().getStatus() == OrderStatus.RECEIVED
-                || item.getOrderItem().getStatus() == OrderStatus.IN_PROGRESS;
     }
 
     @FXML

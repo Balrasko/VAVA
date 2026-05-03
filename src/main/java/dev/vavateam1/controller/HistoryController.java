@@ -25,12 +25,10 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
-import dev.vavateam1.model.User;
 import dev.vavateam1.service.AuthService;
 
 public class HistoryController {
 
-    private static final int MANAGER_ROLE_ID = 1;
     private static final DateTimeFormatter DISPLAY_FORMAT = DateTimeFormatter.ofPattern("d.M.yyyy HH:mm");
     private static final DateTimeFormatter DAY_FORMAT = DateTimeFormatter.ofPattern("d.M.yyyy");
 
@@ -188,7 +186,8 @@ public class HistoryController {
 
         for (OrderItemDto orderItem : orderItems) {
             String priceText = orderItem.getPrice() != null
-                    ? orderItem.getPrice().stripTrailingZeros().toPlainString() + "€"
+                    ? orderItem.getPrice().multiply(java.math.BigDecimal.valueOf(orderItem.getQuantity()))
+                            .stripTrailingZeros().toPlainString() + "€"
                     : "-";
             Label itemLabel = new Label(orderItem.getName() + " x" + orderItem.getQuantity() + " - " + priceText);
             detailContainer.getChildren().add(itemLabel);
@@ -227,45 +226,12 @@ public class HistoryController {
         }
 
         try (BufferedWriter writer = Files.newBufferedWriter(selectedFile.toPath())) {
-            writer.write(buildReceiptText());
+            writer.write(historyService.buildReceiptText(selectedPayment));
         } catch (IOException e) {
             throw new RuntimeException("Failed to export order receipt", e);
         }
     }
 
-    private String buildReceiptText() {
-        List<OrderItemDto> orderItems = historyService.getOrderItemsByPaymentId(selectedPayment.getId());
-        StringBuilder sb = new StringBuilder();
-        sb.append(I18n.t("history.receiptTitle")).append("\n");
-        sb.append(I18n.t("history.order", String.valueOf(selectedPayment.getId()))).append("\n");
-        sb.append(I18n.t("history.date", selectedPayment.getCreatedAt().format(DISPLAY_FORMAT))).append("\n");
-        sb.append(I18n.t("history.waiter", String.valueOf(selectedPayment.getWaiterId()))).append("\n");
-
-        String methodText = selectedPayment.getPaymentMethodName() != null ? localizePaymentMethod(selectedPayment.getPaymentMethodName()) : "-";
-        sb.append(I18n.t("history.payment", methodText)).append("\n");
-
-        String tipText = selectedPayment.getTip() != null
-                ? selectedPayment.getTip().stripTrailingZeros().toPlainString() + "%"
-                : "-";
-        sb.append(I18n.t("history.tip", tipText)).append("\n\n");
-        sb.append(I18n.t("history.items")).append(":\n");
-
-        for (OrderItemDto item : orderItems) {
-            String priceText = item.getPrice() != null
-                    ? item.getPrice().stripTrailingZeros().toPlainString() + "€"
-                    : "-";
-            sb.append("  ").append(item.getName()).append(" x").append(item.getQuantity())
-                    .append(" - ").append(priceText).append("\n");
-        }
-
-        sb.append("\n").append(I18n.t("history.total", selectedPayment.getAmount().toPlainString())).append("\n");
-
-        if (Boolean.TRUE.equals(selectedPayment.getRefunded())) {
-            sb.append(I18n.t("history.refunded")).append("\n");
-        }
-
-        return sb.toString();
-    }
 
     @FXML
     private void refundSelectedOrder() {
@@ -305,8 +271,7 @@ public class HistoryController {
     }
 
     private boolean canCurrentUserRefund() {
-        User currentUser = authService != null ? authService.getUser() : null;
-        return currentUser != null && currentUser.getRoleId() == MANAGER_ROLE_ID;
+        return authService != null && authService.isManager();
     }
 
     private Node createPrintableReceipt() {
@@ -315,7 +280,7 @@ public class HistoryController {
         receipt.setMaxWidth(320);
         receipt.setStyle("-fx-background-color:white; -fx-text-fill:black;");
 
-        for (String line : buildReceiptText().split("\\R")) {
+        for (String line : historyService.buildReceiptText(selectedPayment).split("\\R")) {
             Label label = new Label(line);
             label.setWrapText(true);
             label.setMaxWidth(300);

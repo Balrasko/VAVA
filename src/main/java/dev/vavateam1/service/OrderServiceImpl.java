@@ -150,6 +150,38 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
+    @Override
+    public List<OrderItemDto> buildOrderItemViews(List<OrderItem> orderItems, List<MenuItem> menuItems) {
+        List<OrderItemDto> views = new java.util.ArrayList<>();
+        for (OrderItem item : orderItems) {
+            MenuItem menuItem = menuItems.stream()
+                    .filter(m -> m.getId() == item.getMenuItemId())
+                    .findFirst()
+                    .orElseGet(() -> createDeletedMenuItemFallback(item));
+            views.add(new OrderItemDto(item, menuItem));
+        }
+        return views;
+    }
+
+    @Override
+    public boolean canMergeOrderLine(MenuItem menuItem, OrderStatus currentStatus) {
+        if (!menuItem.isToKitchen()) {
+            return true;
+        }
+        return currentStatus == OrderStatus.RECEIVED || currentStatus == OrderStatus.IN_PROGRESS;
+    }
+
+    private MenuItem createDeletedMenuItemFallback(OrderItem orderItem) {
+        MenuItem fallback = new MenuItem();
+        fallback.setId(orderItem.getMenuItemId());
+        fallback.setName("Deleted item #" + orderItem.getMenuItemId());
+        fallback.setPrice(orderItem.getPrice());
+        fallback.setAvailability(false);
+        fallback.setToKitchen(false);
+        fallback.setDiscount(BigDecimal.ZERO);
+        return fallback;
+    }
+
     private CreateOrder toCreateDto(OrderItem item) {
         return new CreateOrder(
                 item.getMenuItemId(),

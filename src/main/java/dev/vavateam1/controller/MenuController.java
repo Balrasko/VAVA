@@ -1,16 +1,22 @@
 package dev.vavateam1.controller;
 
+import java.math.BigDecimal;
+import java.time.OffsetDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import com.google.inject.Inject;
-import dev.vavateam1.dao.InventoryIngredientDao;
+
 import dev.vavateam1.model.Category;
 import dev.vavateam1.model.MenuItem;
+import dev.vavateam1.service.InventoryService;
 import dev.vavateam1.service.MenuService;
 import dev.vavateam1.util.I18n;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckMenuItem;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.CustomMenuItem;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuButton;
@@ -21,16 +27,10 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
-import java.math.BigDecimal;
-import java.time.OffsetDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 public class MenuController {
 
     private final MenuService menuService;
-    private final InventoryIngredientDao inventoryIngredientDao;
+    private final InventoryService inventoryService;
 
     @FXML
     private HBox categoryTabsContainer;
@@ -83,9 +83,9 @@ public class MenuController {
     private Integer editingMenuItemCode;
 
     @Inject
-    public MenuController(MenuService menuService, InventoryIngredientDao inventoryIngredientDao) {
+    public MenuController(MenuService menuService, InventoryService inventoryService) {
         this.menuService = menuService;
-        this.inventoryIngredientDao = inventoryIngredientDao;
+        this.inventoryService = inventoryService;
     }
 
     @FXML
@@ -150,7 +150,7 @@ public class MenuController {
         MenuItem item = new MenuItem(
                 editingMenuItemId > 0 ? editingMenuItemId : 0,
                 categoryId,
-            itemCode,
+                itemCode,
                 nameField.getText(),
                 parseDecimal(priceField.getText()),
                 true,
@@ -230,7 +230,6 @@ public class MenuController {
                 int pluCode = Integer.parseInt(pluCodeText);
                 boolean duplicatePluCode = menuService.getMenuItems().stream()
                         .anyMatch(item -> item.getItemCode() == pluCode && item.getId() != editingMenuItemId);
-
                 if (pluCode <= 0 || duplicatePluCode) {
                     setFieldError(pluCodeField, true);
                     valid = false;
@@ -246,19 +245,6 @@ public class MenuController {
         }
 
         return valid;
-    }
-
-    private int resolveMenuItemCode() {
-        String pluCodeText = pluCodeField.getText() != null ? pluCodeField.getText().trim() : "";
-        if (!pluCodeText.isEmpty()) {
-            return Integer.parseInt(pluCodeText);
-        }
-
-        if (editingMenuItemCode != null && editingMenuItemCode > 0) {
-            return editingMenuItemCode;
-        }
-
-        return generateItemCode();
     }
 
     private void setFieldError(TextField field, boolean error) {
@@ -355,7 +341,7 @@ public class MenuController {
             return;
         }
         ingredientsButton.getItems().clear();
-        for (var ingredient : inventoryIngredientDao.findAll()) {
+        for (var ingredient : inventoryService.getAll()) {
             CheckBox checkBox = new CheckBox(ingredient.getName());
             checkBox.selectedProperty().addListener((obs, oldVal, newVal) -> updateIngredientsButtonText());
             CustomMenuItem item = new CustomMenuItem(checkBox, false);
@@ -389,7 +375,8 @@ public class MenuController {
         discountField.clear();
         if (ingredientsButton != null) {
             ingredientsButton.getItems().forEach(item -> {
-                if (item instanceof CustomMenuItem cmi && cmi.getContent() instanceof CheckBox cb) cb.setSelected(false);
+                if (item instanceof CustomMenuItem cmi && cmi.getContent() instanceof CheckBox cb)
+                    cb.setSelected(false);
             });
             updateIngredientsButtonText();
         }
@@ -580,12 +567,23 @@ public class MenuController {
                 .orElse("");
     }
 
-    private boolean isKitchenCategory(String category) {
-        return category != null && category.toLowerCase().contains("food");
+    private int resolveMenuItemCode() {
+        String pluCodeText = pluCodeField.getText() != null ? pluCodeField.getText().trim() : "";
+        if (!pluCodeText.isEmpty()) {
+            return Integer.parseInt(pluCodeText);
+        }
+        if (editingMenuItemCode != null && editingMenuItemCode > 0) {
+            return editingMenuItemCode;
+        }
+        return generateItemCode();
     }
 
     private int generateItemCode() {
         return (int) (100 + Math.random() * 900);
+    }
+
+    private boolean isKitchenCategory(String category) {
+        return category != null && category.toLowerCase().contains("food");
     }
 
     private void loadItems(int categoryId) {
