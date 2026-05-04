@@ -94,6 +94,7 @@ public class ClosingController {
         }
 
         boolean created = closingService.closeDay(currentUser.getId());
+        clearDisplayedTotals();
         if (created) {
             showInfo(
                     I18n.t("closing.created"),
@@ -128,6 +129,16 @@ public class ClosingController {
 
     private void reloadSummary() {
         setClosingSummary(closingService.getClosingSummary());
+    }
+
+    private void clearDisplayedTotals() {
+        String zero = formatMoney(BigDecimal.ZERO);
+        totalPaidLabel.setText(zero);
+        totalTipsLabel.setText(zero);
+        grandTotalLabel.setText(zero);
+        cashFloatValueLabel.setText(zero);
+        cashValueLabel.setText(zero);
+        cardValueLabel.setText(zero);
     }
 
     private void handleAmountAction(String title, AmountAction action) {
