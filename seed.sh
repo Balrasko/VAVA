@@ -1,5 +1,9 @@
 #!/bin/bash
 
+set -a
+source .env 
+set +a 
+
 echo "Kompilujem projekt..."
 mvn compile -q
 
