@@ -55,6 +55,8 @@ public class MenuController {
     @FXML
     private TextField pluCodeField;
     @FXML
+    private CheckBox isKitchenCheckBox;
+    @FXML
     private MenuButton ingredientsButton;
     @FXML
     private TextField categoryNameField;
@@ -155,7 +157,7 @@ public class MenuController {
                 parseDecimal(priceField.getText()),
                 true,
                 descriptionField.getText(),
-                isKitchenCategory(categoryField.getValue()),
+                isKitchenCheckBox.isSelected(),
                 parseDecimal(discountField.getText()),
                 OffsetDateTime.now(),
                 OffsetDateTime.now(),
@@ -373,6 +375,9 @@ public class MenuController {
         }
         priceField.clear();
         discountField.clear();
+        if (isKitchenCheckBox != null) {
+            isKitchenCheckBox.setSelected(false);
+        }
         if (ingredientsButton != null) {
             ingredientsButton.getItems().forEach(item -> {
                 if (item instanceof CustomMenuItem cmi && cmi.getContent() instanceof CheckBox cb)
@@ -439,6 +444,7 @@ public class MenuController {
         categoryField.setValue(resolveCategoryName(item.getCategoryId()));
         priceField.setText(item.getPrice() != null ? item.getPrice().toString() : "");
         discountField.setText(item.getDiscount() != null ? item.getDiscount().toString() : "");
+        isKitchenCheckBox.setSelected(item.isToKitchen());
         updateFormMode();
         showForm();
     }
@@ -580,10 +586,6 @@ public class MenuController {
 
     private int generateItemCode() {
         return (int) (100 + Math.random() * 900);
-    }
-
-    private boolean isKitchenCategory(String category) {
-        return category != null && category.toLowerCase().contains("food");
     }
 
     private void loadItems(int categoryId) {
