@@ -172,10 +172,16 @@
 }
 
 .nav-tab:hover {
-  -fx-background-color: rgba(255, 255, 255, 0.1);
+  -fx-background-color: derive(-app-blue-primary, 18%);
 }
 
 .nav-tab-active {
+  -fx-background-color: -app-foreground;
+  -fx-text-fill: -app-text;
+  -fx-border-color: transparent;
+}
+
+.nav-tab-active:hover {
   -fx-background-color: -app-foreground;
   -fx-text-fill: -app-text;
   -fx-border-color: transparent;

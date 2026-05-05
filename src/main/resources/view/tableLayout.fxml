@@ -5,13 +5,13 @@
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.Priority?>
 <?import javafx.scene.layout.Region?>
-<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
@@ -29,11 +29,28 @@
                 <VBox spacing="0" HBox.hgrow="ALWAYS" styleClass="menu-outer-panel">
                     <children>
 
-                        <HBox fx:id="zonesTabsContainer" spacing="0" styleClass="menu-tabs-bar">
-                            <children>
-                                <fx:include fx:id="zonesNavbar" source="top-navbar-zones.fxml" />
-                            </children>
-                        </HBox>
+                        <ScrollPane fitToHeight="true"
+                                    fitToWidth="true"
+                                    hbarPolicy="AS_NEEDED"
+                                    vbarPolicy="NEVER"
+                                    prefHeight="60"
+                                    minHeight="60"
+                                    maxHeight="60"
+                                    pannable="true"
+                                    styleClass="menu-tabs-scroll">
+                            <content>
+                                <HBox fx:id="zonesTabsContainer"
+                                      spacing="0"
+                                      prefHeight="60"
+                                      minHeight="60"
+                                      maxHeight="60"
+                                      styleClass="menu-tabs-bar">
+                                    <children>
+                                        <fx:include fx:id="zonesNavbar" source="top-navbar-zones.fxml" />
+                                    </children>
+                                </HBox>
+                            </content>
+                        </ScrollPane>
 
                         <VBox spacing="18" VBox.vgrow="ALWAYS" styleClass="menu-inner-panel">
                             <children>

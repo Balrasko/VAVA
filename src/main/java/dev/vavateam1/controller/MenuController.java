@@ -470,7 +470,7 @@ public class MenuController {
             int categoryId = category.getId();
 
             Button tabButton = new Button(category.getName());
-            tabButton.getStyleClass().add("menu-tab");
+            tabButton.getStyleClass().add("nav-tab");
             tabButton.setOnAction(e -> setActiveCategory(categoryId));
             categoryButtons.put(categoryId, tabButton);
             categoryTabsContainer.getChildren().add(tabButton);
@@ -483,7 +483,7 @@ public class MenuController {
         }
 
         Button addCategoryTabButton = new Button("+");
-        addCategoryTabButton.getStyleClass().addAll("menu-tab", "menu-tab-add");
+        addCategoryTabButton.getStyleClass().addAll("nav-tab", "menu-tab-add");
         addCategoryTabButton.setOnAction(e -> {
             editingCategoryId = -1;
             categoryNameField.clear();
@@ -537,9 +537,9 @@ public class MenuController {
 
     private void setActiveTab(int activeCategoryId) {
         categoryButtons.forEach((categoryId, button) -> {
-            button.getStyleClass().remove("menu-tab-active");
+            button.getStyleClass().remove("nav-tab-active");
             if (categoryId == activeCategoryId) {
-                button.getStyleClass().add("menu-tab-active");
+                button.getStyleClass().add("nav-tab-active");
             }
         });
     }
