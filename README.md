@@ -2,6 +2,8 @@ Semestral project from the subject VAVA on FIIT STU 2025/2026
 
 Video documentation: https://www.youtube.com/watch?v=X36QpRUEdx4
 
+[Diagrams](./docs/VavaFinal.qea)
+
 ## Development setup
 
 ### Prerequisites
